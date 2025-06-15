@@ -134,3 +134,10 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# 프로젝트 관련 큰 파일들
+data/
+downloads/
+*.db
+*.sqlite
+*.sqlite3

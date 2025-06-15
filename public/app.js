@@ -2,6 +2,9 @@
 let selectedCompany = null;
 let financialData = null;
 let currentChart = null;
+let ratiosChart = null;
+let profitMarginChart = null;
+let stabilityChart = null;
 
 // DOM 요소
 const companySearch = document.getElementById('companySearch');
@@ -175,6 +178,17 @@ function displayFinancialData() {
 function updateChart(chartType) {
   if (!financialData || !financialData.list) return;
 
+  // 재무 비율 차트인 경우
+  if (chartType === 'ratios') {
+    document.getElementById('financialChart').style.display = 'none';
+    document.getElementById('financialRatiosSection').style.display = 'block';
+    calculateAndDisplayRatios();
+    return;
+  } else {
+    document.getElementById('financialChart').style.display = 'block';
+    document.getElementById('financialRatiosSection').style.display = 'none';
+  }
+
   // 기존 차트 제거
   if (currentChart) {
     currentChart.destroy();
@@ -283,6 +297,312 @@ function updateChart(chartType) {
           ticks: {
             maxRotation: 45,
             minRotation: 45,
+          },
+        },
+      },
+    },
+  });
+}
+
+// 재무 비율 계산 및 표시
+function calculateAndDisplayRatios() {
+  if (!financialData || !financialData.list) return;
+
+  const bsData = financialData.list.filter((item) => item.sj_div === 'BS');
+  const isData = financialData.list.filter((item) => item.sj_div === 'IS');
+
+  // 주요 계정 추출 함수
+  function getAccountAmount(data, accountNames) {
+    for (const name of accountNames) {
+      const account = data.find(
+        (item) => item.account_nm && item.account_nm.includes(name)
+      );
+      if (account && account.thstrm_amount) {
+        return parseInt(account.thstrm_amount.replace(/,/g, '')) || 0;
+      }
+    }
+    return 0;
+  }
+
+  // 재무상태표 주요 계정
+  const totalAssets = getAccountAmount(bsData, ['자산총계', '총자산']);
+  const totalLiabilities = getAccountAmount(bsData, ['부채총계', '총부채']);
+  const totalEquity = getAccountAmount(bsData, [
+    '자본총계',
+    '총자본',
+    '자기자본',
+  ]);
+  const currentAssets = getAccountAmount(bsData, ['유동자산']);
+  const currentLiabilities = getAccountAmount(bsData, ['유동부채']);
+  const receivables = getAccountAmount(bsData, [
+    '매출채권',
+    '매출채권및기타채권',
+  ]);
+
+  // 손익계산서 주요 계정
+  const revenue = getAccountAmount(isData, [
+    '매출액',
+    '수익(매출액)',
+    '영업수익',
+  ]);
+  const netIncome = getAccountAmount(isData, ['당기순이익', '순이익']);
+  const operatingIncome = getAccountAmount(isData, ['영업이익']);
+
+  // 비율 계산
+  const ratios = {
+    roe: totalEquity > 0 ? (netIncome / totalEquity) * 100 : 0,
+    roa: totalAssets > 0 ? (netIncome / totalAssets) * 100 : 0,
+    operatingMargin: revenue > 0 ? (operatingIncome / revenue) * 100 : 0,
+    netProfitMargin: revenue > 0 ? (netIncome / revenue) * 100 : 0,
+    debtRatio: totalEquity > 0 ? (totalLiabilities / totalEquity) * 100 : 0,
+    equityRatio: totalAssets > 0 ? (totalEquity / totalAssets) * 100 : 0,
+    equityDebtRatio:
+      totalLiabilities > 0 ? (totalEquity / totalLiabilities) * 100 : 0,
+    currentRatio:
+      currentLiabilities > 0 ? (currentAssets / currentLiabilities) * 100 : 0,
+    assetTurnover: totalAssets > 0 ? revenue / totalAssets : 0,
+    equityTurnover: totalEquity > 0 ? revenue / totalEquity : 0,
+    receivablesTurnover: receivables > 0 ? revenue / receivables : 0,
+  };
+
+  // 비율 값 표시
+  updateRatioValue('roeValue', ratios.roe, '%', 'percentage');
+  updateRatioValue('roaValue', ratios.roa, '%', 'percentage');
+  updateRatioValue(
+    'operatingMarginValue',
+    ratios.operatingMargin,
+    '%',
+    'percentage'
+  );
+  updateRatioValue(
+    'netProfitMarginValue',
+    ratios.netProfitMargin,
+    '%',
+    'percentage'
+  );
+  updateRatioValue('debtRatioValue', ratios.debtRatio, '%', 'ratio');
+  updateRatioValue('equityRatioValue', ratios.equityRatio, '%', 'percentage');
+  updateRatioValue(
+    'equityDebtRatioValue',
+    ratios.equityDebtRatio,
+    '%',
+    'percentage'
+  );
+  updateRatioValue('currentRatioValue', ratios.currentRatio, '%', 'ratio');
+  updateRatioValue(
+    'assetTurnoverValue',
+    ratios.assetTurnover,
+    '회',
+    'turnover'
+  );
+  updateRatioValue(
+    'equityTurnoverValue',
+    ratios.equityTurnover,
+    '회',
+    'turnover'
+  );
+  updateRatioValue(
+    'receivablesTurnoverValue',
+    ratios.receivablesTurnover,
+    '회',
+    'turnover'
+  );
+
+  // 차트 생성
+  createRatiosChart(ratios);
+  createProfitMarginChart(ratios);
+  createStabilityChart(ratios);
+}
+
+// 비율 값 업데이트 및 스타일 적용
+function updateRatioValue(elementId, value, unit, type) {
+  const element = document.getElementById(elementId);
+  if (!element) return;
+
+  if (value === 0 || isNaN(value)) {
+    element.textContent = '-';
+    element.className = 'ratio-value';
+    return;
+  }
+
+  const formattedValue =
+    type === 'turnover' ? value.toFixed(2) : value.toFixed(1);
+  element.textContent = `${formattedValue}${unit}`;
+
+  // 색상 클래스 적용
+  element.className = 'ratio-value';
+
+  if (type === 'percentage') {
+    if (value > 0) element.classList.add('positive');
+    else if (value < 0) element.classList.add('negative');
+    else element.classList.add('neutral');
+  } else if (type === 'ratio') {
+    if (value < 100) element.classList.add('positive');
+    else if (value > 200) element.classList.add('negative');
+    else element.classList.add('neutral');
+  } else if (type === 'turnover') {
+    if (value > 1) element.classList.add('positive');
+    else if (value < 0.5) element.classList.add('negative');
+    else element.classList.add('neutral');
+  }
+}
+
+// 재무 비율 레이더 차트 생성
+function createRatiosChart(ratios) {
+  if (ratiosChart) {
+    ratiosChart.destroy();
+  }
+
+  const ctx = document.getElementById('ratiosChart').getContext('2d');
+
+  // 데이터 정규화 (0-100 스케일)
+  const normalizedData = [
+    Math.min(Math.max((ratios.roe / 20) * 100, 0), 100), // ROE 20%를 100으로
+    Math.min(Math.max((ratios.roa / 10) * 100, 0), 100), // ROA 10%를 100으로
+    Math.min(Math.max((ratios.operatingMargin / 20) * 100, 0), 100), // 영업이익률 20%를 100으로
+    Math.min(Math.max((ratios.netProfitMargin / 15) * 100, 0), 100), // 순이익률 15%를 100으로
+    Math.min(Math.max((200 - ratios.debtRatio) / 2, 0), 100), // 부채비율 낮을수록 좋음
+    Math.min(Math.max(ratios.equityRatio, 0), 100), // 자기자본비율
+    Math.min(Math.max(ratios.currentRatio / 2, 0), 100), // 유동비율 200%를 100으로
+  ];
+
+  ratiosChart = new Chart(ctx, {
+    type: 'radar',
+    data: {
+      labels: [
+        'ROE',
+        'ROA',
+        '영업이익률',
+        '순이익률',
+        '안정성',
+        '자기자본비율',
+        '유동비율',
+      ],
+      datasets: [
+        {
+          label: '재무 비율 종합',
+          data: normalizedData,
+          backgroundColor: 'rgba(52, 152, 219, 0.2)',
+          borderColor: 'rgba(52, 152, 219, 1)',
+          borderWidth: 2,
+          pointBackgroundColor: 'rgba(52, 152, 219, 1)',
+          pointBorderColor: '#fff',
+          pointBorderWidth: 2,
+          pointRadius: 5,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        title: {
+          display: true,
+          text: `${selectedCompany.corp_name} - 재무 비율 종합 분석`,
+          font: {
+            size: 16,
+            weight: 'bold',
+          },
+        },
+      },
+      scales: {
+        r: {
+          beginAtZero: true,
+          max: 100,
+          ticks: {
+            stepSize: 20,
+          },
+        },
+      },
+    },
+  });
+}
+
+// 수익성 지표 차트 생성
+function createProfitMarginChart(ratios) {
+  if (profitMarginChart) {
+    profitMarginChart.destroy();
+  }
+
+  const ctx = document.getElementById('profitMarginChart').getContext('2d');
+
+  profitMarginChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['ROE', 'ROA', '영업이익률', '순이익률'],
+      datasets: [
+        {
+          label: '수익성 지표 (%)',
+          data: [
+            ratios.roe.toFixed(1),
+            ratios.roa.toFixed(1),
+            ratios.operatingMargin.toFixed(1),
+            ratios.netProfitMargin.toFixed(1),
+          ],
+          backgroundColor: ['#3498db', '#2ecc71', '#f39c12', '#e74c3c'],
+          borderColor: ['#2980b9', '#27ae60', '#d68910', '#c0392b'],
+          borderWidth: 1,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: false,
+        },
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            callback: function (value) {
+              return value + '%';
+            },
+          },
+        },
+      },
+    },
+  });
+}
+
+// 안정성 지표 차트 생성
+function createStabilityChart(ratios) {
+  if (stabilityChart) {
+    stabilityChart.destroy();
+  }
+
+  const ctx = document.getElementById('stabilityChart').getContext('2d');
+
+  stabilityChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['자기자본', '부채'],
+      datasets: [
+        {
+          data: [
+            ratios.equityRatio.toFixed(1),
+            (100 - ratios.equityRatio).toFixed(1),
+          ],
+          backgroundColor: ['#27ae60', '#e74c3c'],
+          borderColor: ['#2c3e50', '#2c3e50'],
+          borderWidth: 2,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'bottom',
+        },
+        tooltip: {
+          callbacks: {
+            label: function (context) {
+              return context.label + ': ' + context.parsed + '%';
+            },
           },
         },
       },

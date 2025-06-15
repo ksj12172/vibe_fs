@@ -90,10 +90,96 @@
           <div class="chart-controls">
             <button class="chart-btn active" data-chart="bs">재무상태표</button>
             <button class="chart-btn" data-chart="is">손익계산서</button>
+            <button class="chart-btn" data-chart="ratios">재무비율</button>
           </div>
 
           <div class="chart-container">
             <canvas id="financialChart"></canvas>
+          </div>
+
+          <!-- 재무 비율 섹션 추가 -->
+          <div
+            class="financial-ratios-section"
+            id="financialRatiosSection"
+            style="display: none"
+          >
+            <h3>📊 주요 재무 비율</h3>
+            <div class="ratios-grid">
+              <div class="ratio-card">
+                <h4>수익성 비율</h4>
+                <div class="ratio-item">
+                  <span class="ratio-name">ROE (자기자본이익률)</span>
+                  <span class="ratio-value" id="roeValue">-</span>
+                </div>
+                <div class="ratio-item">
+                  <span class="ratio-name">ROA (총자산이익률)</span>
+                  <span class="ratio-value" id="roaValue">-</span>
+                </div>
+                <div class="ratio-item">
+                  <span class="ratio-name">영업이익률</span>
+                  <span class="ratio-value" id="operatingMarginValue">-</span>
+                </div>
+                <div class="ratio-item">
+                  <span class="ratio-name">매출액순이익률</span>
+                  <span class="ratio-value" id="netProfitMarginValue">-</span>
+                </div>
+              </div>
+
+              <div class="ratio-card">
+                <h4>안정성 비율</h4>
+                <div class="ratio-item">
+                  <span class="ratio-name">부채비율</span>
+                  <span class="ratio-value" id="debtRatioValue">-</span>
+                </div>
+                <div class="ratio-item">
+                  <span class="ratio-name">자기자본비율</span>
+                  <span class="ratio-value" id="equityRatioValue">-</span>
+                </div>
+                <div class="ratio-item">
+                  <span class="ratio-name">자기자본-부채 비율</span>
+                  <span class="ratio-value" id="equityDebtRatioValue">-</span>
+                </div>
+                <div class="ratio-item">
+                  <span class="ratio-name">유동비율</span>
+                  <span class="ratio-value" id="currentRatioValue">-</span>
+                </div>
+              </div>
+
+              <div class="ratio-card">
+                <h4>활동성 비율</h4>
+                <div class="ratio-item">
+                  <span class="ratio-name">총자산회전율</span>
+                  <span class="ratio-value" id="assetTurnoverValue">-</span>
+                </div>
+                <div class="ratio-item">
+                  <span class="ratio-name">자기자본회전율</span>
+                  <span class="ratio-value" id="equityTurnoverValue">-</span>
+                </div>
+                <div class="ratio-item">
+                  <span class="ratio-name">매출채권회전율</span>
+                  <span class="ratio-value" id="receivablesTurnoverValue"
+                    >-</span
+                  >
+                </div>
+              </div>
+            </div>
+
+            <div class="ratios-chart-container">
+              <canvas id="ratiosChart"></canvas>
+            </div>
+
+            <!-- 추가 그래프 섹션 -->
+            <div class="additional-charts">
+              <div class="profit-margin-chart">
+                <h4>📈 수익성 지표 비교</h4>
+                <canvas id="profitMarginChart"></canvas>
+              </div>
+
+              <div class="stability-chart">
+                <h4>🛡️ 안정성 지표 비교</h4>
+                <canvas id="stabilityChart"></canvas>
+              </div>
+            </div>
           </div>
 
           <div class="data-table-container">

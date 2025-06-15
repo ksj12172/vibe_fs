@@ -319,3 +319,150 @@ h2 {
     height: 300px;
   }
 }
+
+/* 재무 비율 섹션 스타일 */
+.financial-ratios-section {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: var(--card-bg);
+  border-radius: 12px;
+  box-shadow: var(--card-shadow);
+}
+
+.ratios-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.ratio-card {
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid #e0e6ed;
+}
+
+.ratio-card h4 {
+  margin: 0 0 1rem 0;
+  color: var(--primary-color);
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-bottom: 2px solid var(--primary-color);
+  padding-bottom: 0.5rem;
+}
+
+.ratio-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.ratio-item:last-child {
+  border-bottom: none;
+}
+
+.ratio-name {
+  font-weight: 500;
+  color: #333;
+  font-size: 0.9rem;
+}
+
+.ratio-value {
+  font-weight: 600;
+  color: var(--accent-color);
+  font-size: 1rem;
+  font-family: 'Courier New', monospace;
+}
+
+.ratio-value.positive {
+  color: #27ae60;
+}
+
+.ratio-value.negative {
+  color: #e74c3c;
+}
+
+.ratio-value.neutral {
+  color: #f39c12;
+}
+
+.ratios-chart-container {
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid #e0e6ed;
+  margin-top: 1rem;
+}
+
+.ratios-chart-container canvas {
+  max-height: 400px !important;
+}
+
+/* 추가 차트 섹션 스타일 */
+.additional-charts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.profit-margin-chart,
+.stability-chart {
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid #e0e6ed;
+}
+
+.profit-margin-chart h4,
+.stability-chart h4 {
+  margin: 0 0 1rem 0;
+  color: var(--primary-color);
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.profit-margin-chart canvas,
+.stability-chart canvas {
+  max-height: 300px !important;
+}
+
+/* 차트 컨테이너 수정 */
+.chart-container {
+  background: var(--card-bg);
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  min-height: 400px;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .ratios-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .ratio-card {
+    padding: 1rem;
+  }
+
+  .ratio-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .ratio-value {
+    align-self: flex-end;
+  }
+
+  .additional-charts {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}

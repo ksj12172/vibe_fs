@@ -7,13 +7,13 @@
     "dev": "next dev",
     "server": "node server.js",
     "dev:all": "concurrently \"npm run dev\" \"npm run server\"",
-    "build": "prisma generate && next build",
+    "build": "prisma generate --no-engine && next build",
     "start": "next start",
     "lint": "next lint",
     "download": "node scripts/download_corp_code.js",
     "setup-postgres": "node scripts/migrate-to-postgres.js",
     "seed": "node scripts/seed-with-prisma.js",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate --no-engine"
   },
   "dependencies": {
     "@prisma/client": "6.9.0",

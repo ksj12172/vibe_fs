@@ -1,9 +1,12 @@
 import { NextResponse } from 'next/server';
 import axios from 'axios';
 
+// API 라우트를 동적으로 렌더링하도록 강제 설정
+export const dynamic = 'force-dynamic';
+
 export async function GET(request) {
   try {
-    const { searchParams } = new URL(request.url);
+    const { searchParams } = request.nextUrl;
     const corp_code = searchParams.get('corp_code');
     const bsns_year = searchParams.get('bsns_year');
     const reprt_code = searchParams.get('reprt_code');

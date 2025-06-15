@@ -64,7 +64,7 @@ app.get('/api/financial-data', async (req, res) => {
       });
     }
 
-    const apiKey = process.env.OPENAI_API_KEY;
+    const apiKey = process.env.DART_API_KEY;
     if (!apiKey) {
       return res.status(500).json({ error: 'API 키가 설정되지 않았습니다.' });
     }

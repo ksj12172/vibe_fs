@@ -7,12 +7,12 @@ const xml2js = require('xml2js');
 
 async function downloadCorpCode() {
   try {
-    // .env 파일에서 API 키 읽기 (OPENAI_API_KEY를 DART API 키로 사용)
-    const apiKey = process.env.OPENAI_API_KEY;
+    // .env 파일에서 API 키 읽기
+    const apiKey = process.env.DART_API_KEY;
 
     if (!apiKey) {
       console.error('❌ API 키가 설정되지 않았습니다.');
-      console.log('💡 .env 파일에서 OPENAI_API_KEY를 설정해주세요.');
+      console.log('💡 .env 파일에서 DART_API_KEY를 설정해주세요.');
       return;
     }
 
@@ -103,7 +103,7 @@ async function downloadCorpCode() {
     }
 
     console.log('\n💡 해결 방법:');
-    console.log('1. .env 파일의 OPENAI_API_KEY가 유효한 DART API 키인지 확인');
+    console.log('1. .env 파일의 DART_API_KEY가 유효한 DART API 키인지 확인');
     console.log('2. 네트워크 연결 상태 확인');
     console.log('3. API 키 등록 및 IP 제한 설정 확인');
   }

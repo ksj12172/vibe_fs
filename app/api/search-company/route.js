@@ -16,6 +16,15 @@ export async function GET(request) {
       );
     }
 
+    // 데이터베이스 연결 확인
+    if (!process.env.DATABASE_URL) {
+      console.error('❌ DATABASE_URL 환경변수가 설정되지 않았습니다.');
+      return NextResponse.json(
+        { error: '데이터베이스 연결 설정이 필요합니다.' },
+        { status: 500 }
+      );
+    }
+
     const db = new PostgresDatabaseManager();
     const results = await db.searchCompanies(query.trim());
 

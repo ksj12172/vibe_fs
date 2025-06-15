@@ -1,9 +1,12 @@
 import { NextResponse } from 'next/server';
 import { PostgresDatabaseManager } from '../../../lib/postgres-database';
 
+// API 라우트를 동적으로 렌더링하도록 강제 설정
+export const dynamic = 'force-dynamic';
+
 export async function GET(request) {
   try {
-    const { searchParams } = new URL(request.url);
+    const { searchParams } = request.nextUrl;
     const query = searchParams.get('query');
 
     if (!query || query.trim() === '') {

@@ -81,23 +81,40 @@ function displaySearchResults(results) {
   }
 
   const html = results
-    .map(
-      (company) => `
+    .map((company) => {
+      const isListed = company.stock_code && company.stock_code.trim() !== '';
+      const listingTag = isListed
+        ? '<span class="company-tag listed">📈 상장</span>'
+        : '<span class="company-tag unlisted">📋 비상장</span>';
+
+      const fsTypeTag = isListed
+        ? '<span class="fs-preview-tag consolidated">연결재무제표 예상</span>'
+        : '<span class="fs-preview-tag individual">개별재무제표 예상</span>';
+
+      return `
         <div class="company-item" onclick="selectCompany('${
           company.corp_code
         }', '${company.corp_name}', '${company.stock_code}')">
-            <h4>${company.corp_name}</h4>
-            <p>회사코드: ${company.corp_code} | 종목코드: ${
+            <div class="company-header">
+              <h4>${company.corp_name}</h4>
+              <div class="company-tags">
+                ${listingTag}
+                ${fsTypeTag}
+              </div>
+            </div>
+            <div class="company-details">
+              <p>회사코드: ${company.corp_code} | 종목코드: ${
         company.stock_code || '없음'
       }</p>
-            ${
-              company.corp_eng_name
-                ? `<p>영문명: ${company.corp_eng_name}</p>`
-                : ''
-            }
+              ${
+                company.corp_eng_name
+                  ? `<p>영문명: ${company.corp_eng_name}</p>`
+                  : ''
+              }
+            </div>
         </div>
-    `
-    )
+    `;
+    })
     .join('');
 
   searchResults.innerHTML = html;
@@ -169,9 +186,45 @@ function displayFinancialData() {
   hideAllSections();
   resultsSection.style.display = 'block';
 
+  // 재무제표 유형 정보 업데이트
+  updateFinancialStatementInfo();
+
   // 기본으로 재무상태표 차트 표시
   updateChart('bs');
   displayDataTable();
+}
+
+// 재무제표 유형 정보 업데이트
+function updateFinancialStatementInfo() {
+  const filteredData = getFilteredFinancialData();
+  const fsTypeTag = document.getElementById('fsTypeTag');
+  const dataCountInfo = document.getElementById('dataCountInfo');
+
+  if (filteredData.length === 0) {
+    fsTypeTag.textContent = '데이터 없음';
+    fsTypeTag.className = 'fs-type-tag';
+    dataCountInfo.textContent = '';
+    return;
+  }
+
+  // 연결재무제표 여부 확인
+  const isConsolidated = filteredData.some((item) => item.fs_div === 'CFS');
+  const consolidatedCount = financialData.list.filter(
+    (item) => item.fs_div === 'CFS'
+  ).length;
+  const individualCount = financialData.list.filter(
+    (item) => item.fs_div === 'OFS'
+  ).length;
+
+  if (isConsolidated) {
+    fsTypeTag.textContent = '🏢 연결재무제표';
+    fsTypeTag.className = 'fs-type-tag consolidated';
+    dataCountInfo.textContent = `연결 ${consolidatedCount}개, 개별 ${individualCount}개 항목`;
+  } else {
+    fsTypeTag.textContent = '📋 개별재무제표';
+    fsTypeTag.className = 'fs-type-tag individual';
+    dataCountInfo.textContent = `개별 ${individualCount}개 항목`;
+  }
 }
 
 // 차트 업데이트

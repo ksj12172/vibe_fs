@@ -92,35 +92,115 @@ h2 {
 }
 
 .search-results {
-  max-height: 300px;
-  overflow-y: auto;
+  margin-top: 1rem;
 }
 
 .company-item {
-  padding: 15px;
-  border: 1px solid #e0e0e0;
+  background: var(--card-bg);
+  border: 1px solid #e0e6ed;
   border-radius: 8px;
-  margin-bottom: 10px;
+  padding: 1.2rem;
+  margin-bottom: 0.8rem;
   cursor: pointer;
-  transition: all 0.3s ease;
-  background: white;
+  transition: all 0.2s ease;
 }
 
 .company-item:hover {
-  background: #f8f9fa;
-  border-color: #3498db;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.2);
+  border-color: var(--primary-color);
+  box-shadow: 0 2px 8px rgba(52, 152, 219, 0.1);
+  transform: translateY(-1px);
 }
 
-.company-item h4 {
-  color: #2c3e50;
-  margin-bottom: 5px;
+.company-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.8rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
-.company-item p {
-  color: #7f8c8d;
+.company-header h4 {
+  margin: 0;
+  color: var(--primary-color);
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.company-tags {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.company-tag {
+  padding: 0.3rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.company-tag.listed {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.company-tag.unlisted {
+  background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+  color: white;
+}
+
+.fs-preview-tag {
+  padding: 0.25rem 0.5rem;
+  border-radius: 10px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  border: 1px solid;
+}
+
+.fs-preview-tag.consolidated {
+  background: rgba(79, 172, 254, 0.1);
+  color: #2980b9;
+  border-color: rgba(79, 172, 254, 0.3);
+}
+
+.fs-preview-tag.individual {
+  background: rgba(67, 233, 123, 0.1);
+  color: #27ae60;
+  border-color: rgba(67, 233, 123, 0.3);
+}
+
+.company-details {
+  color: #666;
   font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.company-details p {
+  margin: 0.3rem 0;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .company-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.8rem;
+  }
+
+  .company-tags {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .company-tag,
+  .fs-preview-tag {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.5rem;
+  }
 }
 
 /* 옵션 섹션 */
@@ -211,9 +291,10 @@ h2 {
 /* 차트 컨트롤 */
 .chart-controls {
   display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
   justify-content: center;
+  flex-wrap: wrap;
 }
 
 .chart-btn {
@@ -464,5 +545,63 @@ h2 {
   .additional-charts {
     grid-template-columns: 1fr;
     gap: 1rem;
+  }
+}
+
+/* 결과 헤더 스타일 */
+.results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.results-header h2 {
+  margin: 0;
+  color: var(--primary-color);
+}
+
+.financial-statement-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-end;
+}
+
+.fs-type-tag {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.fs-type-tag.consolidated {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.fs-type-tag.individual {
+  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+}
+
+.data-count-info {
+  color: #666;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .results-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .financial-statement-info {
+    align-items: flex-start;
   }
 }

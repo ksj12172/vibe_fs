@@ -194,8 +194,11 @@ function updateChart(chartType) {
     currentChart.destroy();
   }
 
+  // 중복 제거된 데이터 사용
+  const filteredData = getFilteredFinancialData();
+
   // 데이터 필터링
-  const filteredData = financialData.list.filter((item) => {
+  const chartData = filteredData.filter((item) => {
     if (chartType === 'bs') {
       return item.sj_div === 'BS'; // 재무상태표
     } else if (chartType === 'is') {
@@ -204,14 +207,14 @@ function updateChart(chartType) {
     return false;
   });
 
-  if (filteredData.length === 0) {
+  if (chartData.length === 0) {
     document.getElementById('financialChart').innerHTML =
       '<p>해당 유형의 데이터가 없습니다.</p>';
     return;
   }
 
   // 주요 계정 선택 (상위 10개)
-  const topAccounts = filteredData
+  const topAccounts = chartData
     .filter(
       (item) =>
         item.thstrm_amount && parseInt(item.thstrm_amount.replace(/,/g, '')) > 0
@@ -274,7 +277,7 @@ function updateChart(chartType) {
           display: true,
           text: `${selectedCompany.corp_name} - ${
             chartType === 'bs' ? '재무상태표' : '손익계산서'
-          }`,
+          } (${getCurrentYear()})`,
           font: {
             size: 16,
             weight: 'bold',
@@ -289,7 +292,16 @@ function updateChart(chartType) {
           beginAtZero: true,
           ticks: {
             callback: function (value) {
-              return new Intl.NumberFormat('ko-KR').format(value);
+              // 숫자를 억원, 조원 단위로 표시
+              if (value >= 1000000000000) {
+                return (value / 1000000000000).toFixed(1) + '조원';
+              } else if (value >= 100000000) {
+                return (value / 100000000).toFixed(1) + '억원';
+              } else if (value >= 10000) {
+                return (value / 10000).toFixed(1) + '만원';
+              } else {
+                return new Intl.NumberFormat('ko-KR').format(value) + '원';
+              }
             },
           },
         },
@@ -297,6 +309,27 @@ function updateChart(chartType) {
           ticks: {
             maxRotation: 45,
             minRotation: 45,
+          },
+        },
+      },
+      plugins: {
+        tooltip: {
+          callbacks: {
+            label: function (context) {
+              const value = context.parsed.y;
+              let formattedValue;
+              if (value >= 1000000000000) {
+                formattedValue = (value / 1000000000000).toFixed(1) + '조원';
+              } else if (value >= 100000000) {
+                formattedValue = (value / 100000000).toFixed(1) + '억원';
+              } else if (value >= 10000) {
+                formattedValue = (value / 10000).toFixed(1) + '만원';
+              } else {
+                formattedValue =
+                  new Intl.NumberFormat('ko-KR').format(value) + '원';
+              }
+              return context.dataset.label + ': ' + formattedValue;
+            },
           },
         },
       },
@@ -308,8 +341,10 @@ function updateChart(chartType) {
 function calculateAndDisplayRatios() {
   if (!financialData || !financialData.list) return;
 
-  const bsData = financialData.list.filter((item) => item.sj_div === 'BS');
-  const isData = financialData.list.filter((item) => item.sj_div === 'IS');
+  // 연결재무제표 우선, 없으면 개별재무제표 사용
+  const filteredData = getFilteredFinancialData();
+  const bsData = filteredData.filter((item) => item.sj_div === 'BS');
+  const isData = filteredData.filter((item) => item.sj_div === 'IS');
 
   // 주요 계정 추출 함수
   function getAccountAmount(data, accountNames) {
@@ -412,6 +447,24 @@ function calculateAndDisplayRatios() {
   createRatiosChart(ratios);
   createProfitMarginChart(ratios);
   createStabilityChart(ratios);
+}
+
+// 연결재무제표 우선 필터링 함수
+function getFilteredFinancialData() {
+  if (!financialData || !financialData.list) return [];
+
+  // 연결재무제표가 있는지 확인
+  const consolidatedData = financialData.list.filter(
+    (item) => item.fs_div === 'CFS' // 연결재무제표
+  );
+
+  // 개별재무제표 확인
+  const individualData = financialData.list.filter(
+    (item) => item.fs_div === 'OFS' // 개별재무제표
+  );
+
+  // 연결재무제표가 있으면 연결재무제표 사용, 없으면 개별재무제표 사용
+  return consolidatedData.length > 0 ? consolidatedData : individualData;
 }
 
 // 비율 값 업데이트 및 스타일 적용
@@ -614,19 +667,26 @@ function createStabilityChart(ratios) {
 function displayDataTable() {
   if (!financialData || !financialData.list) return;
 
+  // 중복 제거된 데이터 사용
+  const filteredData = getFilteredFinancialData();
+
+  // 당기/전기 연도 추출
+  const currentYear = getCurrentYear();
+  const previousYear = getPreviousYear();
+
   const tableHtml = `
         <table class="data-table">
             <thead>
                 <tr>
                     <th>계정명</th>
                     <th>재무제표구분</th>
-                    <th>당기금액</th>
-                    <th>전기금액</th>
-                    <th>통화단위</th>
+                    <th>당기금액 (${currentYear})</th>
+                    <th>전기금액 (${previousYear})</th>
+                    <th>재무제표유형</th>
                 </tr>
             </thead>
             <tbody>
-                ${financialData.list
+                ${filteredData
                   .map(
                     (item) => `
                     <tr>
@@ -634,15 +694,15 @@ function displayDataTable() {
                         <td>${item.sj_nm || '-'}</td>
                         <td>${
                           item.thstrm_amount
-                            ? formatNumber(item.thstrm_amount)
+                            ? formatNumberWithUnit(item.thstrm_amount)
                             : '-'
                         }</td>
                         <td>${
                           item.frmtrm_amount
-                            ? formatNumber(item.frmtrm_amount)
+                            ? formatNumberWithUnit(item.frmtrm_amount)
                             : '-'
                         }</td>
-                        <td>${item.currency || 'KRW'}</td>
+                        <td>${getFinancialStatementType(item.fs_div)}</td>
                     </tr>
                 `
                   )
@@ -654,7 +714,51 @@ function displayDataTable() {
   document.getElementById('dataTable').innerHTML = tableHtml;
 }
 
-// 숫자 포맷팅
+// 당기 연도 추출
+function getCurrentYear() {
+  const businessYear = document.getElementById('businessYear').value;
+  return businessYear;
+}
+
+// 전기 연도 추출
+function getPreviousYear() {
+  const businessYear = document.getElementById('businessYear').value;
+  return (parseInt(businessYear) - 1).toString();
+}
+
+// 재무제표 유형 표시
+function getFinancialStatementType(fsDiv) {
+  switch (fsDiv) {
+    case 'CFS':
+      return '연결재무제표';
+    case 'OFS':
+      return '개별재무제표';
+    default:
+      return '기타';
+  }
+}
+
+// 숫자 포맷팅 (단위 포함)
+function formatNumberWithUnit(numberString) {
+  if (!numberString) return '-';
+
+  const number = parseInt(numberString.replace(/,/g, ''));
+
+  if (number >= 1000000000000) {
+    // 1조 이상
+    return `${(number / 1000000000000).toFixed(1)}조원`;
+  } else if (number >= 100000000) {
+    // 1억 이상
+    return `${(number / 100000000).toFixed(1)}억원`;
+  } else if (number >= 10000) {
+    // 1만 이상
+    return `${(number / 10000).toFixed(1)}만원`;
+  } else {
+    return `${new Intl.NumberFormat('ko-KR').format(number)}원`;
+  }
+}
+
+// 기존 숫자 포맷팅 (호환성 유지)
 function formatNumber(numberString) {
   if (!numberString) return '-';
   return new Intl.NumberFormat('ko-KR').format(

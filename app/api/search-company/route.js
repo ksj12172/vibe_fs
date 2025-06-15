@@ -34,6 +34,15 @@ export async function GET(request) {
     });
   } catch (error) {
     console.error('회사 검색 오류:', error);
+
+    // 더 구체적인 에러 메시지 제공
+    if (error.code === 'P1001') {
+      return NextResponse.json(
+        { error: '데이터베이스 연결에 실패했습니다.' },
+        { status: 503 }
+      );
+    }
+
     return NextResponse.json(
       { error: '회사 검색 중 오류가 발생했습니다.' },
       { status: 500 }

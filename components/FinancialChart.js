@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -57,72 +57,63 @@ export default function FinancialChart({
   const getChartData = () => {
     const filteredData = getFilteredFinancialData();
 
-    // 데이터 필터링
-    const chartData = filteredData.filter((item) => {
-      if (chartType === 'bs') {
-        return item.sj_div === 'BS'; // 재무상태표
-      } else if (chartType === 'is') {
-        return item.sj_div === 'IS'; // 손익계산서
+    let targetItems = [];
+    let chartTitle = '';
+
+    if (chartType === 'bs') {
+      // 재무상태표: 자산총계, 부채총계, 자본총계
+      targetItems = ['자산총계', '부채총계', '자본총계'];
+      chartTitle = '재무상태표 주요 항목';
+    } else if (chartType === 'is') {
+      // 손익계산서: 매출액, 영업이익, 당기순이익
+      targetItems = ['매출액', '영업이익', '당기순이익'];
+      chartTitle = '손익계산서 주요 항목';
+    }
+
+    // 해당 항목들 찾기
+    const chartData = [];
+    targetItems.forEach((itemName) => {
+      const item = filteredData.find(
+        (data) => data.account_nm && data.account_nm.includes(itemName)
+      );
+      if (item) {
+        chartData.push(item);
       }
-      return false;
     });
 
     if (chartData.length === 0) {
       return null;
     }
 
-    // 주요 계정 선택 (상위 10개)
-    const topAccounts = chartData
-      .filter(
-        (item) =>
-          item.thstrm_amount &&
-          parseInt(item.thstrm_amount.replace(/,/g, '')) > 0
-      )
-      .sort(
-        (a, b) =>
-          parseInt(b.thstrm_amount.replace(/,/g, '')) -
-          parseInt(a.thstrm_amount.replace(/,/g, ''))
-      )
-      .slice(0, 10);
-
-    const labels = topAccounts.map((item) => item.account_nm);
-    const data = topAccounts.map((item) =>
-      parseInt(item.thstrm_amount.replace(/,/g, ''))
-    );
+    const labels = chartData.map((item) => item.account_nm);
+    const currentData = chartData.map((item) => {
+      const value = parseInt(item.thstrm_amount?.replace(/,/g, '') || '0');
+      return isNaN(value) ? 0 : value / 100000000; // 억원 단위로 변환
+    });
+    const previousData = chartData.map((item) => {
+      const value = parseInt(item.frmtrm_amount?.replace(/,/g, '') || '0');
+      return isNaN(value) ? 0 : value / 100000000; // 억원 단위로 변환
+    });
 
     return {
       labels,
       datasets: [
         {
-          label: chartType === 'bs' ? '재무상태표 (원)' : '손익계산서 (원)',
-          data,
-          backgroundColor: [
-            '#3498db',
-            '#e74c3c',
-            '#2ecc71',
-            '#f39c12',
-            '#9b59b6',
-            '#1abc9c',
-            '#e67e22',
-            '#34495e',
-            '#f1c40f',
-            '#95a5a6',
-          ],
-          borderColor: [
-            '#2980b9',
-            '#c0392b',
-            '#27ae60',
-            '#d68910',
-            '#8e44ad',
-            '#16a085',
-            '#d35400',
-            '#2c3e50',
-            '#f1c40f',
-            '#7f8c8d',
-          ],
+          label: '2024년 (당기)',
+          data: currentData,
+          backgroundColor: 'rgba(54, 162, 235, 0.8)',
+          borderColor: 'rgba(54, 162, 235, 1)',
+          borderWidth: 1,
+        },
+        {
+          label: '2023년 (전기)',
+          data: previousData,
+          backgroundColor: 'rgba(255, 99, 132, 0.8)',
+          borderColor: 'rgba(255, 99, 132, 1)',
           borderWidth: 1,
         },
       ],
+      chartTitle,
     };
   };
 
@@ -142,21 +133,19 @@ export default function FinancialChart({
     plugins: {
       title: {
         display: true,
-        text: `${selectedCompany?.corp_name} - ${
-          chartType === 'bs' ? '재무상태표' : '손익계산서'
-        } (${currentYear})`,
+        text: `${selectedCompany?.corp_name} - ${chartData.chartTitle} (${currentYear})`,
         font: {
           size: 16,
           weight: 'bold',
         },
       },
       legend: {
-        display: false,
+        position: 'top',
       },
       tooltip: {
         callbacks: {
           label: function (context) {
-            const value = context.parsed.y;
+            const value = context.parsed.y * 100000000;
             const formattedValue = formatNumberWithUnit(value);
             return context.dataset.label + ': ' + formattedValue;
           },
@@ -166,16 +155,20 @@ export default function FinancialChart({
     scales: {
       y: {
         beginAtZero: true,
+        title: {
+          display: true,
+          text: '금액 (억원)',
+        },
         ticks: {
           callback: function (value) {
-            return formatNumberWithUnit(value);
+            return value.toLocaleString() + '억';
           },
         },
       },
       x: {
         ticks: {
           maxRotation: 45,
-          minRotation: 45,
+          minRotation: 0,
         },
       },
     },

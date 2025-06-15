@@ -4,7 +4,7 @@ const cors = require('cors');
 const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
-const DatabaseManager = require('./setup-database');
+const { PostgresDatabaseManager } = require('./lib/postgres-database');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -12,11 +12,10 @@ const PORT = process.env.PORT || 3000;
 // 데이터베이스 초기화
 let dbManager;
 try {
-  dbManager = new DatabaseManager();
-  console.log('✅ 데이터베이스 연결 성공');
+  dbManager = new PostgresDatabaseManager();
+  console.log('✅ PostgreSQL 데이터베이스 연결 준비 완료');
 } catch (error) {
   console.error('❌ 데이터베이스 연결 실패:', error.message);
-  console.log('💡 "yarn setup-db" 명령어로 데이터베이스를 먼저 설정해주세요.');
   process.exit(1);
 }
 
@@ -26,7 +25,7 @@ app.use(express.json());
 app.use(express.static('public')); // 정적 파일 서빙
 
 // 회사 검색 API
-app.get('/api/search-company', (req, res) => {
+app.get('/api/search-company', async (req, res) => {
   try {
     const { query } = req.query;
 
@@ -35,7 +34,7 @@ app.get('/api/search-company', (req, res) => {
     }
 
     // 데이터베이스에서 회사 검색
-    const searchResults = dbManager.searchCompanies(query, 10);
+    const searchResults = await dbManager.searchCompanies(query, 10);
 
     res.json({
       success: true,
@@ -116,17 +115,23 @@ app.get('/', (req, res) => {
 });
 
 // 서버 시작
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(
     `🚀 재무제표 시각화 서버가 http://localhost:${PORT}에서 실행 중입니다.`
   );
   console.log(`📊 웹 브라우저에서 http://localhost:${PORT}를 열어보세요.`);
 
   // 데이터베이스 상태 정보 출력
-  const stats = dbManager.getStats();
-  if (stats) {
+  try {
+    const stats = await dbManager.getStats();
+    if (stats) {
+      console.log(
+        `📦 데이터베이스: ${stats.total}개 회사 (상장회사: ${stats.listed}개) - ${stats.dbType}`
+      );
+    }
+  } catch (error) {
     console.log(
-      `📦 데이터베이스: ${stats.total}개 회사 (상장회사: ${stats.listed}개)`
+      '📦 데이터베이스 상태를 확인할 수 없습니다. 마이그레이션이 필요할 수 있습니다.'
     );
   }
 });

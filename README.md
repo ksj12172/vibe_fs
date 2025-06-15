@@ -1,189 +1,202 @@
 # 📊 재무제표 시각화 웹 애플리케이션
 
-DART API를 활용한 한국 상장기업 재무정보 분석 및 시각화 플랫폼입니다.
+한국 상장기업의 재무제표 데이터를 시각화하는 웹 애플리케이션입니다. Open DART API를 활용하여 실시간 재무 데이터를 조회하고 차트로 표시합니다.
 
-## ✨ 주요 기능
+## 🌟 주요 기능
 
-- 🔍 **기업 검색**: 한국 상장기업 실시간 검색
-- 📈 **재무상태표**: 자산총계, 부채총계, 자본총계 시각화
-- 💰 **손익계산서**: 매출액, 영업이익, 당기순이익 비교
-- 📊 **재무비율 분석**:
-  - 수익성 분석 (방사형 차트): ROE, ROA, 영업이익률, 순이익률
-  - 부채비율 분석 (원형 차트): 자기자본 vs 부채 비율
+- **회사 검색**: 한국 상장기업 및 등록기업 검색
+- **재무제표 시각화**: 손익계산서, 재무상태표, 현금흐름표 차트 표시
+- **실시간 데이터**: Open DART API를 통한 최신 재무 데이터 조회
+- **반응형 디자인**: 데스크톱과 모바일 모두 지원
 
-## 🚀 기술 스택
+## 🚀 설치 및 실행
 
-- **Frontend**: Next.js 15, React 18
-- **Charts**: Chart.js, React-Chart.js-2
-- **Database**: Better-SQLite3
-- **API**: DART Open API
-- **Styling**: Custom CSS
+### 필수 요구사항
 
-## 🛠️ 로컬 개발 환경 설정
+- Node.js (18.0.0 이상)
+- Yarn 또는 npm
+- PostgreSQL 데이터베이스 (Vercel Postgres 권장)
 
-1. **저장소 클론**
+### 환경 설정
 
-```bash
-git clone <repository-url>
-cd vibe_fs
-```
+1. **레포지토리 클론**
+
+   ```bash
+   git clone <repository-url>
+   cd vibe-fs
+   ```
 
 2. **의존성 설치**
 
-```bash
-npm install
-```
+   ```bash
+   yarn install
+   # 또는
+   npm install
+   ```
 
-3. **환경 변수 설정**
-   `.env.local` 파일을 생성하고 DART API 키를 설정하세요:
+3. **환경변수 설정**
+   `.env` 파일을 생성하고 다음 내용을 추가하세요:
 
-```
-DART_API_KEY=your_dart_api_key_here
-```
+   ```env
+   # DART API 키 (https://opendart.fss.or.kr/에서 발급)
+   DART_API_KEY=your_dart_api_key_here
 
-4. **회사코드 데이터 다운로드**
+   # PostgreSQL 연결 정보 (Vercel Postgres 사용 시 자동 설정)
+   POSTGRES_URL="your_postgres_connection_url"
+   POSTGRES_PRISMA_URL="your_postgres_prisma_url"
+   POSTGRES_URL_NON_POOLING="your_postgres_non_pooling_url"
+   POSTGRES_USER="your_postgres_user"
+   POSTGRES_HOST="your_postgres_host"
+   POSTGRES_PASSWORD="your_postgres_password"
+   POSTGRES_DATABASE="your_postgres_database"
+   ```
 
-먼저 회사코드 데이터를 다운로드해야 합니다:
+### 데이터베이스 설정
 
-```bash
-yarn download
-```
+1. **회사 코드 다운로드**
 
-5. **데이터베이스 설정**
+   ```bash
+   yarn download
+   ```
 
-JSON 데이터를 SQLite 데이터베이스로 마이그레이션합니다:
+2. **PostgreSQL 데이터베이스 설정**
+   ```bash
+   yarn setup-postgres
+   ```
 
-```bash
-yarn setup-db
-```
-
-## 🌐 배포하기
-
-### Vercel 배포 (추천)
-
-1. **Vercel CLI 설치**
-
-```bash
-npm install -g vercel
-```
-
-2. **Vercel 로그인**
-
-```bash
-vercel login
-```
-
-3. **배포 실행**
+### 서버 실행
 
 ```bash
-vercel
+# 개발 모드
+yarn dev
+
+# 프로덕션 모드
+yarn build
+yarn start
 ```
 
-## 🔧 API 엔드포인트
+애플리케이션이 `http://localhost:3000`에서 실행됩니다.
+
+## 📊 API 엔드포인트
 
 ### 회사 검색
 
-- **URL**: `/api/search-company`
-- **메소드**: `GET`
-- **파라미터**: `query` (회사명)
-- **응답**: 검색된 회사 목록
+```
+GET /api/search-company?query=삼성전자
+```
 
 ### 재무제표 데이터 조회
 
-- **URL**: `/api/financial-data`
-- **메소드**: `GET`
-- **파라미터**:
-  - `corp_code`: 회사코드 (8자리)
-  - `bsns_year`: 사업연도 (YYYY)
-  - `reprt_code`: 보고서 코드
-    - `11011`: 사업보고서 (연간)
-    - `11012`: 반기보고서
-    - `11013`: 1분기보고서
-    - `11014`: 3분기보고서
+```
+GET /api/financial-data?corp_code={회사코드}&bsns_year={사업연도}&reprt_code={보고서코드}
+```
 
-## 🎯 사용법
+**보고서 코드:**
 
-1. 회사명 검색 (예: 삼성전자, 카카오)
-2. 원하는 기업 선택
-3. 사업연도 및 보고서 유형 선택
-4. 재무제표 조회 버튼 클릭
-5. 3가지 차트로 재무정보 확인
+- `11013`: 사업보고서
+- `11012`: 반기보고서
+- `11014`: 1분기보고서
+- `11011`: 3분기보고서
 
-## 📊 차트 설명
+## 🛠️ 기술 스택
 
-- **재무상태표**: 당기/전기 비교 바 차트
-- **손익계산서**: 당기/전기 비교 바 차트
-- **재무비율**: 수익성(방사형) + 부채비율(원형) 차트
+### Frontend
 
-## 💾 데이터베이스
+- **Next.js 14**: React 기반 풀스택 프레임워크
+- **Chart.js**: 데이터 시각화
+- **React Chart.js 2**: Chart.js의 React 래퍼
+- **CSS**: 반응형 스타일링
 
-이 애플리케이션은 **SQLite**를 사용하여 회사 정보를 저장합니다:
+### Backend
 
-- **테이블**: `companies`
-- **인덱스**: corp_code, corp_name, stock_code에 인덱스 적용
-- **성능**: WAL 모드로 동시 읽기 성능 최적화
-- **검색**: LIKE 쿼리로 유연한 회사명 검색 지원
+- **Node.js**: 서버 런타임
+- **Express.js**: 웹 프레임워크
+- **PostgreSQL**: 데이터베이스 (Vercel Postgres)
+- **@vercel/postgres**: PostgreSQL 클라이언트
 
-### 데이터베이스 스키마
+### 외부 API
+
+- **Open DART API**: 금융감독원 전자공시시스템 API
+
+## 📁 프로젝트 구조
+
+```
+vibe-fs/
+├── app/                    # Next.js 앱 라우터
+├── components/             # React 컴포넌트
+├── lib/                   # 유틸리티 및 데이터베이스
+│   └── postgres-database.js  # PostgreSQL 데이터베이스 매니저
+├── public/                # 정적 파일
+├── scripts/               # 스크립트 파일
+│   ├── download_corp_code.js    # 회사코드 다운로드
+│   └── migrate-to-postgres.js   # PostgreSQL 설정
+├── downloads/             # 다운로드된 파일
+├── server.js             # Express 서버
+└── package.json          # 의존성 및 스크립트
+```
+
+## 🔧 개발 도구
+
+### 사용 가능한 스크립트
+
+```bash
+# 개발 서버 시작
+yarn dev
+
+# 프로덕션 빌드
+yarn build
+
+# 프로덕션 서버 시작
+yarn start
+
+# 린트 검사
+yarn lint
+
+# 회사코드 다운로드
+yarn download
+
+# PostgreSQL 데이터베이스 설정
+yarn setup-postgres
+```
+
+## 📋 데이터베이스 스키마
+
+### companies 테이블
 
 ```sql
 CREATE TABLE companies (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  corp_code TEXT UNIQUE NOT NULL,
-  corp_name TEXT NOT NULL,
-  corp_eng_name TEXT,
-  stock_code TEXT,
-  modify_date TEXT,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  id SERIAL PRIMARY KEY,
+  corp_code VARCHAR(8) UNIQUE NOT NULL,
+  corp_name VARCHAR(255) NOT NULL,
+  corp_eng_name VARCHAR(255),
+  stock_code VARCHAR(6),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 ```
 
-## 💾 데이터베이스
+## 🔒 보안 고려사항
 
-이 애플리케이션은 **SQLite**를 사용하여 회사 정보를 저장합니다:
+- **API 키 보안**: 환경변수를 통한 API 키 관리
+- **SQL Injection 방지**: Prepared Statement 사용
+- **CORS 설정**: 적절한 CORS 정책 적용
 
-- **테이블**: `companies`
-- **인덱스**: corp_code, corp_name, stock_code에 인덱스 적용
-- **성능**: WAL 모드로 동시 읽기 성능 최적화
-- **검색**: LIKE 쿼리로 유연한 회사명 검색 지원
+## 🚨 문제 해결
 
-### 데이터베이스 스키마
+### 자주 발생하는 문제
 
-```sql
-CREATE TABLE companies (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  corp_code TEXT UNIQUE NOT NULL,
-  corp_name TEXT NOT NULL,
-  corp_eng_name TEXT,
-  stock_code TEXT,
-  modify_date TEXT,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
+1. **DART API 키 오류**
 
-## 🔧 주요 파일 구조
+   - `.env` 파일의 `DART_API_KEY` 확인
+   - Open DART에서 발급받은 정확한 키 사용
 
-```
+2. **데이터베이스 연결 오류**
 
-vibe_fs/
-├── app/
-│ ├── api/
-│ │ ├── search-company/
-│ │ └── financial-data/
-│ ├── globals.css
-│ └── page.js
-├── components/
-│ ├── CompanySearch.js
-│ ├── FinancialOptions.js
-│ ├── FinancialChart.js
-│ └── FinancialRatios.js
-├── lib/
-│ └── database.js
-└── data/
-└── companies.db
+   - PostgreSQL 연결 정보 확인
+   - `yarn setup-postgres` 실행 여부 확인
 
-```
+3. **회사 검색 결과 없음**
+   - `yarn download` 실행 여부 확인
+   - 데이터베이스에 회사 데이터 존재 여부 확인
 
 ## 📄 라이선스
 
@@ -191,9 +204,16 @@ MIT License
 
 ## 🤝 기여하기
 
-버그 리포트나 기능 제안은 이슈로 등록해주세요.
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
----
+## 📞 문의
 
-**Made with ❤️ for Korean Financial Data Analysis**
+프로젝트에 대한 질문이나 제안사항이 있으시면 이슈를 생성해 주세요.
+
+```
+
 ```

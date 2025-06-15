@@ -142,3 +142,6 @@ downloads/
 *.sqlite
 *.sqlite3
 .vercel
+.env*.local
+
+/lib/generated/prisma

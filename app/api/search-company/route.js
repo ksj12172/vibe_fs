@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getDatabase } from '../../../lib/database';
+import { PostgresDatabaseManager } from '../../../lib/postgres-database';
 
 export async function GET(request) {
   try {
@@ -13,8 +13,8 @@ export async function GET(request) {
       );
     }
 
-    const db = getDatabase();
-    const results = db.searchCompanies(query.trim());
+    const db = new PostgresDatabaseManager();
+    const results = await db.searchCompanies(query.trim());
 
     return NextResponse.json({
       success: true,

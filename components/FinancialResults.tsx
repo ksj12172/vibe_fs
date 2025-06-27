@@ -192,7 +192,7 @@ export default function FinancialResults({
             financialData={financialData}
           />
         ) : (
-          <div style={{ height: "500px" }}>
+          <div style={{ minHeight: "500px" }}>
             <FinancialChart
               selectedCompany={selectedCompany}
               financialData={financialData}

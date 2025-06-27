@@ -189,5 +189,66 @@ export default function FinancialChart({
     },
   };
 
-  return <Bar data={chartData} options={options} />;
+  const renderIncomeStatementExplanation = () => {
+    if (chartType !== "is") return null;
+
+    return (
+      <div
+        style={{
+          marginTop: "20px",
+          padding: "16px",
+          backgroundColor: "#f8f9fa",
+          borderRadius: "8px",
+          fontSize: "14px",
+          lineHeight: "1.6",
+        }}
+      >
+        <h4
+          style={{ margin: "0 0 12px 0", color: "#495057", fontSize: "16px" }}
+        >
+          📊 손익계산서 주요 계산식
+        </h4>
+        <div style={{ display: "grid", gap: "8px" }}>
+          <div>
+            <strong style={{ color: "#007bff" }}>영업이익</strong> = 매출액 -
+            (매출원가 + 판매비와관리비)
+          </div>
+          <div>
+            <strong style={{ color: "#28a745" }}>법인세비용차감전순이익</strong>{" "}
+            = 영업이익 + 영업외수익 - 영업외비용
+          </div>
+          <div>
+            <strong style={{ color: "#dc3545" }}>당기순이익</strong> =
+            법인세비용차감전순이익 - 법인세비용
+          </div>
+        </div>
+        <div
+          style={{
+            marginTop: "12px",
+            padding: "8px",
+            backgroundColor: "#e9ecef",
+            borderRadius: "4px",
+            fontSize: "12px",
+            color: "#6c757d",
+          }}
+        >
+          💡 손익계산서는 일정 기간 동안의 수익성을 보여주는 재무제표입니다.
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div>
+      <div
+        style={{
+          height: chartType === "is" ? "400px" : "500px",
+          marginBottom: "20px",
+        }}
+      >
+        <Bar data={chartData} options={options} />
+      </div>
+      {renderIncomeStatementExplanation()}
+    </div>
+  );
 }

@@ -14,10 +14,10 @@ export default function CompanyPage() {
 
   const [company, setCompany] = useState(null);
   const [financialData, setFinancialData] = useState(null);
-  const [currentStep, setCurrentStep] = useState("loading"); // loading, options, data-loading, results, error
+  const [currentStep, setCurrentStep] = useState("loading"); // loading, ready, data-loading, results, error
   const [errorMessage, setErrorMessage] = useState("");
 
-  // 페이지 로드 시 회사 정보 조회
+  // 페이지 로드 시 회사 정보 조회 후 자동으로 재무데이터 로드
   useEffect(() => {
     if (stockCode) {
       fetchCompanyInfo(stockCode);
@@ -36,9 +36,38 @@ export default function CompanyPage() {
       }
 
       setCompany(data.company);
-      setCurrentStep("options");
+      setCurrentStep("ready");
+
+      // 회사 정보 로드 완료 후 자동으로 재무데이터 로드
+      setTimeout(() => {
+        autoLoadFinancialData(data.company);
+      }, 100);
     } catch (error) {
       console.error("회사 정보 조회 오류:", error);
+      setErrorMessage(error.message);
+      setCurrentStep("error");
+    }
+  };
+
+  // 자동으로 최신 재무데이터 로드
+  const autoLoadFinancialData = async (companyData) => {
+    try {
+      setCurrentStep("data-loading");
+
+      const response = await fetch(
+        `/api/financial-data?corp_code=${companyData.corp_code}&bsns_year=2024&reprt_code=11011`
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "데이터 조회 중 오류가 발생했습니다.");
+      }
+
+      setFinancialData(data.data);
+      setCurrentStep("results");
+    } catch (error) {
+      console.error("자동 데이터 로드 오류:", error);
       setErrorMessage(error.message);
       setCurrentStep("error");
     }
@@ -60,7 +89,7 @@ export default function CompanyPage() {
 
   const resetToOptions = () => {
     setFinancialData(null);
-    setCurrentStep("options");
+    setCurrentStep("ready");
     setErrorMessage("");
   };
 
@@ -75,6 +104,9 @@ export default function CompanyPage() {
         {company && (
           <div className="company-info">
             <h2 className="company-name">{company.corp_name}</h2>
+            <p className="company-code">
+              회사코드: <strong>{company.corp_code}</strong>
+            </p>
             <p className="stock-code">
               종목코드: <strong>{stockCode}</strong>
             </p>
@@ -96,8 +128,8 @@ export default function CompanyPage() {
           </div>
         )}
 
-        {/* 재무제표 옵션 선택 */}
-        {(currentStep === "options" ||
+        {/* 재무제표 옵션 선택 - 항상 노출 */}
+        {(currentStep === "ready" ||
           currentStep === "data-loading" ||
           currentStep === "results") &&
           company && (
@@ -106,7 +138,7 @@ export default function CompanyPage() {
               onStartLoading={handleStartLoading}
               onDataLoaded={handleDataLoaded}
               onError={handleError}
-              visible={currentStep === "options"}
+              autoLoad={true}
             />
           )}
 

@@ -1,20 +1,20 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 
 export default function FinancialOptions({
   selectedCompany,
   onStartLoading,
   onDataLoaded,
   onError,
-  visible,
+  autoLoad,
 }) {
-  const [businessYear, setBusinessYear] = useState('2024');
-  const [reportType, setReportType] = useState('11011');
+  const [businessYear, setBusinessYear] = useState("2024");
+  const [reportType, setReportType] = useState("11011");
 
   const getFinancialData = async () => {
     if (!selectedCompany) {
-      onError('회사를 먼저 선택해주세요.');
+      onError("회사를 먼저 선택해주세요.");
       return;
     }
 
@@ -28,31 +28,18 @@ export default function FinancialOptions({
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || '데이터 조회 중 오류가 발생했습니다.');
+        throw new Error(data.error || "데이터 조회 중 오류가 발생했습니다.");
       }
 
       onDataLoaded(data.data);
     } catch (error) {
-      console.error('데이터 조회 오류:', error);
+      console.error("데이터 조회 오류:", error);
       onError(error.message);
     }
   };
 
-  if (!visible) return null;
-
   return (
     <section className="options-section">
-      <h2>📋 재무제표 옵션</h2>
-      <div className="selected-company">
-        <h3>{selectedCompany?.corp_name}</h3>
-        <p>
-          회사코드: <span>{selectedCompany?.corp_code}</span>
-        </p>
-        <p>
-          종목코드: <span>{selectedCompany?.stock_code || '없음'}</span>
-        </p>
-      </div>
-
       <div className="options-grid">
         <div className="option-group">
           <label htmlFor="businessYear">사업연도</label>

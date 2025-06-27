@@ -1,12 +1,28 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import FinancialChart from "./FinancialChart.tsx";
-import FinancialRatios from "./FinancialRatios.tsx";
+import { useEffect, useState } from "react";
+import FinancialChart from "./FinancialChart";
+import FinancialRatios from "./FinancialRatios";
 
-export default function FinancialResults({ selectedCompany, financialData }) {
-  const [currentChart, setCurrentChart] = useState("bs");
-  const [fsTypeInfo, setFsTypeInfo] = useState({ type: "", count: "" });
+interface FinancialResultsProps {
+  selectedCompany: Company;
+  financialData: FinancialApiResponse;
+}
+
+interface FsTypeInfo {
+  type: string;
+  count: string;
+}
+
+export default function FinancialResults({
+  selectedCompany,
+  financialData,
+}: FinancialResultsProps) {
+  const [currentChart, setCurrentChart] = useState<ChartType | "ratios">("bs");
+  const [fsTypeInfo, setFsTypeInfo] = useState<FsTypeInfo>({
+    type: "",
+    count: "",
+  });
 
   useEffect(() => {
     if (financialData?.list) {
@@ -14,7 +30,7 @@ export default function FinancialResults({ selectedCompany, financialData }) {
     }
   }, [financialData]);
 
-  const getFilteredFinancialData = () => {
+  const getFilteredFinancialData = (): FinancialItem[] => {
     if (!financialData?.list) return [];
 
     // 연결재무제표가 있는지 확인
@@ -31,14 +47,12 @@ export default function FinancialResults({ selectedCompany, financialData }) {
     return consolidatedData.length > 0 ? consolidatedData : individualData;
   };
 
-  const updateFinancialStatementInfo = () => {
+  const updateFinancialStatementInfo = (): void => {
     const filtered = getFilteredFinancialData();
-    const consolidatedCount = financialData.list.filter(
-      (item) => item.fs_div === "CFS"
-    ).length;
-    const individualCount = financialData.list.filter(
-      (item) => item.fs_div === "OFS"
-    ).length;
+    const consolidatedCount =
+      financialData.list?.filter((item) => item.fs_div === "CFS").length || 0;
+    const individualCount =
+      financialData.list?.filter((item) => item.fs_div === "OFS").length || 0;
 
     if (filtered.length === 0) {
       setFsTypeInfo({ type: "데이터 없음", count: "" });
@@ -61,10 +75,12 @@ export default function FinancialResults({ selectedCompany, financialData }) {
     }
   };
 
-  const formatNumberWithUnit = (numberString) => {
+  const formatNumberWithUnit = (numberString?: string): string => {
     if (!numberString) return "-";
 
     const number = parseInt(numberString.replace(/,/g, ""));
+
+    if (isNaN(number)) return "-";
 
     if (number >= 1000000000000) {
       // 1조 이상
@@ -80,16 +96,16 @@ export default function FinancialResults({ selectedCompany, financialData }) {
     }
   };
 
-  const getCurrentYear = () => {
+  const getCurrentYear = (): string => {
     // 선택된 년도를 가져오는 로직 (일단 2024로 고정)
     return "2024";
   };
 
-  const getPreviousYear = () => {
+  const getPreviousYear = (): string => {
     return (parseInt(getCurrentYear()) - 1).toString();
   };
 
-  const getFinancialStatementType = (fsDiv) => {
+  const getFinancialStatementType = (fsDiv?: string): string => {
     switch (fsDiv) {
       case "CFS":
         return "연결재무제표";
@@ -182,7 +198,7 @@ export default function FinancialResults({ selectedCompany, financialData }) {
             <FinancialChart
               selectedCompany={selectedCompany}
               financialData={financialData}
-              chartType={currentChart}
+              chartType={currentChart as ChartType}
               currentYear={getCurrentYear()}
             />
           </div>

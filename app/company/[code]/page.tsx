@@ -1,26 +1,29 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
-import FinancialOptions from "../../../components/FinancialOptions";
-import LoadingSection from "../../../components/LoadingSection";
-import FinancialResults from "../../../components/FinancialResults";
+import { useEffect, useMemo, useState } from "react";
 import ErrorSection from "../../../components/ErrorSection";
+import FinancialOptions from "../../../components/FinancialOptions";
+import FinancialResults from "../../../components/FinancialResults";
+import LoadingSection from "../../../components/LoadingSection";
+
+type StepType = "loading" | "ready" | "data-loading" | "results" | "error";
 
 export default function CompanyPage() {
   const params = useParams();
   const router = useRouter();
-  const stockCode = params.code;
+  const stockCode = params.code as string;
   const currentYear = new Date().getFullYear();
 
-  const [company, setCompany] = useState(null);
-  const [financialData, setFinancialData] = useState(null);
-  const [currentStep, setCurrentStep] = useState("loading"); // loading, ready, data-loading, results, error
-  const [errorMessage, setErrorMessage] = useState("");
+  const [company, setCompany] = useState<Company | null>(null);
+  const [financialData, setFinancialData] =
+    useState<FinancialApiResponse | null>(null);
+  const [currentStep, setCurrentStep] = useState<StepType>("loading");
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   // 현재 날짜 기준으로 사용 가능한 연도 생성
   const availableYears = useMemo(() => {
-    const years = [];
+    const years: number[] = [];
 
     // 2019년부터 현재 연도까지
     for (let year = currentYear; year >= 2019; year--) {
@@ -28,15 +31,15 @@ export default function CompanyPage() {
     }
 
     return years;
-  }, []);
+  }, [currentYear]);
 
   // 선택된 연도에 따른 사용 가능한 보고서 유형 결정 함수
-  const getAvailableReports = (businessYear) => {
+  const getAvailableReports = (businessYear: string): ReportOption[] => {
     const currentDate = new Date();
     const currentMonth = currentDate.getMonth() + 1; // 0-based이므로 +1
     const selectedYearNum = parseInt(businessYear);
 
-    const reports = [];
+    const reports: ReportOption[] = [];
 
     if (selectedYearNum < currentYear) {
       // 과거 연도
@@ -103,12 +106,12 @@ export default function CompanyPage() {
   const initialYear = currentYear.toString();
 
   // 선택된 연도 상태
-  const [selectedYear, setSelectedYear] = useState(initialYear);
+  const [selectedYear, setSelectedYear] = useState<string>(initialYear);
 
   // 선택된 연도에 따른 사용 가능한 보고서 목록
   const availableReports = useMemo(() => {
     return getAvailableReports(selectedYear);
-  }, [selectedYear]);
+  }, [selectedYear, currentYear]);
 
   // 초기 보고서 유형 결정
   const initialReportType = useMemo(() => {
@@ -133,7 +136,7 @@ export default function CompanyPage() {
     }
   }, [stockCode]);
 
-  const fetchCompanyInfo = async (code) => {
+  const fetchCompanyInfo = async (code: string) => {
     try {
       setCurrentStep("loading");
 
@@ -153,13 +156,17 @@ export default function CompanyPage() {
       }, 100);
     } catch (error) {
       console.error("회사 정보 조회 오류:", error);
-      setErrorMessage(error.message);
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "알 수 없는 오류가 발생했습니다."
+      );
       setCurrentStep("error");
     }
   };
 
   // 자동으로 최신 재무데이터 로드
-  const autoLoadFinancialData = async (companyData) => {
+  const autoLoadFinancialData = async (companyData: Company) => {
     try {
       if (!initialReportType) {
         // 자동 로드할 데이터가 없으면 옵션 선택 상태로 유지
@@ -191,7 +198,7 @@ export default function CompanyPage() {
       // 에러 메시지는 표시하지만 페이지 전체를 에러 상태로 만들지 않음
       console.warn(
         "자동 데이터 로드에 실패했지만, 사용자가 수동으로 선택할 수 있습니다:",
-        error.message
+        error instanceof Error ? error.message : "알 수 없는 오류"
       );
     }
   };
@@ -200,12 +207,12 @@ export default function CompanyPage() {
     setCurrentStep("data-loading");
   };
 
-  const handleDataLoaded = (data) => {
+  const handleDataLoaded = (data: FinancialApiResponse) => {
     setFinancialData(data);
     setCurrentStep("results");
   };
 
-  const handleError = (message) => {
+  const handleError = (message: string) => {
     setErrorMessage(message);
     setCurrentStep("error");
   };

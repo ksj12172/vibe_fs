@@ -1,17 +1,56 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import {
-  Chart as ChartJS,
-  RadialLinearScale,
-  PointElement,
-  LineElement,
-  Filler,
-  Tooltip,
-  Legend,
   ArcElement,
+  Chart as ChartJS,
+  Filler,
+  Legend,
+  LineElement,
+  PointElement,
+  RadialLinearScale,
+  Tooltip,
 } from "chart.js";
-import { Radar, Doughnut } from "react-chartjs-2";
+import { useEffect, useState } from "react";
+import { Doughnut, Radar } from "react-chartjs-2";
+
+// 재무 데이터 타입 정의
+interface FinancialItem {
+  fs_div?: string;
+  sj_div?: string;
+  account_nm?: string;
+  thstrm_amount?: string;
+}
+
+interface FinancialData {
+  list?: FinancialItem[];
+}
+
+interface Company {
+  id?: string;
+  company_name?: string;
+  stock_code?: string;
+}
+
+// 재무 비율 타입 정의
+interface FinancialRatios {
+  roe: number;
+  roa: number;
+  operatingMargin: number;
+  netProfitMargin: number;
+  debtRatio: number;
+  equityRatio: number;
+  currentRatio: number;
+  currentAssets: number;
+  currentLiabilities: number;
+}
+
+// Props 타입 정의
+interface FinancialRatiosProps {
+  selectedCompany?: Company;
+  financialData?: FinancialData;
+}
+
+type RatioType = "profitability" | "debt" | "liquidity";
 
 ChartJS.register(
   RadialLinearScale,
@@ -23,8 +62,21 @@ ChartJS.register(
   ArcElement
 );
 
-export default function FinancialRatios({ selectedCompany, financialData }) {
-  const [ratios, setRatios] = useState({});
+export default function FinancialRatios({
+  selectedCompany,
+  financialData,
+}: FinancialRatiosProps) {
+  const [ratios, setRatios] = useState<FinancialRatios>({
+    roe: 0,
+    roa: 0,
+    operatingMargin: 0,
+    netProfitMargin: 0,
+    debtRatio: 0,
+    equityRatio: 0,
+    currentRatio: 0,
+    currentAssets: 0,
+    currentLiabilities: 0,
+  });
 
   useEffect(() => {
     if (financialData?.list) {
@@ -32,7 +84,7 @@ export default function FinancialRatios({ selectedCompany, financialData }) {
     }
   }, [financialData]);
 
-  const getFilteredFinancialData = () => {
+  const getFilteredFinancialData = (): FinancialItem[] => {
     if (!financialData?.list) return [];
 
     const consolidatedData = financialData.list.filter(
@@ -46,7 +98,10 @@ export default function FinancialRatios({ selectedCompany, financialData }) {
     return consolidatedData.length > 0 ? consolidatedData : individualData;
   };
 
-  const getAccountAmount = (data, accountNames) => {
+  const getAccountAmount = (
+    data: FinancialItem[],
+    accountNames: string[]
+  ): number => {
     for (const name of accountNames) {
       const account = data.find(
         (item) => item.account_nm && item.account_nm.includes(name)
@@ -58,7 +113,7 @@ export default function FinancialRatios({ selectedCompany, financialData }) {
     return 0;
   };
 
-  const calculateRatios = () => {
+  const calculateRatios = (): void => {
     const filteredData = getFilteredFinancialData();
     const bsData = filteredData.filter((item) => item.sj_div === "BS");
     const isData = filteredData.filter((item) => item.sj_div === "IS");
@@ -86,7 +141,7 @@ export default function FinancialRatios({ selectedCompany, financialData }) {
     const operatingIncome = getAccountAmount(isData, ["영업이익"]);
 
     // 비율 계산
-    const calculatedRatios = {
+    const calculatedRatios: FinancialRatios = {
       roe: totalEquity > 0 ? (netIncome / totalEquity) * 100 : 0,
       roa: totalAssets > 0 ? (netIncome / totalAssets) * 100 : 0,
       operatingMargin: revenue > 0 ? (operatingIncome / revenue) * 100 : 0,
@@ -103,12 +158,12 @@ export default function FinancialRatios({ selectedCompany, financialData }) {
     setRatios(calculatedRatios);
   };
 
-  const formatRatioValue = (value, unit) => {
+  const formatRatioValue = (value: number, unit: string): string => {
     if (value === 0 || isNaN(value)) return "-";
     return `${value.toFixed(1)}${unit}`;
   };
 
-  const formatAmountValue = (amount) => {
+  const formatAmountValue = (amount: number): string => {
     if (!amount || amount === 0 || isNaN(amount)) return "-";
 
     const absAmount = Math.abs(amount);
@@ -127,7 +182,7 @@ export default function FinancialRatios({ selectedCompany, financialData }) {
     }
   };
 
-  const getRatioClass = (value, type) => {
+  const getRatioClass = (value: number, type: RatioType): string => {
     if (value === 0 || isNaN(value)) return "ratio-value";
 
     let className = "ratio-value";
@@ -149,7 +204,7 @@ export default function FinancialRatios({ selectedCompany, financialData }) {
     return className;
   };
 
-  const getCurrentRatioDescription = (ratio) => {
+  const getCurrentRatioDescription = (ratio: number): string => {
     if (ratio === 0 || isNaN(ratio)) return "데이터 없음";
     if (ratio >= 200) return "매우 양호";
     if (ratio >= 150) return "양호";
@@ -203,7 +258,7 @@ export default function FinancialRatios({ selectedCompany, financialData }) {
         text: "수익성 분석",
         font: {
           size: 16,
-          weight: "bold",
+          weight: "bold" as const,
         },
       },
       legend: {
@@ -211,7 +266,7 @@ export default function FinancialRatios({ selectedCompany, financialData }) {
       },
       tooltip: {
         callbacks: {
-          label: function (context) {
+          label: function (context: any) {
             return `${context.label}: ${context.parsed.r.toFixed(1)}%`;
           },
         },
@@ -223,7 +278,7 @@ export default function FinancialRatios({ selectedCompany, financialData }) {
         max: 50,
         ticks: {
           stepSize: 10,
-          callback: function (value) {
+          callback: function (value: any) {
             return value + "%";
           },
         },
@@ -246,15 +301,15 @@ export default function FinancialRatios({ selectedCompany, financialData }) {
         text: "부채비율 분석",
         font: {
           size: 16,
-          weight: "bold",
+          weight: "bold" as const,
         },
       },
       legend: {
-        position: "bottom",
+        position: "bottom" as const,
       },
       tooltip: {
         callbacks: {
-          label: function (context) {
+          label: function (context: any) {
             return `${context.label}: ${context.parsed.toFixed(1)}%`;
           },
         },

@@ -6,7 +6,6 @@ import FinancialRatios from "./FinancialRatios.tsx";
 
 export default function FinancialResults({ selectedCompany, financialData }) {
   const [currentChart, setCurrentChart] = useState("bs");
-  const [filteredData, setFilteredData] = useState([]);
   const [fsTypeInfo, setFsTypeInfo] = useState({ type: "", count: "" });
 
   useEffect(() => {

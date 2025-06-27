@@ -19,39 +19,245 @@
 }
 
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   line-height: 1.6;
   color: var(--text-color);
   background-color: var(--background-color);
 }
 
+.main-content {
+  padding-top: 70px; /* 헤더 높이만큼 패딩 추가 */
+}
+
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 20px;
-  min-height: 100vh;
+  padding: 20px;
+  min-height: calc(100vh - 70px);
 }
 
-/* 헤더 스타일 */
-header {
+/* 새로운 앱 헤더 스타일 */
+.app-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  transition: all 0.3s ease;
+}
+
+.header-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 70px;
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.header-brand:hover {
+  transform: scale(1.02);
+}
+
+.logo {
+  font-size: 2.5rem;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.brand-text h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.subtitle {
+  font-size: 0.9rem;
+  opacity: 0.85;
+  font-weight: 400;
+  display: block;
+  margin-top: 2px;
+}
+
+/* 데스크톱 네비게이션 */
+.desktop-nav {
+  display: flex;
+  gap: 1rem;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: white;
+  padding: 0.75rem 1.25rem;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.nav-item:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.nav-item.active {
+  background: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.nav-icon {
+  font-size: 1.1rem;
+}
+
+/* 모바일 햄버거 메뉴 */
+.mobile-menu-btn {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  z-index: 1001;
+}
+
+.hamburger {
+  display: flex;
+  flex-direction: column;
+  width: 24px;
+  height: 18px;
+  justify-content: space-between;
+  transition: all 0.3s ease;
+}
+
+.hamburger span {
+  display: block;
+  height: 3px;
+  width: 100%;
+  background: white;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+.hamburger.active span:nth-child(1) {
+  transform: rotate(45deg) translate(6px, 6px);
+}
+
+.hamburger.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger.active span:nth-child(3) {
+  transform: rotate(-45deg) translate(6px, -6px);
+}
+
+/* 모바일 네비게이션 */
+.mobile-nav {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  transform: translateY(-100%);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 999;
+}
+
+.mobile-nav.active {
+  transform: translateY(0);
+  opacity: 1;
+  visibility: visible;
+}
+
+.mobile-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: none;
+  border: none;
+  color: white;
+  padding: 1rem 20px;
+  width: 100%;
+  text-align: left;
+  font-size: 1.1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mobile-nav-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.mobile-nav-item.active {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.mobile-nav-info {
+  padding: 1.5rem 20px;
+  text-align: center;
+  opacity: 0.8;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mobile-nav-info p {
+  margin: 0.25rem 0;
+}
+
+/* 모바일 오버레이 */
+.mobile-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 998;
+  backdrop-filter: blur(2px);
+}
+
+/* 기존 헤더 스타일 (페이지별 헤더용) */
+.page-header {
   text-align: center;
   padding: 2rem 0;
   margin-bottom: 2rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: var(--card-bg);
   border-radius: var(--border-radius);
   box-shadow: var(--card-shadow);
 }
 
-header h1 {
+.page-header h1 {
   font-size: 2.5rem;
   margin-bottom: 0.5rem;
   font-weight: 700;
+  color: var(--primary-color);
 }
 
-header p {
+.page-header p {
   font-size: 1.1rem;
-  opacity: 0.9;
+  opacity: 0.8;
+  color: var(--text-color);
 }
 
 /* 섹션 스타일 */
@@ -412,7 +618,7 @@ section h2 {
   font-weight: 600;
   color: var(--accent-color);
   font-size: 1rem;
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
 }
 
 .ratio-value.positive {
@@ -469,6 +675,63 @@ section h2 {
   max-height: 300px !important;
 }
 
+/* 유동성 분석 스타일 */
+.liquidity-amounts {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 1rem 0;
+  padding: 1rem;
+  background: rgba(52, 152, 219, 0.05);
+}
+
+.amount-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(52, 152, 219, 0.1);
+}
+
+.amount-item:last-child {
+  border-bottom: none;
+}
+
+.amount-label {
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.amount-value {
+  font-weight: 700;
+  color: var(--primary-color);
+  font-size: 1.1rem;
+}
+
+.liquidity-description {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: rgba(230, 126, 34, 0.05);
+}
+
+.liquidity-description p {
+  margin: 0.5rem 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.ratio-formula {
+  color: var(--primary-color);
+}
+
+.ratio-explanation {
+  color: var(--success-color);
+}
+
+.ratio-warning {
+  color: var(--error-color);
+}
+
 /* 데이터 테이블 스타일 */
 .data-table-container {
   margin-top: 2rem;
@@ -514,12 +777,40 @@ section h2 {
 }
 
 /* 반응형 디자인 */
+/* 모바일 반응형 스타일 */
 @media (max-width: 768px) {
+  /* 헤더 모바일 스타일 */
+  .header-container {
+    padding: 0 15px;
+    min-height: 60px;
+  }
+
+  .brand-text h1 {
+    font-size: 1.5rem;
+  }
+
+  .subtitle {
+    font-size: 0.8rem;
+  }
+
+  .logo {
+    font-size: 2rem;
+  }
+
+  .desktop-nav {
+    display: none;
+  }
+
+  .mobile-menu-btn {
+    display: block;
+  }
+
+  /* 기타 모바일 스타일 */
   .container {
     padding: 0 15px;
   }
 
-  header h1 {
+  .page-header h1 {
     font-size: 2rem;
   }
 
@@ -597,5 +888,46 @@ section h2 {
   .data-table th,
   .data-table td {
     padding: 0.6rem 0.8rem;
+  }
+
+  /* 유동성 분석 모바일 스타일 */
+  .liquidity-amounts {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .amount-item {
+    justify-content: space-between;
+  }
+}
+
+/* 태블릿 반응형 스타일 */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .header-container {
+    padding: 0 20px;
+  }
+
+  .brand-text h1 {
+    font-size: 1.6rem;
+  }
+
+  .nav-item {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* 큰 화면 스타일 */
+@media (min-width: 1400px) {
+  .header-container {
+    padding: 0 40px;
+  }
+
+  .brand-text h1 {
+    font-size: 2rem;
+  }
+
+  .logo {
+    font-size: 3rem;
   }
 }

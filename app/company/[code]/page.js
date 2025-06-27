@@ -70,26 +70,12 @@ export default function CompanyPage() {
 
   return (
     <div className="container">
-      <header>
-        <h1>📊 재무제표 시각화</h1>
+      <div className="page-header">
+        <h1>재무제표 분석</h1>
         <p>
           종목코드: <strong>{stockCode}</strong>
         </p>
-        <button
-          className="back-btn"
-          onClick={goToHome}
-          style={{
-            marginTop: "10px",
-            padding: "8px 16px",
-            backgroundColor: "#f0f0f0",
-            border: "1px solid #ddd",
-            borderRadius: "4px",
-            cursor: "pointer",
-          }}
-        >
-          🏠 홈으로 돌아가기
-        </button>
-      </header>
+      </div>
 
       <main>
         {/* 로딩 상태 - 회사 정보 조회 중 */}

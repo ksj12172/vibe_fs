@@ -72,9 +72,19 @@ export default function CompanyPage() {
     <div className="container">
       <div className="page-header">
         <h1>재무제표 분석</h1>
-        <p>
-          종목코드: <strong>{stockCode}</strong>
-        </p>
+        {company && (
+          <div className="company-info">
+            <h2 className="company-name">{company.corp_name}</h2>
+            <p className="stock-code">
+              종목코드: <strong>{stockCode}</strong>
+            </p>
+          </div>
+        )}
+        {!company && currentStep === "loading" && (
+          <p className="loading-text">
+            종목코드: <strong>{stockCode}</strong>
+          </p>
+        )}
       </div>
 
       <main>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import FinancialChart from "./FinancialChart";
 import FinancialRatios from "./FinancialRatios";
 
@@ -23,6 +23,15 @@ export default function FinancialResults({
     type: "",
     count: "",
   });
+
+  // props에서 파생된 값들을 useMemo로 관리
+  const currentYear = useMemo(() => {
+    return financialData?.list?.[0]?.bsns_year || "";
+  }, [financialData]);
+
+  const previousYear = useMemo(() => {
+    return currentYear ? (parseInt(currentYear) - 1).toString() : "";
+  }, [currentYear]);
 
   useEffect(() => {
     if (financialData?.list) {
@@ -96,15 +105,6 @@ export default function FinancialResults({
     }
   };
 
-  const getCurrentYear = (): string => {
-    // 선택된 년도를 가져오는 로직 (일단 2024로 고정)
-    return "2024";
-  };
-
-  const getPreviousYear = (): string => {
-    return (parseInt(getCurrentYear()) - 1).toString();
-  };
-
   const getFinancialStatementType = (fsDiv?: string): string => {
     switch (fsDiv) {
       case "CFS":
@@ -118,8 +118,6 @@ export default function FinancialResults({
 
   const renderDataTable = () => {
     const filtered = getFilteredFinancialData();
-    const currentYear = getCurrentYear();
-    const previousYear = getPreviousYear();
 
     return (
       <div className="data-table-container">
@@ -199,7 +197,7 @@ export default function FinancialResults({
               selectedCompany={selectedCompany}
               financialData={financialData}
               chartType={currentChart as ChartType}
-              currentYear={getCurrentYear()}
+              currentYear={currentYear}
             />
           </div>
         )}

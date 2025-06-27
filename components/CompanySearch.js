@@ -1,15 +1,17 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
-export default function CompanySearch({ onCompanySelect, onError }) {
-  const [query, setQuery] = useState('');
+export default function CompanySearch({ onError }) {
+  const router = useRouter();
+  const [query, setQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
 
   const searchCompanies = async () => {
     if (!query.trim()) {
-      onError('검색어를 입력해주세요.');
+      onError("검색어를 입력해주세요.");
       return;
     }
 
@@ -23,12 +25,12 @@ export default function CompanySearch({ onCompanySelect, onError }) {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || '검색 중 오류가 발생했습니다.');
+        throw new Error(data.error || "검색 중 오류가 발생했습니다.");
       }
 
       setSearchResults(data.results || []);
     } catch (error) {
-      console.error('검색 오류:', error);
+      console.error("검색 오류:", error);
       onError(error.message);
     } finally {
       setIsSearching(false);
@@ -36,17 +38,20 @@ export default function CompanySearch({ onCompanySelect, onError }) {
   };
 
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       searchCompanies();
     }
   };
 
-  const selectCompany = (company) => {
-    onCompanySelect({
-      corp_code: company.corp_code,
-      corp_name: company.corp_name,
-      stock_code: company.stock_code,
-    });
+  const handleCompanyClick = (company) => {
+    const isListed = company.stock_code && company.stock_code.trim() !== "";
+
+    if (!isListed) {
+      return;
+    }
+
+    // 상장된 회사면 회사 페이지로 이동
+    router.push(`/company/${company.stock_code}`);
   };
 
   const renderSearchResults = () => {
@@ -71,13 +76,19 @@ export default function CompanySearch({ onCompanySelect, onError }) {
       <div className="search-results">
         {searchResults.map((company) => {
           const isListed =
-            company.stock_code && company.stock_code.trim() !== '';
+            company.stock_code && company.stock_code.trim() !== "";
 
           return (
             <div
               key={company.corp_code}
-              className="company-item"
-              onClick={() => selectCompany(company)}
+              className={`company-item ${
+                isListed ? "clickable" : "non-clickable"
+              }`}
+              onClick={() => handleCompanyClick(company)}
+              style={{
+                cursor: isListed ? "pointer" : "default",
+                opacity: isListed ? 1 : 0.7,
+              }}
             >
               <div className="company-header">
                 <h4>{company.corp_name}</h4>
@@ -100,11 +111,33 @@ export default function CompanySearch({ onCompanySelect, onError }) {
               </div>
               <div className="company-details">
                 <p>
-                  회사코드: {company.corp_code} | 종목코드:{' '}
-                  {company.stock_code || '없음'}
+                  회사코드: {company.corp_code} | 종목코드:{" "}
+                  {company.stock_code || "없음"}
                 </p>
                 {company.corp_eng_name && (
                   <p>영문명: {company.corp_eng_name}</p>
+                )}
+                {isListed && (
+                  <p
+                    style={{
+                      marginTop: "8px",
+                      fontSize: "12px",
+                      color: "#007bff",
+                    }}
+                  >
+                    📈 클릭하여 재무제표 보기
+                  </p>
+                )}
+                {!isListed && (
+                  <p
+                    style={{
+                      marginTop: "8px",
+                      fontSize: "12px",
+                      color: "#999",
+                    }}
+                  >
+                    📋 비상장 회사 (재무제표 조회 불가)
+                  </p>
                 )}
               </div>
             </div>
@@ -127,7 +160,7 @@ export default function CompanySearch({ onCompanySelect, onError }) {
           disabled={isSearching}
         />
         <button onClick={searchCompanies} disabled={isSearching}>
-          {isSearching ? '검색 중...' : '검색'}
+          {isSearching ? "검색 중..." : "검색"}
         </button>
       </div>
       {renderSearchResults()}

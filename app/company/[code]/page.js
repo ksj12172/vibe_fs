@@ -223,7 +223,6 @@ export default function CompanyPage() {
   return (
     <div className="container">
       <div className="page-header">
-        <h1>재무제표 분석</h1>
         {company && (
           <div className="company-info">
             <h2 className="company-name">{company.corp_name}</h2>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import FinancialChart from "./FinancialChart";
+import FinancialChart from "./FinancialChart.tsx";
 import FinancialRatios from "./FinancialRatios.tsx";
 
 export default function FinancialResults({ selectedCompany, financialData }) {

@@ -25,10 +25,6 @@ body {
   background-color: var(--background-color);
 }
 
-.main-content {
-  padding-top: 70px; /* 헤더 높이만큼 패딩 추가 */
-}
-
 .container {
   max-width: 1200px;
   margin: 0 auto;

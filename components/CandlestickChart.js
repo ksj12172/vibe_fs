@@ -2,134 +2,109 @@
 
 import { useEffect, useRef } from "react";
 
-// TradingView Lightweight Charts는 클라이언트 사이드에서만 동작하므로 동적 import 사용
-let LightweightCharts;
-
 const CandlestickChart = ({ data, companyName }) => {
   const chartContainerRef = useRef();
   const chartRef = useRef();
+  const candlestickSeriesRef = useRef();
 
   useEffect(() => {
+    let chartInstance = null;
     const initChart = async () => {
       try {
-        // 동적으로 lightweight-charts 라이브러리 로드
-        if (typeof window !== "undefined") {
-          // 임시로 Chart.js 사용 (lightweight-charts 설치 전)
-          const { Chart, registerables } = await import("chart.js");
-          Chart.register(...registerables);
-
-          if (chartRef.current) {
-            chartRef.current.destroy();
-          }
-
-          // 캔들스틱 차트 데이터 변환
-          const labels = data.map((item) => item.time);
-          const candleData = data.map((item) => ({
-            x: item.time,
-            o: item.open,
-            h: item.high,
-            l: item.low,
-            c: item.close,
-          }));
-
-          const ctx = chartContainerRef.current.getContext("2d");
-
-          // 캔버스 크기 명시적 설정
-          chartContainerRef.current.width =
-            chartContainerRef.current.offsetWidth;
-          chartContainerRef.current.height = 400;
-
-          chartRef.current = new Chart(ctx, {
-            type: "line", // 임시로 선 차트 사용
-            data: {
-              labels: labels,
-              datasets: [
-                {
-                  label: "종가",
-                  data: data.map((item) => item.close),
-                  borderColor: "rgb(75, 192, 192)",
-                  backgroundColor: "rgba(75, 192, 192, 0.1)",
-                  tension: 0.1,
-                  fill: true,
-                },
-                {
-                  label: "고가",
-                  data: data.map((item) => item.high),
-                  borderColor: "rgb(255, 99, 132)",
-                  backgroundColor: "rgba(255, 99, 132, 0.1)",
-                  tension: 0.1,
-                  fill: false,
-                },
-                {
-                  label: "저가",
-                  data: data.map((item) => item.low),
-                  borderColor: "rgb(54, 162, 235)",
-                  backgroundColor: "rgba(54, 162, 235, 0.1)",
-                  tension: 0.1,
-                  fill: false,
-                },
-                {
-                  label: "시가",
-                  data: data.map((item) => item.open),
-                  borderColor: "rgb(255, 206, 86)",
-                  backgroundColor: "rgba(255, 206, 86, 0.1)",
-                  tension: 0.1,
-                  fill: false,
-                },
-              ],
-            },
-            options: {
-              responsive: true,
-              maintainAspectRatio: false,
-              aspectRatio: 2,
-              layout: {
-                padding: {
-                  top: 10,
-                  bottom: 10,
-                  left: 10,
-                  right: 10,
-                },
-              },
-              plugins: {
-                title: {
-                  display: true,
-                  text: `${companyName} 주가 차트`,
-                },
-                legend: {
-                  display: true,
-                  position: "top",
-                },
-              },
-              scales: {
-                x: {
-                  display: true,
-                  title: {
-                    display: true,
-                    text: "날짜",
-                  },
-                },
-                y: {
-                  display: true,
-                  title: {
-                    display: true,
-                    text: "가격 (원)",
-                  },
-                  ticks: {
-                    callback: function (value) {
-                      return value.toLocaleString() + "원";
-                    },
-                  },
-                },
-              },
-              interaction: {
-                intersect: false,
-                mode: "index",
-              },
-            },
-          });
+        if (!chartContainerRef.current) {
+          return;
         }
+        const LightweightCharts = await import("lightweight-charts");
+        const { createChart, ColorType, CandlestickSeries } = LightweightCharts;
+
+        // 기존 차트 안전하게 제거
+        if (chartRef.current) {
+          try {
+            if (typeof chartRef.current.remove === "function") {
+              chartRef.current.remove();
+            }
+          } catch (e) {
+            // 이미 dispose된 경우 무시
+          }
+          chartRef.current = null;
+        }
+
+        // 차트 생성
+        const chart = createChart(chartContainerRef.current, {
+          width: chartContainerRef.current.clientWidth || 600,
+          height: 400,
+          layout: {
+            background: { type: ColorType.Solid, color: "#ffffff" },
+            textColor: "#333",
+          },
+          grid: {
+            vertLines: { color: "#e1e1e1" },
+            horzLines: { color: "#e1e1e1" },
+          },
+          rightPriceScale: { borderColor: "#cccccc" },
+          timeScale: {
+            borderColor: "#cccccc",
+            timeVisible: true,
+            secondsVisible: false,
+          },
+        });
+        chartRef.current = chart;
+        chartInstance = chart;
+
+        // 빨강(양봉)/파랑(음봉) 색상으로 candlestickSeries 생성
+        const candlestickSeries = chart.addSeries(CandlestickSeries, {
+          upColor: "#ED5858",
+          downColor: "#5889ED",
+          borderUpColor: "#ED5858",
+          borderDownColor: "#5889ED",
+          wickUpColor: "#ED5858",
+          wickDownColor: "#5889ED",
+        });
+
+        candlestickSeriesRef.current = candlestickSeries;
+
+        // 데이터 변환 및 설정
+        if (data && data.length > 0) {
+          try {
+            const chartData = data.map((item) => ({
+              time: item.time,
+              open: parseFloat(item.open) || 0,
+              high: parseFloat(item.high) || 0,
+              low: parseFloat(item.low) || 0,
+              close: parseFloat(item.close) || 0,
+            }));
+
+            candlestickSeries.setData(chartData);
+
+            setTimeout(() => {
+              if (chart && chart.timeScale) {
+                chart.timeScale().fitContent();
+              }
+            }, 100);
+          } catch (error) {
+            console.error("데이터 설정 중 에러:", error);
+          }
+        }
+
+        // 반응형 처리
+        const handleResize = () => {
+          try {
+            if (chartRef.current && chartContainerRef.current) {
+              const newWidth = chartContainerRef.current.clientWidth;
+              if (newWidth > 0) {
+                chartRef.current.applyOptions({ width: newWidth });
+              }
+            }
+          } catch (error) {
+            // 무시
+          }
+        };
+        window.addEventListener("resize", handleResize);
+        return () => {
+          window.removeEventListener("resize", handleResize);
+        };
       } catch (error) {
-        console.error("차트 초기화 실패:", error);
+        console.error("TradingView 차트 초기화 실패:", error);
       }
     };
 
@@ -138,26 +113,63 @@ const CandlestickChart = ({ data, companyName }) => {
     }
 
     return () => {
+      // 안전하게 차트 제거
       if (chartRef.current) {
-        chartRef.current.destroy();
+        try {
+          if (typeof chartRef.current.remove === "function") {
+            chartRef.current.remove();
+          }
+        } catch (e) {
+          // 이미 dispose된 경우 무시
+        }
+        chartRef.current = null;
       }
     };
   }, [data, companyName]);
 
   return (
-    <div className="w-full relative" style={{ height: "400px" }}>
-      <canvas
+    <div className="w-full relative">
+      <div className="mb-4">
+        <h3 className="text-lg font-semibold text-gray-800">
+          {companyName} 캔들스틱 차트
+        </h3>
+        <p className="text-sm text-gray-500">TradingView Lightweight Charts</p>
+      </div>
+      <div
         ref={chartContainerRef}
-        style={{
-          width: "100%",
-          height: "100%",
-          maxHeight: "400px",
-        }}
-      ></canvas>
-      <div className="absolute top-4 right-4 bg-white bg-opacity-90 rounded p-2 text-sm">
-        <div className="text-gray-600">임시 차트</div>
-        <div className="text-xs text-gray-500">
-          TradingView 차트로 업그레이드 예정
+        className="w-full border border-gray-200 rounded-lg"
+        style={{ height: "400px" }}
+      />
+      <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+          <div>
+            <span className="text-gray-500">데이터 포인트:</span>
+            <span className="ml-2 font-medium">{data?.length || 0}개</span>
+          </div>
+          <div>
+            <span className="text-gray-500">기간:</span>
+            <span className="ml-2 font-medium">
+              {data?.length > 0
+                ? `${data[0].time} ~ ${data[data.length - 1].time}`
+                : "N/A"}
+            </span>
+          </div>
+          <div>
+            <span className="text-gray-500">최고가:</span>
+            <span className="ml-2 font-medium text-red-600">
+              {data?.length > 0
+                ? Math.max(...data.map((d) => d.high)).toLocaleString() + "원"
+                : "N/A"}
+            </span>
+          </div>
+          <div>
+            <span className="text-gray-500">최저가:</span>
+            <span className="ml-2 font-medium text-blue-600">
+              {data?.length > 0
+                ? Math.min(...data.map((d) => d.low)).toLocaleString() + "원"
+                : "N/A"}
+            </span>
+          </div>
         </div>
       </div>
     </div>

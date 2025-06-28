@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "next dev",
     "server": "node server.js",
+    "python-server": "NEXT_PUBLIC_PYTHON_API_PORT=5001 ./scripts/start-python-server.sh",
+    "python-server:win": "set NEXT_PUBLIC_PYTHON_API_PORT=5001 && ./scripts/start-python-server.bat",
     "dev:all": "concurrently \"npm run dev\" \"npm run server\"",
+    "dev:with-python": "concurrently \"npm run dev\" \"npm run python-server\"",
     "build": "prisma generate --no-engine && next build",
     "start": "next start",
     "lint": "next lint",
@@ -23,6 +26,7 @@
     "axios": "^1.6.0",
     "chart.js": "^4.4.0",
     "dotenv": "^16.3.0",
+    "lightweight-charts": "^5.0.8",
     "next": "^14.0.0",
     "react": "^18.2.0",
     "react-chartjs-2": "^5.2.0",

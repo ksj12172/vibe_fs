@@ -10,6 +10,18 @@ export default function Header() {
 
   const isHomePage = pathname === "/";
   const isCompanyPage = pathname.startsWith("/company/");
+  const isChartPage = pathname.startsWith("/chart/");
+
+  // 현재 페이지에서 종목코드 추출
+  const getStockCode = () => {
+    if (isCompanyPage) {
+      return pathname.split("/")[2];
+    }
+    if (isChartPage) {
+      return pathname.split("/")[2];
+    }
+    return null;
+  };
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -23,6 +35,22 @@ export default function Header() {
   const goBack = () => {
     router.back();
     setIsMobileMenuOpen(false);
+  };
+
+  const navigateToChart = () => {
+    const stockCode = getStockCode();
+    if (stockCode) {
+      router.push(`/chart/${stockCode}`);
+      setIsMobileMenuOpen(false);
+    }
+  };
+
+  const navigateToCompany = () => {
+    const stockCode = getStockCode();
+    if (stockCode) {
+      router.push(`/company/${stockCode}`);
+      setIsMobileMenuOpen(false);
+    }
   };
 
   return (
@@ -48,10 +76,29 @@ export default function Header() {
           </button>
 
           {isCompanyPage && (
-            <button className="nav-item" onClick={goBack}>
-              <span className="nav-icon">←</span>
-              <span className="nav-text">뒤로가기</span>
-            </button>
+            <>
+              <button className="nav-item" onClick={navigateToChart}>
+                <span className="nav-icon">📈</span>
+                <span className="nav-text">차트보기</span>
+              </button>
+              <button className="nav-item" onClick={goBack}>
+                <span className="nav-icon">←</span>
+                <span className="nav-text">뒤로가기</span>
+              </button>
+            </>
+          )}
+
+          {isChartPage && (
+            <>
+              <button className="nav-item" onClick={navigateToCompany}>
+                <span className="nav-icon">📊</span>
+                <span className="nav-text">재무제표</span>
+              </button>
+              <button className="nav-item" onClick={goBack}>
+                <span className="nav-icon">←</span>
+                <span className="nav-text">뒤로가기</span>
+              </button>
+            </>
           )}
         </nav>
 
@@ -80,10 +127,29 @@ export default function Header() {
         </button>
 
         {isCompanyPage && (
-          <button className="mobile-nav-item" onClick={goBack}>
-            <span className="nav-icon">←</span>
-            <span className="nav-text">뒤로가기</span>
-          </button>
+          <>
+            <button className="mobile-nav-item" onClick={navigateToChart}>
+              <span className="nav-icon">📈</span>
+              <span className="nav-text">차트보기</span>
+            </button>
+            <button className="mobile-nav-item" onClick={goBack}>
+              <span className="nav-icon">←</span>
+              <span className="nav-text">뒤로가기</span>
+            </button>
+          </>
+        )}
+
+        {isChartPage && (
+          <>
+            <button className="mobile-nav-item" onClick={navigateToCompany}>
+              <span className="nav-icon">📊</span>
+              <span className="nav-text">재무제표</span>
+            </button>
+            <button className="mobile-nav-item" onClick={goBack}>
+              <span className="nav-icon">←</span>
+              <span className="nav-text">뒤로가기</span>
+            </button>
+          </>
         )}
 
         <div className="mobile-nav-info">

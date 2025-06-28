@@ -19,37 +19,71 @@
 
 ### 환경 설정
 
-1. **레포지토리 클론**
+1.  **레포지토리 클론**
 
-   ```bash
-   git clone <repository-url>
-   cd vibe-fs
-   ```
+    ```bash
+    git clone <repository-url>
+    cd vibe-fs
+    ```
 
-2. **의존성 설치**
+2.  **의존성 설치**
 
-   ```bash
-   yarn install
-   # 또는
-   npm install
-   ```
+    ```bash
+    yarn install
+    # 또는
+    npm install
+    ```
 
-3. **환경변수 설정**
-   `.env` 파일을 생성하고 다음 내용을 추가하세요:
+3.  **Python 주식 API 서버 설정 (실제 주식 데이터용)**
 
-   ```env
-   # DART API 키 (https://opendart.fss.or.kr/에서 발급)
-   DART_API_KEY=your_dart_api_key_here
+    실제 yfinance 주식 데이터를 사용하려면 Python 서버를 별도로 실행해야 합니다.
 
-   # PostgreSQL 연결 정보 (Vercel Postgres 사용 시 자동 설정)
-   POSTGRES_URL="your_postgres_connection_url"
-   POSTGRES_PRISMA_URL="your_postgres_prisma_url"
-   POSTGRES_URL_NON_POOLING="your_postgres_non_pooling_url"
-   POSTGRES_USER="your_postgres_user"
-   POSTGRES_HOST="your_postgres_host"
-   POSTGRES_PASSWORD="your_postgres_password"
-   POSTGRES_DATABASE="your_postgres_database"
-   ```
+    **자동 설정 (권장):**
+
+    ```bash
+    # macOS/Linux
+    npm run python-server
+
+    # Windows
+    npm run python-server:win
+    ```
+
+    **수동 설정:**
+
+    ```bash
+    cd python-server
+    python3 -m venv venv
+    source venv/bin/activate  # Windows: venv\Scripts\activate
+    pip install -r requirements.txt
+    python stock_api.py
+    ```
+
+        Python 서버가 `http://localhost:5001`에서 실행됩니다.
+
+    **포트 변경 (선택사항):**
+
+    ```bash
+    # .env 파일에 추가
+    PYTHON_API_PORT=5001
+    NEXT_PUBLIC_PYTHON_API_PORT=5001
+    ```
+
+4.  **환경변수 설정**
+    `.env` 파일을 생성하고 다음 내용을 추가하세요:
+
+    ```env
+    # DART API 키 (https://opendart.fss.or.kr/에서 발급)
+    DART_API_KEY=your_dart_api_key_here
+
+    # PostgreSQL 연결 정보 (Vercel Postgres 사용 시 자동 설정)
+    POSTGRES_URL="your_postgres_connection_url"
+    POSTGRES_PRISMA_URL="your_postgres_prisma_url"
+    POSTGRES_URL_NON_POOLING="your_postgres_non_pooling_url"
+    POSTGRES_USER="your_postgres_user"
+    POSTGRES_HOST="your_postgres_host"
+    POSTGRES_PASSWORD="your_postgres_password"
+    POSTGRES_DATABASE="your_postgres_database"
+    ```
 
 ### 데이터베이스 설정
 

@@ -3,6 +3,10 @@
   "functions": {
     "app/api/**/*.js": {
       "maxDuration": 30
+    },
+    "api/**/*.py": {
+      "runtime": "python3.9",
+      "maxDuration": 30
     }
   }
 }

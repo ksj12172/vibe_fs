@@ -170,7 +170,7 @@ export default function CompanySearch({ onError }) {
     <section className="search-section">
       <h2 style={{ marginBottom: "1rem" }}>🔍 회사 검색</h2>
       <div className="guide" style={{ marginBottom: "1rem" }}>
-        재무제표를 확인하고 싶은 회사를 검색해보세요
+        재무제표, 주가를 확인하고 싶은 회사를 검색해보세요
       </div>
       <div className="search-box">
         <input

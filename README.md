@@ -85,6 +85,14 @@
     POSTGRES_DATABASE="your_postgres_database"
     ```
 
+5.  **💡 PYTHONPATH 설정 이유**
+
+    Vercel Python runtime에서 `PYTHONPATH="/var/runtime"`을 설정하는 이유:
+
+    - Vercel 환경의 기본 Python 구성 요소 경로 지정
+    - Python 모듈 검색 경로에 런타임 필수 라이브러리 포함
+    - Serverless Function의 안정적인 실행 보장
+
 ### 데이터베이스 설정
 
 1. **회사 코드 다운로드**

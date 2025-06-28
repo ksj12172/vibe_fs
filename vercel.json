@@ -8,5 +8,16 @@
       "runtime": "python3.9",
       "maxDuration": 30
     }
-  }
+  },
+  "build": {
+    "env": {
+      "PYTHONPATH": "/var/runtime"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/stock-data/(.*)",
+      "destination": "/api/stock-data/[code].py"
+    }
+  ]
 }

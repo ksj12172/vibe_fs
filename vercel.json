@@ -1,11 +1,9 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "prisma generate --no-engine && next build",
+  "framework": "nextjs",
   "functions": {
     "app/api/**/*.js": {
-      "maxDuration": 30
-    },
-    "api/**/*.py": {
-      "runtime": "python3.9",
       "maxDuration": 30
     }
   },
@@ -13,11 +11,5 @@
     "env": {
       "PYTHONPATH": "/var/runtime"
     }
-  },
-  "rewrites": [
-    {
-      "source": "/api/stock-data/(.*)",
-      "destination": "/api/stock-data/[code].py"
-    }
-  ]
+  }
 }

@@ -1,7 +1,16 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // PostgreSQL로 마이그레이션하면서 better-sqlite3 제거
-  // serverExternalPackages: ['better-sqlite3'],
+  rewrites: async () => {
+    return [
+      {
+        source: "/api/stock-data/:code",
+        destination:
+          process.env.NODE_ENV === "development"
+            ? "http://localhost:5001/api/stock-data/:code"
+            : "/api/stock-data/:code",
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;

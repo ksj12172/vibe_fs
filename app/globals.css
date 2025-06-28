@@ -256,6 +256,10 @@ body {
 
 .page-header p {
   font-size: 1.1rem;
+}
+
+.page-header p,
+.search-section .guide {
   opacity: 0.8;
   color: var(--text-color);
 }
@@ -368,7 +372,6 @@ section h2 {
   border-radius: 8px;
   padding: 1.2rem;
   margin-bottom: 0.8rem;
-  cursor: pointer;
   transition: all 0.2s ease;
 }
 

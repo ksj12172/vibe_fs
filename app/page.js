@@ -17,11 +17,6 @@ export default function HomePage() {
 
   return (
     <div className="container">
-      <div className="page-header">
-        <h1>회사 검색</h1>
-        <p>재무제표를 확인하고 싶은 회사를 검색해보세요</p>
-      </div>
-
       <main>
         {/* 회사 검색 */}
         <CompanySearch onError={handleError} />

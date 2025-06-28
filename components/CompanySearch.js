@@ -43,7 +43,7 @@ export default function CompanySearch({ onError }) {
     }
   };
 
-  const handleCompanyClick = (company) => {
+  const handleSearchCompany = (company) => {
     const isListed = company.stock_code && company.stock_code.trim() !== "";
 
     if (!isListed) {
@@ -52,6 +52,10 @@ export default function CompanySearch({ onError }) {
 
     // 상장된 회사면 회사 페이지로 이동
     router.push(`/company/${company.stock_code}`);
+  };
+
+  const handleSearchTicker = async (stock_code) => {
+    router.push(`/chart/${stock_code}`);
   };
 
   const renderSearchResults = () => {
@@ -81,12 +85,8 @@ export default function CompanySearch({ onError }) {
           return (
             <div
               key={company.corp_code}
-              className={`company-item ${
-                isListed ? "clickable" : "non-clickable"
-              }`}
-              onClick={() => handleCompanyClick(company)}
+              className="company-item"
               style={{
-                cursor: isListed ? "pointer" : "default",
                 opacity: isListed ? 1 : 0.7,
               }}
             >
@@ -118,15 +118,34 @@ export default function CompanySearch({ onError }) {
                   <p>영문명: {company.corp_eng_name}</p>
                 )}
                 {isListed && (
-                  <p
-                    style={{
-                      marginTop: "8px",
-                      fontSize: "12px",
-                      color: "#007bff",
-                    }}
-                  >
-                    📈 클릭하여 재무제표 보기
-                  </p>
+                  <div className="company-tags">
+                    <button
+                      className="fs-preview-tag consolidated"
+                      style={{
+                        marginTop: "8px",
+                        fontSize: "12px",
+                        color: "#007bff",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => handleSearchCompany(company)}
+                    >
+                      📃 재무제표 보기
+                    </button>
+                    {company.stock_code && (
+                      <button
+                        className="fs-preview-tag consolidated"
+                        style={{
+                          marginTop: "8px",
+                          fontSize: "12px",
+                          color: "#007bff",
+                          cursor: "pointer",
+                        }}
+                        onClick={() => handleSearchTicker(company.stock_code)}
+                      >
+                        📈 주가 변화 보기
+                      </button>
+                    )}
+                  </div>
                 )}
                 {!isListed && (
                   <p
@@ -149,7 +168,10 @@ export default function CompanySearch({ onError }) {
 
   return (
     <section className="search-section">
-      <h2>🔍 회사 검색</h2>
+      <h2 style={{ marginBottom: "1rem" }}>🔍 회사 검색</h2>
+      <div className="guide" style={{ marginBottom: "1rem" }}>
+        재무제표를 확인하고 싶은 회사를 검색해보세요
+      </div>
       <div className="search-box">
         <input
           type="text"

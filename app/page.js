@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import CompanySearch from "../components/CompanySearch";
 import ErrorSection from "../components/ErrorSection";
 
-const ETF_TICKER_LIST = [{ name: "TIGER 200", stockCode: "130680" }];
+const ETF_TICKER_LIST = [{ name: "TIGER 200", stockCode: "102110" }];
 
 export default function HomePage() {
   const [errorMessage, setErrorMessage] = useState("");

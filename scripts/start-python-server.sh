@@ -21,6 +21,7 @@ pip install -r requirements.txt
 
 # 환경변수 설정
 export PYTHON_API_PORT=5001
+export ENV=development
 
 # 서버 시작
 echo "🚀 Starting Flask server on http://localhost:$PYTHON_API_PORT"

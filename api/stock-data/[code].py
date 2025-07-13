@@ -38,8 +38,6 @@ class handler(BaseHTTPRequestHandler):
             interval = query_params.get('interval', '1d')
             force_refresh = query_params.get('force_refresh', 'false').lower() == 'true'
             
-            print(f"Vercel: Fetching data for {stock_code} (period: {period}, interval: {interval})")
-            
             # 공통 서비스를 사용하여 데이터 조회
             response_data = stock_service.get_stock_data(
                 stock_code=stock_code,

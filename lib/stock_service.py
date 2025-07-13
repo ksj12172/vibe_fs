@@ -4,6 +4,8 @@ from datetime import datetime
 import time
 import hashlib
 import json
+import pprint
+import os
 
 class StockDataService:
     """주식 데이터 조회 공통 서비스"""
@@ -171,6 +173,10 @@ class StockDataService:
             
             # 주식 정보 조회
             company_name, info = self._fetch_stock_info(ticker)
+            
+            # 개발 환경에서만 pprint 실행
+            if os.getenv('ENV') == 'development':
+                pprint.pprint(info)
             
             # 히스토리 데이터 조회
             hist, final_yahoo_symbol = self._fetch_historical_data(ticker, period, interval, yahoo_symbol)

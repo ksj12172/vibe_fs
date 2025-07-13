@@ -6,7 +6,7 @@ import CandlestickChart from "../../../components/CandlestickChart";
 
 export default function ChartPage() {
   const params = useParams();
-  const [companyInfo, setCompanyInfo] = useState(null);
+  const [stockInfo, setStockInfo] = useState(null);
   const [chartData, setChartData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -26,8 +26,8 @@ export default function ChartPage() {
           const stockData = await stockResponse.json();
           if (stockData.success) {
             setChartData(stockData.data.candles);
-            setCompanyInfo({
-              company_name: stockData.data.company_name,
+            setStockInfo({
+              symbol_name: stockData.data.symbol_name,
               stock_code: stockData.data.stock_code,
             });
             setError(null);
@@ -65,7 +65,7 @@ export default function ChartPage() {
       {/* 헤더 */}
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-800">
-          {companyInfo ? companyInfo.company_name : "알 수 없음"}
+          {stockInfo ? stockInfo.symbol_name : "알 수 없음"}
         </h1>
         <p className="text-lg text-gray-600">종목코드: {params.code}</p>
       </div>
@@ -80,7 +80,7 @@ export default function ChartPage() {
         ) : (
           <CandlestickChart
             data={chartData}
-            companyName={companyInfo ? companyInfo.company_name : "알 수 없음"}
+            symbolName={stockInfo ? stockInfo.symbol_name : "알 수 없음"}
           />
         )}
 

@@ -27,7 +27,7 @@ interface FinancialData {
 
 interface Company {
   id?: string;
-  company_name?: string;
+  symbol_name?: string;
   stock_code?: string;
 }
 

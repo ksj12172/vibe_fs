@@ -83,13 +83,13 @@ class StockDataService:
         """주식 정보 조회"""
         try:
             info = ticker.info
-            company_name = info.get('longName') or info.get('shortName') or info.get('symbol', '알 수 없음')
-            print(f"Company name: {company_name}")
+            symbol_name = info.get('longName') or info.get('shortName') or info.get('symbol', '알 수 없음')
+            print(f"Symbol name: {symbol_name}")
             print(f"Market: {info.get('market', 'Unknown')}")
             print(f"Currency: {info.get('currency', 'Unknown')}")
-            return company_name, info
+            return symbol_name, info
         except Exception as e:
-            print(f"Failed to get company info: {e}")
+            print(f"Failed to get symbol info: {e}")
             return '알 수 없음', {}
     
     def _fetch_historical_data(self, ticker, period, interval, yahoo_symbol):
@@ -172,7 +172,7 @@ class StockDataService:
             ticker = yf.Ticker(yahoo_symbol)
             
             # 주식 정보 조회
-            company_name, info = self._fetch_stock_info(ticker)
+            symbol_name, info = self._fetch_stock_info(ticker)
             
             # 개발 환경에서만 pprint 실행
             if os.getenv('ENV') == 'development':
@@ -193,7 +193,7 @@ class StockDataService:
                 'data': {
                     'symbol': final_yahoo_symbol,
                     'stock_code': stock_code,
-                    'company_name': company_name,
+                    'symbol_name': symbol_name,
                     'period': period,
                     'interval': interval,
                     'candles': candle_data,

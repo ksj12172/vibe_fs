@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 
-const CandlestickChart = ({ data, companyName }) => {
+const CandlestickChart = ({ data, symbolName }) => {
   const chartContainerRef = useRef();
   const chartRef = useRef();
   const candlestickSeriesRef = useRef();
@@ -125,13 +125,13 @@ const CandlestickChart = ({ data, companyName }) => {
         chartRef.current = null;
       }
     };
-  }, [data, companyName]);
+  }, [data, symbolName]);
 
   return (
     <div className="w-full relative">
       <div className="mb-4">
         <h3 className="text-lg font-semibold text-gray-800">
-          {companyName} 캔들스틱 차트
+          {symbolName} 캔들스틱 차트
         </h3>
       </div>
       <div

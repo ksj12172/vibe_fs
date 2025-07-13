@@ -35,7 +35,7 @@ def test_stock_service():
             )
             
             if result1['success']:
-                print(f"✅ 성공: {result1['data']['company_name']}")
+                print(f"✅ 성공: {result1['data']['symbol_name']}")
                 print(f"   데이터 포인트: {result1['data']['total_count']}")
                 print(f"   캐시 여부: {result1['data']['cache_info']['from_cache']}")
             else:
@@ -51,7 +51,7 @@ def test_stock_service():
             )
             
             if result2['success']:
-                print(f"✅ 성공: {result2['data']['company_name']}")
+                print(f"✅ 성공: {result2['data']['symbol_name']}")
                 print(f"   데이터 포인트: {result2['data']['total_count']}")
                 print(f"   캐시 여부: {result2['data']['cache_info']['from_cache']}")
             else:

@@ -16,6 +16,7 @@
     "download": "node scripts/download_corp_code.js",
     "setup-postgres": "node scripts/migrate-to-postgres.js",
     "seed": "node scripts/seed-with-prisma.js",
+    "manage-stock-descriptions": "python lib/stock_description_manager.py",
     "postinstall": "prisma generate --no-engine"
   },
   "dependencies": {

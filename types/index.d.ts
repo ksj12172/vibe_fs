@@ -68,6 +68,16 @@ declare global {
     server: string; // "Vercel Python Runtime", "Python Flask (Local Development)"
     yfinance_version: string; // "0.2.64"
     timestamp: string; // "2025-07-12T12:00:00.000Z"
+    stock_description: AdditionalStockInfo;
+  }
+
+  interface AdditionalStockInfo {
+    description?: string;
+    sector?: string;
+    industry?: string;
+    website?: string;
+    founded?: string;
+    headquarters?: string;
   }
 
   interface CandleData {

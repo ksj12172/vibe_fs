@@ -1,0 +1,46 @@
+{
+  "371160": {
+    "description": "<div>TIGER 차이나 항셍테크 ETF는 홍콩 증권거래소에 상장된 중국의 대표적인 혁신 기술 기업 30개에 투자하는 상장지수펀드입니다. \n이 ETF는 Hang Seng TECH 지수를 기초지수로 추종하며, 알리바바, 텐센트, 샤오미, 메이퇀 등 중국의 주요 빅테크 기업들을 포함하여 중국 기술 부문의 성장성에 투자할 수 있는 기회를 제공합니다.\n중국 주식 시장 구조에 대한 설명과, 중국 기술주 ETF에 대한 추가 설명이 필요하다면 아래 링크를 참조해주세요.<br/ ><a href=\"https://ksj12172.tistory.com/1531\" target=\"_blank\">tistory 블로그: 중국 주식 시장 구조 이해하기, 중국 기술주 ETF</a></div>",
+    "website": "https://www.tigeretf.com/ko/product/search/detail/index.do?ksdFund=KR7371160003",
+  },
+  "005930": {
+    "description": "삼성전자는 세계 최대의 반도체 및 스마트폰 제조업체로, 메모리 반도체, 시스템 반도체, 디스플레이, 모바일 기기 등을 생산합니다. 삼성 갤럭시 시리즈로 유명하며, AI, IoT, 자율주행 등 미래 기술 분야에서도 선도적 역할을 하고 있습니다.",
+    "sector": "전기전자",
+    "industry": "반도체",
+    "website": "https://www.samsung.com",
+    "founded": "1969",
+    "headquarters": "경기도 수원시"
+  },
+  "035720": {
+    "description": "카카오는 한국의 대표적인 인터넷 기업으로, 카카오톡, 카카오페이, 카카오맵 등 다양한 서비스를 제공합니다. 모바일 메신저를 기반으로 한 생태계를 구축했으며, AI, 게임, 콘텐츠, 금융 등 다양한 분야로 사업을 확장하고 있습니다.",
+    "sector": "서비스업",
+    "industry": "소프트웨어 개발 및 공급업",
+    "website": "https://www.kakaocorp.com",
+    "founded": "2010",
+    "headquarters": "제주특별자치도 제주시"
+  },
+  "000660": {
+    "description": "SK하이닉스는 세계 2위의 메모리 반도체 제조업체로, DRAM과 NAND 플래시 메모리를 주력 제품으로 생산합니다. AI, 5G, 자율주행 등 미래 기술의 핵심 부품을 공급하며, 지속적인 기술 혁신을 통해 시장을 선도하고 있습니다.",
+    "sector": "전기전자",
+    "industry": "반도체",
+    "website": "https://www.skhynix.com",
+    "founded": "1983",
+    "headquarters": "경기도 이천시"
+  },
+  "051910": {
+    "description": "LG화학은 세계적인 화학 기업으로, 배터리 소재, 석유화학, 첨단소재, 생명과학 등 다양한 사업을 영위합니다. 전기차 배터리 분야에서 글로벌 시장을 선도하며, 친환경 기술 개발에 주력하고 있습니다.",
+    "sector": "화학",
+    "industry": "기초화학물질 제조업",
+    "website": "https://www.lgchem.com",
+    "founded": "1947",
+    "headquarters": "서울특별시 영등포구"
+  },
+  "006400": {
+    "description": "삼성SDI는 리튬이온 배터리와 전자재료를 생산하는 기업으로, 전기차 배터리, 에너지저장장치(ESS), 소형 배터리 등을 제조합니다. 삼성그룹의 계열사로, 지속가능한 에너지 솔루션을 제공하며 미래 모빌리티 시장을 선도하고 있습니다.",
+    "sector": "전기전자",
+    "industry": "전지 및 축전지 제조업",
+    "website": "https://www.samsungsdi.com",
+    "founded": "1970",
+    "headquarters": "경기도 용인시"
+  }
+} 

@@ -7,6 +7,8 @@
 - **회사 검색**: 한국 상장기업 및 등록기업 검색
 - **재무제표 시각화**: 손익계산서, 재무상태표, 현금흐름표 차트 표시
 - **실시간 데이터**: Open DART API를 통한 최신 재무 데이터 조회
+- **주식 데이터 시각화**: Yahoo Finance를 통한 실시간 주식 차트
+- **기업 정보 제공**: 주식별 상세한 기업 설명 및 정보
 - **반응형 디자인**: 데스크톱과 모바일 모두 지원
 
 ## 🚀 설치 및 실행
@@ -251,6 +253,9 @@ yarn python-server
 
 # 주식 서비스 테스트
 python test_stock_service.py
+
+# 주식 description 관리
+yarn manage-stock-descriptions
 
 ## 🏗️ 아키텍처 개선사항
 

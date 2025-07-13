@@ -14,6 +14,25 @@ class StockDataService:
         self.cache_enabled = cache_enabled
         self.cache = {} if cache_enabled else None
         self.cache_timestamps = {} if cache_enabled else None
+        self.stock_descriptions = self._load_stock_descriptions()
+    
+    def _load_stock_descriptions(self):
+        """주식별 description 정보 로드"""
+        try:
+            descriptions_path = os.path.join(os.path.dirname(__file__), 'stock_descriptions.json')
+            if os.path.exists(descriptions_path):
+                with open(descriptions_path, 'r', encoding='utf-8') as f:
+                    return json.load(f)
+            else:
+                print("Warning: stock_descriptions.json 파일을 찾을 수 없습니다.")
+                return {}
+        except Exception as e:
+            print(f"Warning: description 파일 로드 중 오류: {e}")
+            return {}
+    
+    def _get_stock_description(self, stock_code):
+        """주식코드에 해당하는 description 정보 조회"""
+        return self.stock_descriptions.get(stock_code, {})
     
     def _generate_cache_key(self, stock_code, period, interval):
         """캐시 키 생성"""
@@ -187,6 +206,9 @@ class StockDataService:
             # 캔들 데이터 변환
             candle_data = self._convert_to_candle_data(hist)
             
+            # 주식 description 정보 조회
+            stock_description = self._get_stock_description(stock_code)
+            pprint.pprint(stock_description)
             # 응답 데이터 구성
             response_data = {
                 'success': True,
@@ -210,7 +232,8 @@ class StockDataService:
                     'cache_info': {
                         'from_cache': False,
                         'note': 'Vercel runtime does not support persistent caching' if server_name == 'Vercel Python Runtime' else 'Local cache available'
-                    }
+                    },
+                    'stock_description': stock_description
                 }
             }
             

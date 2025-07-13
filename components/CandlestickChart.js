@@ -133,7 +133,6 @@ const CandlestickChart = ({ data, companyName }) => {
         <h3 className="text-lg font-semibold text-gray-800">
           {companyName} 캔들스틱 차트
         </h3>
-        <p className="text-sm text-gray-500">TradingView Lightweight Charts</p>
       </div>
       <div
         ref={chartContainerRef}

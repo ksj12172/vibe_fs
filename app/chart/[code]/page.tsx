@@ -118,29 +118,6 @@ export default function ChartPage() {
         <p className="text-lg text-gray-600">종목코드: {params.code}</p>
       </div>
 
-      {/* 기간 선택 메뉴 */}
-      <div className="mb-6">
-        <div className="bg-white rounded-lg shadow-sm border p-4">
-          <h3 className="text-lg font-medium mb-3 text-gray-800">📊 차트 기간 선택</h3>
-          <div className="flex flex-wrap gap-2">
-            {PERIOD_OPTIONS.map((option) => (
-              <button
-                key={option.value}
-                onClick={() => handlePeriodChange(option.value)}
-                disabled={chartLoading}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-                  currentPeriod === option.value
-                    ? 'bg-blue-600 text-white shadow-md'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-sm'
-                } ${chartLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
-              >
-                {option.label}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
       {/* 종목 설명 */}
       {stockInfo && stockInfo.description && stockInfo.description.description && (
         <div className="mt-6 p-4 bg-gray-50 rounded-lg" style={{margin: '25px 0'}}>
@@ -189,6 +166,31 @@ export default function ChartPage() {
           )}
         </div>
       )}
+
+
+
+      {/* 기간 선택 메뉴 */}
+      <div className="mb-6">
+        <div className="bg-white rounded-lg shadow-sm border p-4" style={{margin: '25px 0'}}>
+          <h3 className="text-lg font-medium mb-3 text-gray-800">📊 차트 기간 선택</h3>
+          <div className="flex flex-wrap gap-2">
+            {PERIOD_OPTIONS.map((option) => (
+              <button
+                key={option.value}
+                onClick={() => handlePeriodChange(option.value)}
+                disabled={chartLoading}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                  currentPeriod === option.value
+                    ? 'bg-blue-600 text-white shadow-md'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-sm'
+                } ${chartLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
 
       {/* 차트 컨테이너 */}
       <div className="bg-white rounded-lg shadow-lg p-6">

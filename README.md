@@ -140,6 +140,36 @@ GET /api/financial-data?corp_code={회사코드}&bsns_year={사업연도}&reprt_
 - `11014`: 1분기보고서
 - `11011`: 3분기보고서
 
+### 주식 데이터 조회
+
+#### 로컬 개발 서버 (Flask)
+```
+GET http://localhost:5001/api/stock-data/{종목코드}?period=3mo&interval=1d&force_refresh=false
+```
+
+#### 프로덕션 서버 (Vercel)
+```
+GET /api/stock-data/{종목코드}?period=3mo&interval=1d&force_refresh=false
+```
+
+**파라미터:**
+- `period`: 기간 (1d, 5d, 1mo, 3mo, 6mo, 1y, 2y, 5y, 10y, ytd, max)
+- `interval`: 간격 (1m, 2m, 5m, 15m, 30m, 60m, 90m, 1h, 1d, 5d, 1wk, 1mo, 3mo)
+- `force_refresh`: 캐시 무시 여부 (true/false)
+
+**예시:**
+```
+GET /api/stock-data/005930?period=1mo&interval=1d
+GET /api/stock-data/035720?period=3mo&interval=1d&force_refresh=true
+```
+
+#### 캐시 관리 (로컬 서버만)
+```
+GET http://localhost:5001/cache/stats          # 캐시 통계
+POST http://localhost:5001/cache/clear         # 전체 캐시 삭제
+POST http://localhost:5001/cache/clear-expired # 만료된 캐시만 삭제
+```
+
 ## 🛠️ 기술 스택
 
 ### Frontend
@@ -156,24 +186,40 @@ GET /api/financial-data?corp_code={회사코드}&bsns_year={사업연도}&reprt_
 - **PostgreSQL**: 데이터베이스 (Vercel Postgres)
 - **@vercel/postgres**: PostgreSQL 클라이언트
 
+### 주식 데이터 API
+
+- **Python**: 주식 데이터 조회
+- **yfinance**: Yahoo Finance 데이터 라이브러리
+- **Flask**: 로컬 개발용 Python 서버
+- **Vercel Python Runtime**: 프로덕션 배포용 Serverless Function
+
 ### 외부 API
 
 - **Open DART API**: 금융감독원 전자공시시스템 API
+- **Yahoo Finance**: 실시간 주식 데이터
 
 ## 📁 프로젝트 구조
 
 ```
 vibe-fs/
 ├── app/                    # Next.js 앱 라우터
+├── api/                   # Vercel API Routes
+│   └── stock-data/        # 주식 데이터 API (Vercel Python Runtime)
+│       └── [code].py      # 동적 주식 데이터 엔드포인트
 ├── components/             # React 컴포넌트
-├── lib/                   # 유틸리티 및 데이터베이스
-│   └── postgres-database.js  # PostgreSQL 데이터베이스 매니저
+├── lib/                   # 공통 라이브러리
+│   ├── stock_service.py   # 주식 데이터 조회 공통 서비스
+│   ├── postgres-database.js  # PostgreSQL 데이터베이스 매니저
+│   └── __init__.py        # Python 패키지 초기화
+├── python-server/         # 로컬 개발용 Python 서버
+│   └── stock_api.py       # Flask 기반 주식 API 서버
 ├── public/                # 정적 파일
 ├── scripts/               # 스크립트 파일
 │   ├── download_corp_code.js    # 회사코드 다운로드
 │   └── migrate-to-postgres.js   # PostgreSQL 설정
 ├── downloads/             # 다운로드된 파일
 ├── server.js             # Express 서버
+├── test_stock_service.py # 주식 서비스 테스트 스크립트
 └── package.json          # 의존성 및 스크립트
 ```
 
@@ -199,7 +245,40 @@ yarn download
 
 # PostgreSQL 데이터베이스 설정
 yarn setup-postgres
-```
+
+# Python 주식 서버 시작
+yarn python-server
+
+# 주식 서비스 테스트
+python test_stock_service.py
+
+## 🏗️ 아키텍처 개선사항
+
+### 공통 모듈 구조
+
+프로젝트의 주식 데이터 조회 기능을 다음과 같이 개선했습니다:
+
+1. **공통 서비스 모듈** (`lib/stock_service.py`)
+   - Flask와 Vercel Function에서 공통으로 사용
+   - 캐시 기능 포함 (로컬에서는 활성화, Vercel에서는 비활성화)
+   - 재시도 로직 및 에러 처리 통합
+
+2. **로컬 개발 서버** (`python-server/stock_api.py`)
+   - Flask 기반 로컬 개발용
+   - 캐시 기능 활성화 (15분 TTL)
+   - 캐시 관리 엔드포인트 제공
+
+3. **프로덕션 서버** (`api/stock-data/[code].py`)
+   - Vercel Python Runtime 기반
+   - Serverless Function으로 배포
+   - 캐시 기능 비활성화 (Vercel 환경 특성상)
+
+### 장점
+
+- **코드 중복 제거**: 공통 로직을 한 곳에서 관리
+- **유지보수성 향상**: 기능 수정 시 한 곳만 변경하면 됨
+- **환경별 최적화**: 로컬과 프로덕션 환경에 맞는 설정
+- **테스트 용이성**: 공통 모듈을 독립적으로 테스트 가능
 
 ## 📋 데이터베이스 스키마
 

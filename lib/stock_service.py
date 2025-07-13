@@ -217,8 +217,12 @@ class StockDataService:
         
         for date, row in hist.iterrows():
             try:
+                # JavaScript의 date.getTime() / 1000과 동일한 Unix timestamp (초 단위)
+                # date: ex. Timestamp('2025-07-11 09:00:00+0900', tz='Asia/Seoul')
+                time_timestamp = int(date.timestamp())
+
                 candle_data.append({
-                    'time': date.strftime('%Y-%m-%d'),
+                    'time': time_timestamp,
                     'open': round(float(row['Open']), 2) if pd.notna(row['Open']) else 0,
                     'high': round(float(row['High']), 2) if pd.notna(row['High']) else 0,
                     'low': round(float(row['Low']), 2) if pd.notna(row['Low']) else 0,
@@ -268,7 +272,7 @@ class StockDataService:
             
             # 주식 description 정보 조회
             stock_description = self._get_stock_description(stock_code)
-            pprint.pprint(stock_description)
+
             # 응답 데이터 구성
             response_data = {
                 'success': True,

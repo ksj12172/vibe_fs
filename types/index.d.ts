@@ -86,7 +86,7 @@ declare global {
     high: number;
     low: number;
     close: number;
-    time: string; // 2025-07-12
+    time: string | number; // 2025-07-12, 1752192000 (timestamp)
     volume: number;
   }
 }

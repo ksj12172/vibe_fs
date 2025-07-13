@@ -20,8 +20,8 @@ export default function HomePage() {
   };
 
   const handleETFClick = (etfCode) => {
-    // ETF 차트 페이지로 이동
-    router.push(`/chart/${etfCode}`);
+    // ETF 차트 페이지로 이동 (기본 period: 3mo)
+    router.push(`/chart/${etfCode}?period=3mo`);
   };
 
   return (

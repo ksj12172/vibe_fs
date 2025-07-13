@@ -40,7 +40,7 @@ export default function Header() {
   const navigateToChart = () => {
     const stockCode = getStockCode();
     if (stockCode) {
-      router.push(`/chart/${stockCode}`);
+      router.push(`/chart/${stockCode}?period=3mo`);
       setIsMobileMenuOpen(false);
     }
   };

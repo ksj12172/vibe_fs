@@ -55,7 +55,7 @@ export default function CompanySearch({ onError }) {
   };
 
   const handleSearchTicker = async (stock_code) => {
-    router.push(`/chart/${stock_code}`);
+    router.push(`/chart/${stock_code}?period=3mo`);
   };
 
   const renderSearchResults = () => {

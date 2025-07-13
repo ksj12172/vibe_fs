@@ -6,6 +6,7 @@ import CandlestickChart from "../../../components/CandlestickChart";
 
 interface StockInfo {
   symbol_name: string;
+  display_name: string;
   stock_code: string;
 }
 
@@ -35,6 +36,7 @@ export default function ChartPage() {
             setChartData(stockData.data.candles);
             setStockInfo({
               symbol_name: stockData.data.symbol_name,
+              display_name: stockData.data.display_name,
               stock_code: stockData.data.stock_code,
             });
             setError(null);
@@ -87,7 +89,7 @@ export default function ChartPage() {
         ) : (
           <CandlestickChart
             data={chartData}
-            symbolName={stockInfo ? stockInfo.symbol_name : "알 수 없음"}
+            displayName={stockInfo ? stockInfo.display_name : "알 수 없음"}
           />
         )}
 

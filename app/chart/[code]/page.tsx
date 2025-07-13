@@ -4,12 +4,18 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import CandlestickChart from "../../../components/CandlestickChart";
 
+interface StockInfo {
+  symbol_name: string;
+  stock_code: string;
+}
+
+
 export default function ChartPage() {
   const params = useParams();
-  const [stockInfo, setStockInfo] = useState(null);
-  const [chartData, setChartData] = useState([]);
+  const [stockInfo, setStockInfo] = useState<StockInfo | null>(null);
+  const [chartData, setChartData] = useState<CandleData[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -23,7 +29,8 @@ export default function ChartPage() {
         const stockResponse = await fetch(apiUrl);
 
         if (stockResponse.ok) {
-          const stockData = await stockResponse.json();
+          const stockData: StockDataResponse = await stockResponse.json();
+
           if (stockData.success) {
             setChartData(stockData.data.candles);
             setStockInfo({
@@ -132,4 +139,4 @@ export default function ChartPage() {
       </div>
     </div>
   );
-}
+} 

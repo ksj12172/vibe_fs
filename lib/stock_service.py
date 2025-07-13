@@ -194,6 +194,7 @@ class StockDataService:
                     'symbol': final_yahoo_symbol,
                     'stock_code': stock_code,
                     'symbol_name': symbol_name,
+                    'display_name': info.get('shortName') or symbol_name,
                     'period': period,
                     'interval': interval,
                     'candles': candle_data,

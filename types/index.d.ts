@@ -41,6 +41,44 @@ declare global {
   }
 
   type ChartType = "bs" | "is";
+
+  interface StockDataResponse {
+    success: boolean;
+    data: StockData;
+  }
+
+  interface StockData {
+    cache_info: {
+      from_cache: boolean;
+      note: string;
+    };
+    market_info: {
+      currency: string;
+      market: string;
+      timezone: string;
+    };
+    candles: CandleData[];
+    symbol: string; // "371160.KS"
+    stock_code: string; // "371160"
+    symbol_name: string; // "Mirae Asset Management - Tiger China Hang Seng Tech ETF"
+    display_name: string; // "TIGER China Hang Seng TECH"
+    period: string; // "3mo"
+    interval: string; // "1d"
+    total_count: number; // 120
+    server: string; // "Vercel Python Runtime", "Python Flask (Local Development)"
+    yfinance_version: string; // "0.2.64"
+    timestamp: string; // "2025-07-12T12:00:00.000Z"
+  }
+
+  interface CandleData {
+    adj_close: number; // 7980.14
+    open: number;
+    high: number;
+    low: number;
+    close: number;
+    time: string; // 2025-07-12
+    volume: number;
+  }
 }
 
 // 이 파일을 모듈로 만들기 위한 빈 export

@@ -7,6 +7,7 @@ import FinancialOptions from "../../../components/FinancialOptions";
 import FinancialResults from "../../../components/FinancialResults";
 import LoadingSection from "../../../components/LoadingSection";
 import Image from "next/image";
+import { extractDominantColor } from "../../../lib/colorUtils";
 
 type StepType = "loading" | "ready" | "data-loading" | "results" | "error";
 
@@ -21,6 +22,27 @@ export default function CompanyPage() {
     useState<FinancialApiResponse | null>(null);
   const [currentStep, setCurrentStep] = useState<StepType>("loading");
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const [dominantColor, setDominantColor] = useState<string>("");
+
+  // 회사 정보가 로드되고 로고가 있을 때 색상 추출
+  useEffect(() => {
+    if (company?.logo) {
+      extractDominantColor(company.logo, {
+        colorFilter: {
+          excludeWhite: true,
+        },
+        useProxy: true,
+      })
+        .then((color) => {
+          if (color) {
+            setDominantColor(color);
+          }
+        })
+        .catch((error) => {
+          console.warn("색상 추출 중 오류:", error);
+        });
+    }
+  }, [company?.logo]);
 
   // 현재 날짜 기준으로 사용 가능한 연도 생성
   const availableYears = useMemo(() => {
@@ -255,7 +277,15 @@ export default function CompanyPage() {
                   alt={company.corp_name + " 로고"}
                 />
               )}
-              <h2 className="company-name">{company.corp_name}</h2>
+              <h2
+                className="company-name"
+                style={{
+                  color: dominantColor || "inherit",
+                  transition: "color 0.3s ease",
+                }}
+              >
+                {company.corp_name}
+              </h2>
             </div>
             <p className="company-code">
               회사코드: <strong>{company.corp_code}</strong>

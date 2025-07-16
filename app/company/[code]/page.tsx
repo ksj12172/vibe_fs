@@ -6,6 +6,7 @@ import ErrorSection from "../../../components/ErrorSection";
 import FinancialOptions from "../../../components/FinancialOptions";
 import FinancialResults from "../../../components/FinancialResults";
 import LoadingSection from "../../../components/LoadingSection";
+import Image from "next/image";
 
 type StepType = "loading" | "ready" | "data-loading" | "results" | "error";
 
@@ -232,7 +233,30 @@ export default function CompanyPage() {
       <div className="page-header">
         {company && (
           <div className="company-info">
-            <h2 className="company-name">{company.corp_name}</h2>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              {company.logo && (
+                <Image
+                  src={company.logo}
+                  width={40}
+                  height={40}
+                  style={{
+                    width: "40px",
+                    height: "40px",
+                    marginRight: "10px",
+                    borderRadius: "50%",
+                    objectFit: "cover",
+                  }}
+                  alt={company.corp_name + " 로고"}
+                />
+              )}
+              <h2 className="company-name">{company.corp_name}</h2>
+            </div>
             <p className="company-code">
               회사코드: <strong>{company.corp_code}</strong>
             </p>

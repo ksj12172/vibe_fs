@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
 import CandlestickChart from "../../../components/CandlestickChart";
+import Image from "next/image";
 
 interface StockInfo {
   symbol_name: string;
@@ -142,6 +143,7 @@ export default function ChartPage() {
             ? {
                 ...prev,
                 description: {
+                  logo: companyData.value.logo,
                   description: companyData.value.description,
                   website: companyData.value.website,
                   sector: companyData.value.sector,
@@ -205,9 +207,32 @@ export default function ChartPage() {
     <div className="container mx-auto px-4 py-8">
       {/* 헤더 */}
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-800">
-          {stockInfo ? stockInfo.symbol_name : "알 수 없음"}
-        </h1>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            marginBottom: "20px",
+          }}
+        >
+          {stockInfo?.description?.logo && (
+            <Image
+              src={stockInfo.description.logo}
+              alt="logo"
+              width={50}
+              height={50}
+              style={{
+                width: "50px",
+                height: "50px",
+                objectFit: "cover",
+                marginRight: "10px",
+                borderRadius: "50%",
+              }}
+            />
+          )}
+          <h1 className="text-3xl font-bold text-gray-800">
+            {stockInfo ? stockInfo.symbol_name : "알 수 없음"}
+          </h1>
+        </div>
         <p className="text-lg text-gray-600">종목코드: {params.code}</p>
       </div>
 

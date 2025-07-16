@@ -85,6 +85,7 @@ declare global {
     website?: string;
     founded?: string;
     headquarters?: string;
+    logo?: string;
   }
 
   interface CandleData {

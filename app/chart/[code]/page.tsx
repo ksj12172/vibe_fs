@@ -223,7 +223,7 @@ export default function ChartPage() {
               style={{
                 width: "50px",
                 height: "50px",
-                objectFit: "cover",
+                objectFit: "contain",
                 marginRight: "10px",
                 borderRadius: "50%",
               }}

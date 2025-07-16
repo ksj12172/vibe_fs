@@ -5,7 +5,6 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "server": "node server.js",
     "python-server": "NEXT_PUBLIC_PYTHON_API_PORT=5001 ./scripts/start-python-server.sh",
     "python-server:win": "set NEXT_PUBLIC_PYTHON_API_PORT=5001 && ./scripts/start-python-server.bat",
     "dev:all": "concurrently \"npm run dev\" \"npm run server\"",

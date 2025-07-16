@@ -145,27 +145,32 @@ GET /api/financial-data?corp_code={회사코드}&bsns_year={사업연도}&reprt_
 ### 주식 데이터 조회
 
 #### 로컬 개발 서버 (Flask)
+
 ```
 GET http://localhost:5001/api/stock-data/{종목코드}?period=3mo&interval=1d&force_refresh=false
 ```
 
 #### 프로덕션 서버 (Vercel)
+
 ```
 GET /api/stock-data/{종목코드}?period=3mo&interval=1d&force_refresh=false
 ```
 
 **파라미터:**
+
 - `period`: 기간 (1d, 5d, 1mo, 3mo, 6mo, 1y, 2y, 5y, 10y, ytd, max)
 - `interval`: 간격 (1m, 2m, 5m, 15m, 30m, 60m, 90m, 1h, 1d, 5d, 1wk, 1mo, 3mo)
 - `force_refresh`: 캐시 무시 여부 (true/false)
 
 **예시:**
+
 ```
 GET /api/stock-data/005930?period=1mo&interval=1d
 GET /api/stock-data/035720?period=3mo&interval=1d&force_refresh=true
 ```
 
 #### 캐시 관리 (로컬 서버만)
+
 ```
 GET http://localhost:5001/cache/stats          # 캐시 통계
 POST http://localhost:5001/cache/clear         # 전체 캐시 삭제
@@ -220,7 +225,6 @@ vibe-fs/
 │   ├── download_corp_code.js    # 회사코드 다운로드
 │   └── migrate-to-postgres.js   # PostgreSQL 설정
 ├── downloads/             # 다운로드된 파일
-├── server.js             # Express 서버
 ├── test_stock_service.py # 주식 서비스 테스트 스크립트
 └── package.json          # 의존성 및 스크립트
 ```
@@ -229,7 +233,7 @@ vibe-fs/
 
 ### 사용 가능한 스크립트
 
-```bash
+````bash
 # 개발 서버 시작
 yarn dev
 
@@ -298,7 +302,7 @@ CREATE TABLE companies (
   stock_code VARCHAR(6),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-```
+````
 
 ## 🔒 보안 고려사항
 

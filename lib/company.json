@@ -3,6 +3,105 @@
     "description": "<div>TIGER 차이나 항셍테크 ETF는 홍콩 증권거래소에 상장된 중국의 대표적인 혁신 기술 기업 30개에 투자하는 상장지수펀드입니다. <br />이 ETF는 Hang Seng TECH 지수를 기초지수로 추종하며, 알리바바, 텐센트, 샤오미, 메이퇀 등 중국의 주요 빅테크 기업들을 포함하여 중국 기술 부문의 성장성에 투자할 수 있는 기회를 제공합니다. <br/>중국 주식 시장 구조에 대한 설명과, 중국 기술주 ETF에 대한 추가 설명이 필요하다면 아래 링크를 참조해주세요.<br/ ><a href=\"https://ksj12172.tistory.com/1531\" target=\"_blank\">tistory 블로그: 중국 주식 시장 구조 이해하기, 중국 기술주 ETF</a></div>",
     "website": "https://www.tigeretf.com/ko/product/search/detail/index.do?ksdFund=KR7371160003"
   },
+  "035420": {
+    "description": "네이버는 대한민국의 최대 검색 포털이자 종합 인터넷 서비스 기업입니다. 검색, 뉴스, 쇼핑, 지도 등 다양한 서비스를 제공하며, 라인(LINE), 웹툰, 클라우드, AI(HyperCLOVA) 등 글로벌 사업을 확장하고 있습니다.",
+    "sector": "서비스업",
+    "industry": "인터넷 포털",
+    "website": "https://www.navercorp.com",
+    "founded": "1999",
+    "headquarters": "경기도 성남시",
+    "logo": "https://media.brand.dev/58ba60ed-1b30-4ed9-844f-8ac1cb827eb4.png"
+  },
+  "005380": {
+    "description": "현대자동차는 대한민국의 대표적인 자동차 제조사로, 전 세계적으로 승용차, SUV, 상용차 등을 생산 및 판매합니다. 전기차 브랜드 '아이오닉'과 고성능 브랜드 'N'을 통해 미래 모빌리티 시장을 선도하고 있습니다.",
+    "sector": "제조업",
+    "industry": "자동차",
+    "website": "https://www.hyundai.com",
+    "founded": "1967",
+    "headquarters": "서울특별시 서초구",
+    "logo": "https://media.brand.dev/e3e3b3fe-9426-4537-8e6f-124b815e9851.png"
+  },
+  "000270": {
+    "description": "기아는 현대자동차그룹의 일원으로, 혁신적인 디자인과 품질을 바탕으로 글로벌 자동차 시장에서 빠르게 성장하고 있습니다. 전기차 EV 시리즈와 RV 차량에 강점을 가지고 있으며, 전동화 및 모빌리티 솔루션 기업으로 전환을 가속화하고 있습니다.",
+    "sector": "제조업",
+    "industry": "자동차",
+    "website": "https://www.kia.com",
+    "founded": "1944",
+    "headquarters": "서울특별시 서초구",
+    "logo": "https://media.brand.dev/8c186ba9-503b-452e-872f-a112460637b1.png"
+  },
+  "005490": {
+    "description": "POSCO홀딩스는 대한민국 최대의 철강회사인 포스코를 중심으로 하는 지주회사입니다. 철강 사업 외에도 이차전지소재, 리튬, 니켈, 에너지, 건설, 무역 등 다양한 분야로 사업을 다각화하며 친환경 미래소재 대표기업으로 나아가고 있습니다.",
+    "sector": "철강금속",
+    "industry": "철강",
+    "website": "https://www.posco-inc.com",
+    "founded": "1968",
+    "headquarters": "경상북도 포항시",
+    "logo": "https://dhdvmaysdegn10vc.public.blob.vercel-storage.com/POSCO.png"
+  },
+  "105560": {
+    "description": "KB금융그룹은 대한민국을 대표하는 종합금융그룹 중 하나입니다. KB국민은행을 중심으로 증권, 손해보험, 카드, 생명보험 등 다양한 금융 계열사를 통해 은행, 투자, 보험 서비스를 포괄적으로 제공합니다.",
+    "sector": "금융업",
+    "industry": "금융지주",
+    "website": "https://www.kbfg.com",
+    "founded": "2008",
+    "headquarters": "서울특별시 영등포구",
+    "logo": "https://dhdvmaysdegn10vc.public.blob.vercel-storage.com/KB_SymbolMark.png"
+  },
+  "055550": {
+    "description": "신한금융그룹은 신한은행을 주축으로 하는 대한민국 최초의 민간 금융지주회사입니다. 은행, 카드, 금융투자, 생명보험 등 폭넓은 금융 네트워크를 바탕으로 '따뜻한 금융'을 표방하며 디지털 혁신을 주도하고 있습니다.",
+    "sector": "금융업",
+    "industry": "금융지주",
+    "website": "https://www.shinhangroup.com",
+    "founded": "2001",
+    "headquarters": "서울특별시 중구",
+    "logo": "https://shinhanfp.kr/wp-content/uploads/2023/05/ci-symbol.png"
+  },
+  "068270": {
+    "description": "셀트리온은 대한민국의 대표적인 바이오시밀러 및 신약 개발 기업입니다. 항체 바이오시밀러 분야에서 세계적인 경쟁력을 갖추고 있으며, 램시마, 트룩시마, 허쥬마 등의 제품을 통해 글로벌 시장을 공략하고 있습니다.",
+    "sector": "의약품",
+    "industry": "바이오",
+    "website": "https://www.celltrion.com",
+    "founded": "2002",
+    "headquarters": "인천광역시 연수구",
+    "logo": "https://media.brand.dev/1967a87b-3200-442f-ab60-bc7a9ad16388.png"
+  },
+  "028260": {
+    "description": "삼성물산은 삼성그룹의 모기업 중 하나로, 상사, 건설, 패션, 리조트 등 4개 부문의 사업을 영위하는 글로벌 기업입니다. 특히 초고층 빌딩 건설에 강점을 가지며, 패션 브랜드와 에버랜드 리조트 운영으로도 잘 알려져 있습니다.",
+    "sector": "서비스업",
+    "industry": "종합상사",
+    "website": "https://www.samsungcnt.com",
+    "founded": "1938",
+    "headquarters": "서울특별시 강동구",
+    "logo": "https://media.brand.dev/f9c40b4b-3803-4465-b656-e042ed730c6e.png"
+  },
+  "066570": {
+    "description": "LG전자는 가전제품, TV, 모바일 기기 등을 생산하는 글로벌 전자기업입니다. 생활가전(H&A)과 TV(HE) 사업에서 세계적인 경쟁력을 갖추고 있으며, 최근에는 전장(VS) 사업을 미래 성장 동력으로 집중 육성하고 있습니다.",
+    "sector": "전기전자",
+    "industry": "가전",
+    "website": "https://www.lge.co.kr",
+    "founded": "1958",
+    "headquarters": "서울특별시 영등포구",
+    "logo": "https://www.lg.co.kr/images/common/img_ci_logo_mo.jpg"
+  },
+  "017670": {
+    "description": "SK텔레콤은 대한민국의 1위 이동통신 사업자로, 무선통신, 유선통신, 미디어, 커머스 등 다양한 ICT 사업을 운영합니다. 5G 기술을 선도하며, AI, 메타버스(이프랜드), 클라우드 등 신사업 분야로 확장을 가속화하고 있습니다.",
+    "sector": "서비스업",
+    "industry": "통신",
+    "website": "https://www.sktelecom.com",
+    "founded": "1984",
+    "headquarters": "서울특별시 중구",
+    "logo": "https://media.brand.dev/99147bcf-3d65-43a4-a8c0-6a39dc8cc5d0.jpg"
+  },
+  "030200": {
+    "description": "KT는 대한민국의 주요 유무선 통신 서비스 제공업체입니다. 초고속인터넷, IPTV(지니 TV), 이동통신 등 핵심 통신 사업을 기반으로, AI, 클라우드, 미디어 콘텐츠 분야로 사업을 확장하며 디지털 플랫폼 기업으로 변모하고 있습니다.",
+    "sector": "서비스업",
+    "industry": "통신",
+    "website": "https://www.kt.com",
+    "founded": "1981",
+    "headquarters": "경기도 성남시",
+    "logo": "https://dhdvmaysdegn10vc.public.blob.vercel-storage.com/01_KT%20Wordmark%20%28Standard%29_01.png"
+  },
   "005930": {
     "description": "삼성전자는 세계 최대의 반도체 및 스마트폰 제조업체로, 메모리 반도체, 시스템 반도체, 디스플레이, 모바일 기기 등을 생산합니다. 삼성 갤럭시 시리즈로 유명하며, AI, IoT, 자율주행 등 미래 기술 분야에서도 선도적 역할을 하고 있습니다.",
     "sector": "전기전자",
@@ -18,7 +117,8 @@
     "industry": "소프트웨어 개발 및 공급업",
     "website": "https://www.kakaocorp.com",
     "founded": "2010",
-    "headquarters": "제주특별자치도 제주시"
+    "headquarters": "제주특별자치도 제주시",
+    "logo": "https://media.brand.dev/8baf3e91-733d-40ec-a340-1192a1342b89.jpg"
   },
   "000660": {
     "description": "SK하이닉스는 세계 2위의 메모리 반도체 제조업체로, DRAM과 NAND 플래시 메모리를 주력 제품으로 생산합니다. AI, 5G, 자율주행 등 미래 기술의 핵심 부품을 공급하며, 지속적인 기술 혁신을 통해 시장을 선도하고 있습니다.",
@@ -26,7 +126,8 @@
     "industry": "반도체",
     "website": "https://www.skhynix.com",
     "founded": "1983",
-    "headquarters": "경기도 이천시"
+    "headquarters": "경기도 이천시",
+    "logo": "https://dhdvmaysdegn10vc.public.blob.vercel-storage.com/SK%E1%84%92%E1%85%A1%E1%84%8B%E1%85%B5%E1%84%82%E1%85%B5%E1%86%A8%E1%84%89%E1%85%B3-%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%86%E1%85%AE%E1%86%AB-CI_1_%E1%84%92%E1%85%AC%E1%84%89%E1%85%A1_%E1%84%89%E1%85%A1%E1%84%8C%E1%85%B5%E1%86%AB_2020.jpg"
   },
   "051910": {
     "description": "LG화학은 세계적인 화학 기업으로, 배터리 소재, 석유화학, 첨단소재, 생명과학 등 다양한 사업을 영위합니다. 전기차 배터리 분야에서 글로벌 시장을 선도하며, 친환경 기술 개발에 주력하고 있습니다.",

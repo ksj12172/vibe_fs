@@ -110,7 +110,7 @@ export default function CompanySearch({ onError }) {
                         height: "30px",
                         marginRight: "8px",
                         borderRadius: "50%",
-                        objectFit: "cover",
+                        objectFit: "contain",
                       }}
                     />
                   )}

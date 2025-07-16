@@ -250,7 +250,7 @@ export default function CompanyPage() {
                     height: "40px",
                     marginRight: "10px",
                     borderRadius: "50%",
-                    objectFit: "cover",
+                    objectFit: "contain",
                   }}
                   alt={company.corp_name + " 로고"}
                 />

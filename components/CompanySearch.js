@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function CompanySearch({ onError }) {
   const router = useRouter();
@@ -91,7 +92,30 @@ export default function CompanySearch({ onError }) {
               }}
             >
               <div className="company-header">
-                <h4>{company.corp_name}</h4>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  {company.logo && (
+                    <Image
+                      src={company.logo}
+                      alt={company.corp_name + " 로고"}
+                      width={40}
+                      height={40}
+                      style={{
+                        width: "30px",
+                        height: "30px",
+                        marginRight: "8px",
+                        borderRadius: "50%",
+                        objectFit: "cover",
+                      }}
+                    />
+                  )}
+                  <h4>{company.corp_name}</h4>
+                </div>
                 <div className="company-tags">
                   {isListed ? (
                     <span className="company-tag listed">📈 상장</span>

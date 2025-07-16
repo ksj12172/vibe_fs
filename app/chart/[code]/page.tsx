@@ -267,13 +267,13 @@ export default function ChartPage() {
             <div className="mt-3 grid grid-cols-2 gap-4 text-sm text-gray-600">
               {stockInfo.description.sector && (
                 <div>
-                  <strong className="font-medium">섹터:</strong>{" "}
+                  <span className="font-medium">섹터:</span>{" "}
                   {stockInfo.description.sector}
                 </div>
               )}
               {stockInfo.description.industry && (
                 <div>
-                  <strong className="font-medium">산업:</strong>{" "}
+                  <span className="font-medium">산업:</span>{" "}
                   {stockInfo.description.industry}
                 </div>
               )}

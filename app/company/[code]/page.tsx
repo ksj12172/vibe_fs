@@ -30,6 +30,7 @@ export default function CompanyPage() {
       extractDominantColor(company.logo, {
         colorFilter: {
           excludeWhite: true,
+          excludeBlack: true,
         },
         useProxy: true,
       })

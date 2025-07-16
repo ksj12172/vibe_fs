@@ -184,7 +184,11 @@ export const kMeansColorExtraction = (
     // 클러스터 초기화
     clusters.forEach((cluster) => (cluster.points = []));
 
-    // 각 픽셀을 가장 가까운 클러스터에 할당
+    /**
+     * 모든 픽셀에 대해, K개의 중심점(Centroid) 색상 중 어떤 색상과 가장 가까운지 계산한다
+     * 거리 계산은 3차원 공간의 두 점 사이 거리를 구하는 유클리드 거리(Euclidean Distance) 공식을 사용합니다. sqrt((r1-r2)² + (g1-g2)² + (b1-b2)²)
+     * 각 픽셀은 가장 가깝다고 판단된 클러스터에 소속된다.
+     */
     pixels.forEach((pixel) => {
       let minDistance = Infinity;
       let closestCluster = 0;
@@ -205,7 +209,10 @@ export const kMeansColorExtraction = (
       clusters[closestCluster].points.push(pixel);
     });
 
-    // 새로운 중심점 계산
+    /**
+     * 새로운 중심점 계산
+     * 클러스터에 모인 모든 픽셀들의 평균 R, G, B 값을 계산하여 새로운 중심점(Centroid)으로 업데이트
+     */
     clusters.forEach((cluster) => {
       if (cluster.points.length > 0) {
         const avgR =
@@ -230,6 +237,9 @@ export const kMeansColorExtraction = (
   // 클러스터를 포인트 수로 정렬 (가장 많은 픽셀을 가진 색상이 대표색)
   clusters.sort((a, b) => b.points.length - a.points.length);
 
+  /**
+   * 정렬된 클러스터들의 최종 중심점(대표 색상) 목록을 반환
+   */
   return clusters.map((cluster) => cluster.centroid);
 };
 
@@ -381,6 +391,9 @@ const processImage = (
   ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
   try {
+    /**
+     * 픽셀 데이터 추출: ctx.getImageData()를 통해 캔버스에 그려진 이미지의 모든 픽셀 정보를 ImageData 객체로 가져온다
+     */
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const dominantColors = kMeansColorExtraction(imageData, k, maxIterations);
     resolve(dominantColors);

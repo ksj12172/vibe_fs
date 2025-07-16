@@ -29,7 +29,22 @@ export default function CompanySearch({ onError }) {
         throw new Error(data.error || "검색 중 오류가 발생했습니다.");
       }
 
-      setSearchResults(data.results || []);
+      // logo > stock_code가 있는 회사 순으로 정렬
+      const sortedResults = (data.results || []).sort((a, b) => {
+        const aHasLogo = a.logo && a.logo.trim() !== "";
+        const bHasLogo = b.logo && b.logo.trim() !== "";
+
+        if (aHasLogo || bHasLogo) {
+          return bHasLogo - aHasLogo;
+        }
+
+        const aHasStock = a.stock_code && a.stock_code.trim() !== "";
+        const bHasStock = b.stock_code && b.stock_code.trim() !== "";
+
+        return bHasStock - aHasStock; // stock_code가 있는 회사들을 앞에 정렬
+      });
+
+      setSearchResults(sortedResults);
     } catch (error) {
       console.error("검색 오류:", error);
       onError(error.message);

@@ -20,11 +20,11 @@ class StockDataService:
         """주식별 description 정보 로드"""
         # 여러 가능한 경로를 시도
         possible_paths = [
-            os.path.join(os.path.dirname(__file__), 'stock_descriptions.json'),
-            os.path.join(os.getcwd(), 'lib', 'stock_descriptions.json'),
-            os.path.join(os.getcwd(), 'stock_descriptions.json'),
-            '/var/task/lib/stock_descriptions.json',  # Vercel 환경
-            '/var/runtime/lib/stock_descriptions.json',  # Vercel 환경
+            os.path.join(os.path.dirname(__file__), 'company.json'),
+            os.path.join(os.getcwd(), 'lib', 'company.json'),
+            os.path.join(os.getcwd(), 'company.json'),
+            '/var/task/lib/company.json',  # Vercel 환경
+            '/var/runtime/lib/company.json',  # Vercel 환경
         ]
         
         for descriptions_path in possible_paths:
@@ -39,7 +39,7 @@ class StockDataService:
                 print(f"Failed to load from {descriptions_path}: {e}")
                 continue
         
-        print("Warning: stock_descriptions.json 파일을 찾을 수 없습니다. 모든 경로를 시도했습니다.")
+        print("Warning: company.json 파일을 찾을 수 없습니다. 모든 경로를 시도했습니다.")
         print("Using fallback stock descriptions data...")
         
         # Fallback: JSON 파일을 찾지 못한 경우 기본 데이터 사용

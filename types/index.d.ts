@@ -33,6 +33,13 @@ declare global {
     corp_name?: string;
     corp_code?: string;
     stock_code?: string;
+    logo?: string;
+    description?: string;
+    website?: string;
+    sector?: string;
+    industry?: string;
+    founded?: string;
+    headquarters?: string;
   }
 
   interface ReportOption {

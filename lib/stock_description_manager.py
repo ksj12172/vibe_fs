@@ -7,7 +7,7 @@ class StockDescriptionManager:
     
     def __init__(self, file_path: str = None):
         if file_path is None:
-            file_path = os.path.join(os.path.dirname(__file__), 'stock_descriptions.json')
+            file_path = os.path.join(os.path.dirname(__file__), 'company.json')
         self.file_path = file_path
         self.descriptions = self._load_descriptions()
     

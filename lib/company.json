@@ -9,7 +9,8 @@
     "industry": "반도체",
     "website": "https://www.samsung.com",
     "founded": "1969",
-    "headquarters": "경기도 수원시"
+    "headquarters": "경기도 수원시",
+    "logo": "https://media.brand.dev/18da56dd-8ace-4833-aac2-0a32bb97dcc4.png"
   },
   "035720": {
     "description": "카카오는 한국의 대표적인 인터넷 기업으로, 카카오톡, 카카오페이, 카카오맵 등 다양한 서비스를 제공합니다. 모바일 메신저를 기반으로 한 생태계를 구축했으며, AI, 게임, 콘텐츠, 금융 등 다양한 분야로 사업을 확장하고 있습니다.",
@@ -43,4 +44,4 @@
     "founded": "1970",
     "headquarters": "경기도 용인시"
   }
-} 
+}

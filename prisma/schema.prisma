@@ -19,6 +19,13 @@ model Company {
   corpName     String   @map("corp_name") @db.VarChar(255)
   corpEngName  String?  @map("corp_eng_name") @db.VarChar(255)
   stockCode    String?  @map("stock_code") @db.VarChar(6)
+  description  String?  @map("description") @db.Text
+  website      String?  @map("website") @db.VarChar(255)
+  sector       String?  @map("sector") @db.VarChar(100)
+  industry     String?  @map("industry") @db.VarChar(100)
+  founded      String?  @map("founded") @db.VarChar(20)
+  headquarters String?  @map("headquarters") @db.VarChar(255)
+  logo         String?  @map("logo") @db.VarChar(500)
   createdAt    DateTime @default(now()) @map("created_at")
 
   @@index([corpName], name: "idx_corp_name")

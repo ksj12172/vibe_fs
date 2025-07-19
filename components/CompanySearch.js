@@ -59,7 +59,7 @@ export default function CompanySearch({ onError }) {
     }
   };
 
-  const handleSearchCompany = (company) => {
+  const goToFinancialStatementAnalysis = (company) => {
     const isListed = company.stock_code && company.stock_code.trim() !== "";
 
     if (!isListed) {
@@ -166,7 +166,7 @@ export default function CompanySearch({ onError }) {
                         color: "#007bff",
                         cursor: "pointer",
                       }}
-                      onClick={() => handleSearchCompany(company)}
+                      onClick={() => goToFinancialStatementAnalysis(company)}
                     >
                       📃 재무제표 보기
                     </button>

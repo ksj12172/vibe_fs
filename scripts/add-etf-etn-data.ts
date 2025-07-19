@@ -1,113 +1,44 @@
-import { getPrismaClient } from "../lib/prisma";
+const { PrismaClient } = require("@prisma/client");
 
 async function addETFData() {
-  const prisma = getPrismaClient();
+  const prisma = new PrismaClient();
 
   try {
     console.log("📊 ETF 데이터 추가 중...");
 
     const etfData = [
-      // KODEX ETF
       {
-        symbol: "069500",
-        name: "KODEX 200",
-        nameKor: "KODEX 200",
-        nameEng: "KODEX KOSPI 200",
+        symbol: "381170",
+        name: "TIGER 미국테크TOP10 INDXX",
+        nameKor: "TIGER 미국테크TOP10 INDXX",
+        nameEng: "Mirae Asset Maps Management - Tiger US Tech Top 10 Index ETF",
         type: "ETF",
         market: "KR",
         exchange: "KOSPI",
         sector: "ETF",
         industry: "Index ETF",
-        description: "KOSPI 200 지수를 추종하는 ETF",
+        description:
+          "미국 나스닥 상장 거대 멀티플랫폼 상위 10종목에 투자합니다.",
         currency: "KRW",
         isActive: true,
+        website:
+          "https://www.tigeretf.com/ko/product/search/detail/index.do?ksdFund=KR7381170000",
       },
-      // TIGER ETF
       {
-        symbol: "102110",
-        name: "TIGER 200",
-        nameKor: "TIGER 200",
-        nameEng: "TIGER KOSPI 200",
+        symbol: "497570",
+        name: "TIGER 미국필라델피아AI반도체나스닥",
+        nameKor: "TIGER 미국필라델피아AI반도체나스닥",
+        nameEng: "Mirae Asset Tiger Phlx Us Ai Semiconductor Etf",
         type: "ETF",
         market: "KR",
         exchange: "KOSPI",
         sector: "ETF",
         industry: "Index ETF",
-        description: "KOSPI 200 지수를 추종하는 ETF",
+        description: "AI반도체 시대의 승자",
         currency: "KRW",
         isActive: true,
-      },
-      {
-        symbol: "371160",
-        name: "TIGER 차이나항셍테크",
-        nameKor: "TIGER 차이나항셍테크",
-        nameEng: "TIGER China Hang Seng TECH",
-        type: "ETF",
-        market: "KR",
-        exchange: "KOSPI",
-        sector: "ETF",
-        industry: "China Tech ETF",
-        description: "항셍 테크놀로지 지수를 추종하는 ETF",
-        currency: "KRW",
-        isActive: true,
-      },
-      {
-        symbol: "133690",
-        name: "TIGER 미국나스닥100",
-        nameKor: "TIGER 미국나스닥100",
-        nameEng: "TIGER NASDAQ 100",
-        type: "ETF",
-        market: "KR",
-        exchange: "KOSPI",
-        sector: "ETF",
-        industry: "US Tech ETF",
-        description: "나스닥 100 지수를 추종하는 ETF",
-        currency: "KRW",
-        isActive: true,
-      },
-      {
-        symbol: "360750",
-        name: "TIGER 미국S&P500",
-        nameKor: "TIGER 미국S&P500",
-        nameEng: "TIGER S&P 500",
-        type: "ETF",
-        market: "KR",
-        exchange: "KOSPI",
-        sector: "ETF",
-        industry: "US Index ETF",
-        description: "S&P 500 지수를 추종하는 ETF",
-        currency: "KRW",
-        isActive: true,
-      },
-      // KBSTAR ETF
-      {
-        symbol: "148020",
-        name: "KBSTAR 200",
-        nameKor: "KBSTAR 200",
-        nameEng: "KBSTAR KOSPI 200",
-        type: "ETF",
-        market: "KR",
-        exchange: "KOSPI",
-        sector: "ETF",
-        industry: "Index ETF",
-        description: "KOSPI 200 지수를 추종하는 ETF",
-        currency: "KRW",
-        isActive: true,
-      },
-      // ARIRANG ETF
-      {
-        symbol: "152100",
-        name: "ARIRANG 200",
-        nameKor: "ARIRANG 200",
-        nameEng: "ARIRANG KOSPI 200",
-        type: "ETF",
-        market: "KR",
-        exchange: "KOSPI",
-        sector: "ETF",
-        industry: "Index ETF",
-        description: "KOSPI 200 지수를 추종하는 ETF",
-        currency: "KRW",
-        isActive: true,
+        website:
+          "https://www.tigeretf.com/ko/product/search/detail/index.do?ksdFund=KR7497570002",
       },
     ];
 
@@ -124,7 +55,7 @@ async function addETFData() {
 }
 
 async function addETNData() {
-  const prisma = getPrismaClient();
+  const prisma = new PrismaClient();
 
   try {
     console.log("📈 ETN 데이터 추가 중...");
@@ -187,7 +118,7 @@ async function addETNData() {
 }
 
 async function addPreferredStockData() {
-  const prisma = getPrismaClient();
+  const prisma = new PrismaClient();
 
   try {
     console.log("💎 우선주 데이터 추가 중...");
@@ -251,12 +182,12 @@ async function addPreferredStockData() {
 
 // 스크립트 실행
 async function main() {
-  const prisma = getPrismaClient();
+  const prisma = new PrismaClient();
 
   try {
     await addETFData();
-    await addETNData();
-    await addPreferredStockData();
+    // await addETNData();
+    // await addPreferredStockData();
 
     // 통계 확인
     const totalCount = await prisma.stock.count();

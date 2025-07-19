@@ -30,14 +30,6 @@ export default function HomePage() {
   return (
     <div className="container">
       <main>
-        {/* 주식 검색 */}
-        <StockSearch onError={handleError} />
-
-        {/* 오류 메시지 */}
-        {errorMessage && (
-          <ErrorSection message={errorMessage} onReset={resetError} />
-        )}
-
         {/* ETF 차트 바로가기 */}
         <section
           className="etf-quick-access"
@@ -91,6 +83,14 @@ export default function HomePage() {
             ))}
           </div>
         </section>
+
+        {/* 주식 검색 */}
+        <StockSearch onError={handleError} />
+
+        {/* 오류 메시지 */}
+        {errorMessage && (
+          <ErrorSection message={errorMessage} onReset={resetError} />
+        )}
       </main>
     </div>
   );

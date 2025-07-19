@@ -68,6 +68,20 @@ export default function StockSearch({ onError }) {
     return <span className="company-tag listed">📈 {market}</span>;
   };
 
+  const getTypeBadge = (type) => {
+    switch (type) {
+      case "ETF":
+        return <span className="fs-preview-tag consolidated">📊 ETF</span>;
+      case "ETN":
+        return <span className="fs-preview-tag consolidated">📈 ETN</span>;
+      case "PREFERRED":
+        return <span className="fs-preview-tag individual">💎 우선주</span>;
+      case "STOCK":
+      default:
+        return <span className="fs-preview-tag individual">📃 일반주</span>;
+    }
+  };
+
   const getDisplayName = (stock) => {
     if (stock.market === "KR") {
       return stock.name || stock.nameKor;
@@ -84,6 +98,14 @@ export default function StockSearch({ onError }) {
       return stock.name;
     }
     return null;
+  };
+
+  // 재무제표 버튼 표시 조건: ETF/ETN이 아니고 한국 주식인 경우
+  const shouldShowFinancialStatement = (stock) => {
+    return (
+      stock.market === "KR" &&
+      (stock.type === "STOCK" || stock.type === "PREFERRED")
+    );
   };
 
   const renderSearchResults = () => {
@@ -146,6 +168,7 @@ export default function StockSearch({ onError }) {
                 </div>
                 <div className="company-tags">
                   {getMarketBadge(stock.market, stock.exchange)}
+                  {getTypeBadge(stock.type)}
                   {stock.currency && (
                     <span className="fs-preview-tag individual">
                       {stock.currency}
@@ -160,18 +183,20 @@ export default function StockSearch({ onError }) {
                 </p>
                 {stock.industry && <p>업종: {stock.industry}</p>}
                 <div className="company-tags">
-                  <button
-                    className="fs-preview-tag consolidated"
-                    style={{
-                      marginTop: "8px",
-                      fontSize: "12px",
-                      color: "#007bff",
-                      cursor: "pointer",
-                    }}
-                    onClick={() => goToFinancialStatementAnalysis(stock)}
-                  >
-                    📃 재무제표 보기
-                  </button>
+                  {shouldShowFinancialStatement(stock) && (
+                    <button
+                      className="fs-preview-tag consolidated"
+                      style={{
+                        marginTop: "8px",
+                        fontSize: "12px",
+                        color: "#007bff",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => goToFinancialStatementAnalysis(stock)}
+                    >
+                      📃 재무제표 보기
+                    </button>
+                  )}
                   <button
                     className="fs-preview-tag consolidated"
                     style={{
@@ -197,7 +222,7 @@ export default function StockSearch({ onError }) {
     <section className="search-section">
       <h2 style={{ marginBottom: "1rem" }}>🔍 주식 검색</h2>
       <div className="guide" style={{ marginBottom: "1rem" }}>
-        재무제표, 주가를 확인하고 싶은 주식을 검색해보세요
+        주식, ETF, ETN, 우선주를 검색해보세요
       </div>
 
       {/* 마켓 필터 */}
@@ -225,7 +250,7 @@ export default function StockSearch({ onError }) {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyPress={handleKeyPress}
-          placeholder="주식명을 입력하세요 (예: 삼성전자, Apple, Tiger 코스피200)"
+          placeholder="종목명을 입력하세요 (예: 삼성전자, TIGER 200, 애플)"
           disabled={isSearching}
         />
         <button onClick={searchStocks} disabled={isSearching}>

@@ -56,6 +56,7 @@ export async function GET(request) {
         name: true,
         nameKor: true,
         nameEng: true,
+        type: true,
         market: true,
         exchange: true,
         sector: true,

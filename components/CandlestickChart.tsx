@@ -1,14 +1,20 @@
 "use client";
 
+import { IChartApi, ISeriesApi } from "lightweight-charts";
 import { useEffect, useRef } from "react";
 
-const CandlestickChart = ({ data, displayName }) => {
-  const chartContainerRef = useRef();
-  const chartRef = useRef();
-  const candlestickSeriesRef = useRef();
+export default function CandlestickChart({
+  data,
+  displayName,
+}: {
+  data: CandleData[];
+  displayName: string;
+}) {
+  const chartContainerRef = useRef<HTMLDivElement>(null);
+  const chartRef = useRef<IChartApi | null>(null);
+  const candlestickSeriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
 
   useEffect(() => {
-    let chartInstance = null;
     const initChart = async () => {
       try {
         if (!chartContainerRef.current) {
@@ -49,7 +55,6 @@ const CandlestickChart = ({ data, displayName }) => {
           },
         });
         chartRef.current = chart;
-        chartInstance = chart;
 
         // 빨강(양봉)/파랑(음봉) 색상으로 candlestickSeries 생성
         const candlestickSeries = chart.addSeries(CandlestickSeries, {
@@ -67,11 +72,21 @@ const CandlestickChart = ({ data, displayName }) => {
         if (data && data.length > 0) {
           try {
             const chartData = data.map((item) => ({
-              time: item.time,
-              open: parseFloat(item.open) || 0,
-              high: parseFloat(item.high) || 0,
-              low: parseFloat(item.low) || 0,
-              close: parseFloat(item.close) || 0,
+              time: item.time as any,
+              open:
+                typeof item.open === "string"
+                  ? parseFloat(item.open)
+                  : item.open,
+              high:
+                typeof item.high === "string"
+                  ? parseFloat(item.high)
+                  : item.high,
+              low:
+                typeof item.low === "string" ? parseFloat(item.low) : item.low,
+              close:
+                typeof item.close === "string"
+                  ? parseFloat(item.close)
+                  : item.close,
             }));
 
             candlestickSeries.setData(chartData);
@@ -173,6 +188,4 @@ const CandlestickChart = ({ data, displayName }) => {
       </div>
     </div>
   );
-};
-
-export default CandlestickChart;
+}

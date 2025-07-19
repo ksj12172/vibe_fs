@@ -2,12 +2,12 @@
 
 import { useEffect, useState, Suspense } from "react";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
-import CandlestickChart from "../../../components/CandlestickChart";
 import Image from "next/image";
 import {
   useStockStore,
   StockInfo as ZustandStockInfo,
 } from "../../../lib/stockStore";
+import CandlestickChart from "@/components/CandlestickChart";
 
 interface StockInfo extends Partial<ZustandStockInfo> {
   symbol_name?: string;

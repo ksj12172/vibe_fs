@@ -1017,3 +1017,14 @@ section h2 {
 .selected-btn {
   background-color: #dee2e6;
 }
+
+.etf-btn {
+  padding: 0.75rem 1.5rem;
+  margin: 5px 5px 5px 0;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}

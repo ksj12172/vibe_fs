@@ -71,16 +71,9 @@ export default function HomePage() {
               {ETF_TICKER_LIST.korea.map((item) => (
                 <button
                   onClick={() => handleETFClick(item.stockCode)}
+                  className="etf-btn"
                   style={{
-                    padding: "0.75rem 1.5rem",
-                    marginRight: "5px",
                     color: COLOR.korea,
-                    border: "none",
-                    borderRadius: "6px",
-                    cursor: "pointer",
-                    fontSize: "0.9rem",
-                    fontWeight: "500",
-                    transition: "all 0.2s ease",
                   }}
                 >
                   🇰🇷 {item.name}
@@ -91,16 +84,9 @@ export default function HomePage() {
               {ETF_TICKER_LIST.us.map((item) => (
                 <button
                   onClick={() => handleETFClick(item.stockCode)}
+                  className="etf-btn"
                   style={{
-                    padding: "0.75rem 1.5rem",
-                    marginRight: "5px",
                     color: COLOR.us,
-                    border: "none",
-                    borderRadius: "6px",
-                    cursor: "pointer",
-                    fontSize: "0.9rem",
-                    fontWeight: "500",
-                    transition: "all 0.2s ease",
                   }}
                 >
                   🇺🇸 {item.name}
@@ -111,16 +97,9 @@ export default function HomePage() {
               {ETF_TICKER_LIST.china.map((item) => (
                 <button
                   onClick={() => handleETFClick(item.stockCode)}
+                  className="etf-btn"
                   style={{
-                    padding: "0.75rem 1.5rem",
-                    marginRight: "5px",
                     color: COLOR.china,
-                    border: "none",
-                    borderRadius: "6px",
-                    cursor: "pointer",
-                    fontSize: "0.9rem",
-                    fontWeight: "500",
-                    transition: "all 0.2s ease",
                   }}
                 >
                   🇨🇳 {item.name}

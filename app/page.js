@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useRouter } from "next/navigation";
 import StockSearch from "../components/StockSearch";
 import ErrorSection from "../components/ErrorSection";
@@ -87,7 +87,9 @@ export default function HomePage() {
         </section>
 
         {/* 주식 검색 */}
-        <StockSearch onError={handleError} />
+        <Suspense fallback={<div>Loading...</div>}>
+          <StockSearch onError={handleError} />
+        </Suspense>
 
         {/* 오류 메시지 */}
         {errorMessage && (

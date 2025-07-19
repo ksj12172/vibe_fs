@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
 import CandlestickChart from "../../../components/CandlestickChart";
 import Image from "next/image";
@@ -27,7 +27,7 @@ const PERIOD_OPTIONS = [
   { value: "5y", label: "5년", interval: "1mo" },
 ];
 
-export default function ChartPage() {
+function ChartPageContent() {
   const params = useParams();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -57,7 +57,6 @@ export default function ChartPage() {
         ? `http://localhost:${process.env.NEXT_PUBLIC_PYTHON_API_PORT}/api/stock-data/${params.code}?period=${period}&interval=${interval}`
         : `/api/stock-data/${params.code}?period=${period}&interval=${interval}`;
 
-    console.log("Stock API URL:", apiUrl);
     const response = await fetch(apiUrl);
 
     if (!response.ok) {
@@ -362,5 +361,22 @@ export default function ChartPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function ChartPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500 mx-auto"></div>
+            <p className="mt-4 text-gray-600">페이지를 불러오는 중...</p>
+          </div>
+        </div>
+      }
+    >
+      <ChartPageContent />
+    </Suspense>
   );
 }

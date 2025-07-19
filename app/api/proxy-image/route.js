@@ -36,7 +36,7 @@ export async function GET(request) {
         imageUrlObj.hostname === domain ||
         imageUrlObj.hostname.endsWith("." + domain)
     );
-    console.log("isAllowedDomain", isAllowedDomain);
+
     // 모든 도메인 허용하려면 이 체크를 제거하세요
     if (!isAllowedDomain) {
       console.warn(`Blocked request to domain: ${imageUrlObj.hostname}`);

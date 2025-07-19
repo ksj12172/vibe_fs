@@ -1,19 +1,75 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, useCallback } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { useStockStore } from "../lib/stockStore";
 
 export default function StockSearch({ onError }) {
   const router = useRouter();
-  const [query, setQuery] = useState("");
+  const searchParams = useSearchParams();
+
+  // URL에서 쿼리 파라미터 읽기
+  const urlQuery = searchParams.get("q") || "";
+  const urlMarket = searchParams.get("market") || "";
+
+  const [query, setQuery] = useState(urlQuery);
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
-  const [selectedMarket, setSelectedMarket] = useState(""); // "", "KR", "US"
+  const [isSearchComplete, setIsSearchComplete] = useState(false);
+  const [selectedMarket, setSelectedMarket] = useState(urlMarket); // "", "KR", "US"
 
   // Zustand store 사용
   const { setSelectedStock } = useStockStore();
+
+  // URL 파라미터 변경 시 자동 검색
+  useEffect(() => {
+    const urlQuery = searchParams.get("q") || "";
+    const urlMarket = searchParams.get("market") || "";
+
+    // URL에 검색어가 있으면 자동으로 검색 실행
+    if (urlQuery.trim()) {
+      performSearch(urlQuery, urlMarket);
+    } else {
+      // 검색어가 없으면 결과 초기화
+      setSearchResults([]);
+    }
+  }, [searchParams]);
+
+  const performSearch = useCallback(
+    async (searchQuery, searchMarket) => {
+      if (!searchQuery.trim()) {
+        return;
+      }
+
+      try {
+        setIsSearching(true);
+        setIsSearchComplete(false);
+        setSearchResults([]);
+
+        const marketParam = searchMarket ? `&market=${searchMarket}` : "";
+        const response = await fetch(
+          `/api/search-stock?query=${encodeURIComponent(
+            searchQuery
+          )}${marketParam}`
+        );
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "검색 중 오류가 발생했습니다.");
+        }
+
+        setSearchResults(data.results || []);
+      } catch (error) {
+        console.error("주식 검색 오류:", error);
+        onError(error.message);
+      } finally {
+        setIsSearching(false);
+        setIsSearchComplete(true);
+      }
+    },
+    [onError]
+  );
 
   const searchStocks = async () => {
     if (!query.trim()) {
@@ -21,27 +77,22 @@ export default function StockSearch({ onError }) {
       return;
     }
 
-    try {
-      setIsSearching(true);
-      setSearchResults([]);
+    // URL 업데이트 (이후 useEffect에서 자동으로 검색 실행됨)
+    updateURL(query, selectedMarket);
+  };
 
-      const marketParam = selectedMarket ? `&market=${selectedMarket}` : "";
-      const response = await fetch(
-        `/api/search-stock?query=${encodeURIComponent(query)}${marketParam}`
-      );
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "검색 중 오류가 발생했습니다.");
-      }
-
-      setSearchResults(data.results || []);
-    } catch (error) {
-      console.error("주식 검색 오류:", error);
-      onError(error.message);
-    } finally {
-      setIsSearching(false);
+  const updateURL = (searchQuery, searchMarket) => {
+    const params = new URLSearchParams();
+    if (searchQuery.trim()) {
+      params.set("q", searchQuery.trim());
     }
+    if (searchMarket) {
+      params.set("market", searchMarket);
+    }
+
+    // 히스토리에 추가 (뒤로가기 가능)
+    const newUrl = params.toString() ? `/?${params.toString()}` : "/";
+    router.push(newUrl);
   };
 
   const handleKeyPress = (e) => {
@@ -164,7 +215,7 @@ export default function StockSearch({ onError }) {
       );
     }
 
-    if (searchResults.length === 0 && query) {
+    if (isSearchComplete && searchResults.length === 0 && query) {
       return (
         <div className="search-results">
           <p>검색 결과가 없습니다. 다른 키워드로 검색해보세요.</p>
@@ -276,7 +327,14 @@ export default function StockSearch({ onError }) {
         <label style={{ fontSize: "14px", marginRight: "10px" }}>마켓:</label>
         <select
           value={selectedMarket}
-          onChange={(e) => setSelectedMarket(e.target.value)}
+          onChange={(e) => {
+            const newMarket = e.target.value;
+            setSelectedMarket(newMarket);
+            // 마켓 변경 시 URL 즉시 업데이트
+            if (query.trim()) {
+              updateURL(query, newMarket);
+            }
+          }}
           style={{
             padding: "5px 10px",
             marginRight: "10px",

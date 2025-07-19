@@ -7,6 +7,8 @@ import ErrorSection from "../components/ErrorSection";
 
 const ETF_TICKER_LIST = [
   { name: "TIGER 200", stockCode: "102110" },
+  { name: "TIGER 미국S&P500", stockCode: "133690" },
+  { name: "TIGER 미국나스닥", stockCode: "143850" },
   { name: "TIGER 차이나항셍테크", stockCode: "371160" },
 ];
 

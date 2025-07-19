@@ -49,7 +49,7 @@ declare global {
 
   type ChartType = "bs" | "is";
 
-  interface StockDataResponse {
+  interface StockCandleChartDataResponse {
     success: boolean;
     data: StockData;
   }

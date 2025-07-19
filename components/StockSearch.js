@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { useStockStore } from "../lib/stockStore";
 
 export default function StockSearch({ onError }) {
   const router = useRouter();
@@ -10,6 +11,9 @@ export default function StockSearch({ onError }) {
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [selectedMarket, setSelectedMarket] = useState(""); // "", "KR", "US"
+
+  // Zustand store 사용
+  const { setSelectedStock } = useStockStore();
 
   const searchStocks = async () => {
     if (!query.trim()) {
@@ -47,12 +51,54 @@ export default function StockSearch({ onError }) {
   };
 
   const goToFinancialStatementAnalysis = (stock) => {
+    // Zustand store에 주식 정보 저장
+    setSelectedStock({
+      id: stock.id,
+      symbol: stock.symbol,
+      name: stock.name,
+      nameKor: stock.nameKor,
+      nameEng: stock.nameEng,
+      type: stock.type,
+      market: stock.market,
+      exchange: stock.exchange,
+      sector: stock.sector,
+      industry: stock.industry,
+      description: stock.description,
+      logo: stock.logo,
+      website: stock.website,
+      currency: stock.currency,
+      isActive: stock.isActive,
+      createdAt: stock.createdAt || new Date().toISOString(),
+      updatedAt: stock.updatedAt || new Date().toISOString(),
+    });
+
     // 종목코드로 회사 페이지로 이동
     router.push(`/company/${stock.symbol}`);
   };
 
-  const handleSearchTicker = async (symbol) => {
-    router.push(`/chart/${symbol}?period=3mo`);
+  const handleSearchTicker = async (stock) => {
+    // Zustand store에 주식 정보 저장
+    setSelectedStock({
+      id: stock.id,
+      symbol: stock.symbol,
+      name: stock.name,
+      nameKor: stock.nameKor,
+      nameEng: stock.nameEng,
+      type: stock.type,
+      market: stock.market,
+      exchange: stock.exchange,
+      sector: stock.sector,
+      industry: stock.industry,
+      description: stock.description,
+      logo: stock.logo,
+      website: stock.website,
+      currency: stock.currency,
+      isActive: stock.isActive,
+      createdAt: stock.createdAt || new Date().toISOString(),
+      updatedAt: stock.updatedAt || new Date().toISOString(),
+    });
+
+    router.push(`/chart/${stock.symbol}?period=3mo`);
   };
 
   const getMarketBadge = (market, exchange) => {
@@ -205,7 +251,7 @@ export default function StockSearch({ onError }) {
                       color: "#007bff",
                       cursor: "pointer",
                     }}
-                    onClick={() => handleSearchTicker(stock.symbol)}
+                    onClick={() => handleSearchTicker(stock)}
                   >
                     📈 주가 변화 보기
                   </button>

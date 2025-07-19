@@ -4,26 +4,15 @@ import { useEffect, useState } from "react";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
 import CandlestickChart from "../../../components/CandlestickChart";
 import Image from "next/image";
+import {
+  useStockStore,
+  StockInfo as ZustandStockInfo,
+} from "../../../lib/stockStore";
 
-interface StockInfo {
-  symbol_name: string;
-  display_name: string;
-  stock_code: string;
-  description?: AdditionalStockInfo; // Optional since it comes from separate API
-}
-
-interface CompanyInfo {
-  id?: string;
-  corp_name?: string;
-  corp_code?: string;
+interface StockInfo extends Partial<ZustandStockInfo> {
+  symbol_name?: string;
+  display_name?: string;
   stock_code?: string;
-  description?: string;
-  website?: string;
-  sector?: string;
-  industry?: string;
-  founded?: string;
-  headquarters?: string;
-  logo?: string;
 }
 
 /**
@@ -43,11 +32,13 @@ export default function ChartPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [stockInfo, setStockInfo] = useState<StockInfo | null>(null);
-  const [companyInfo, setCompanyInfo] = useState<CompanyInfo | null>(null);
   const [chartData, setChartData] = useState<CandleData[]>([]);
   const [loading, setLoading] = useState(true);
   const [chartLoading, setChartLoading] = useState(false); // 차트 영역만 로딩
   const [error, setError] = useState<string | null>(null);
+
+  // Zustand store 사용
+  const { getStockBySymbol } = useStockStore();
 
   // 쿼리 파라미터에서 period 가져오기 (기본값: 3mo)
   const currentPeriod = searchParams.get("period") || "3mo";
@@ -57,7 +48,7 @@ export default function ChartPage() {
     PERIOD_OPTIONS.find((option) => option.value === currentPeriod)?.interval ||
     "1d";
 
-  const fetchStockData = async (
+  const fetchCandleChartData = async (
     period: string = currentPeriod,
     interval: string = currentInterval
   ) => {
@@ -73,37 +64,73 @@ export default function ChartPage() {
       throw new Error("주식 데이터를 불러오지 못했습니다.");
     }
 
-    const stockData: StockDataResponse = await response.json();
+    const candleChartData: StockCandleChartDataResponse = await response.json();
 
-    if (!stockData.success) {
+    if (!candleChartData.success) {
       throw new Error("주식 데이터를 불러오지 못했습니다.");
     }
 
-    return stockData;
+    return candleChartData;
   };
 
-  const fetchCompanyData = async () => {
+  const fetchStockInfo = async () => {
     try {
+      // 1. 먼저 Zustand store에서 주식 정보 확인
+      const cachedStock = getStockBySymbol(params.code as string);
+
+      if (cachedStock) {
+        console.log("✅ Zustand store에서 주식 정보 발견:", cachedStock);
+
+        // StockInfo 인터페이스에 맞게 변환
+        return {
+          id: cachedStock.id.toString(),
+          type: cachedStock.type,
+          corp_name: cachedStock.nameKor || cachedStock.name,
+          corp_code: "", // Stock 테이블에는 corp_code가 없음
+          stock_code: cachedStock.symbol,
+          description: cachedStock.description,
+          website: cachedStock.website,
+          sector: cachedStock.sector,
+          industry: cachedStock.industry,
+          logo: cachedStock.logo,
+        };
+      }
+
+      // 2. store에 없으면 새로운 Stock API 호출
+      console.log("🔍 Store에 없음. Stock API 호출 중...");
       const response = await fetch(
-        `/api/company-by-code?stock_code=${params.code}`
+        `/api/stock-by-code?stock_code=${params.code}`
       );
 
       if (!response.ok) {
-        // Company data is optional, don't throw error
-        console.warn("회사 정보를 찾을 수 없습니다:", response.status);
+        // Stock data is optional, don't throw error
+        console.warn("주식 정보를 찾을 수 없습니다:", response.status);
         return null;
       }
 
-      const companyData = await response.json();
+      const stockData = await response.json();
 
-      if (!companyData.success) {
-        console.warn("회사 정보를 불러오지 못했습니다");
+      if (!stockData.success) {
+        console.warn("주식 정보를 불러오지 못했습니다");
         return null;
       }
 
-      return companyData.company;
+      // StockInfo 인터페이스에 맞게 변환
+      const stock = stockData.stock;
+      return {
+        id: stock.id.toString(),
+        type: stock.type,
+        corp_name: stock.nameKor || stock.name,
+        corp_code: "", // Stock 테이블에는 corp_code가 없음
+        stock_code: stock.symbol,
+        description: stock.description,
+        website: stock.website,
+        sector: stock.sector,
+        industry: stock.industry,
+        logo: stock.logo,
+      };
     } catch (error) {
-      console.warn("회사 정보 조회 중 오류:", error);
+      console.warn("주식 정보 조회 중 오류:", error);
       return null;
     }
   };
@@ -117,46 +144,46 @@ export default function ChartPage() {
       setError(null);
 
       // 병렬로 두 API 호출
-      const [stockData, companyData] = await Promise.allSettled([
-        fetchStockData(period, interval),
-        fetchCompanyData(),
+      const [candleChartData, stockInfoData] = await Promise.allSettled([
+        fetchCandleChartData(period, interval),
+        fetchStockInfo(),
       ]);
 
       // 주식 데이터는 필수
-      if (stockData.status === "fulfilled") {
-        setChartData(stockData.value.data.candles);
+      if (candleChartData.status === "fulfilled") {
+        setChartData(candleChartData.value.data.candles);
         setStockInfo({
-          symbol_name: stockData.value.data.symbol_name,
-          display_name: stockData.value.data.display_name,
-          stock_code: stockData.value.data.stock_code,
+          symbol_name: candleChartData.value.data.symbol_name,
+          display_name: candleChartData.value.data.display_name,
+          stock_code: candleChartData.value.data.stock_code,
         });
       } else {
+        setChartData([]);
+        setStockInfo(null);
+
         throw new Error("차트 데이터를 불러오지 못했습니다.");
       }
 
-      // 회사 데이터는 선택적
-      if (companyData.status === "fulfilled" && companyData.value) {
-        setCompanyInfo(companyData.value);
-        // 회사 정보가 있으면 stockInfo에 description 추가
-        setStockInfo((prev) =>
-          prev
-            ? {
-                ...prev,
-                description: {
-                  logo: companyData.value.logo,
-                  description: companyData.value.description,
-                  website: companyData.value.website,
-                  sector: companyData.value.sector,
-                  industry: companyData.value.industry,
-                  founded: companyData.value.founded,
-                  headquarters: companyData.value.headquarters,
-                },
-              }
-            : null
-        );
+      // 주식 정보는 선택적
+      if (stockInfoData.status === "fulfilled" && stockInfoData.value) {
+        const stockInfoValue = stockInfoData.value;
+        console.log("stockInfoValue", stockInfoValue);
+
+        setStockInfo((prev: StockInfo | null) => {
+          if (prev) {
+            return {
+              ...prev,
+              ...stockInfoValue,
+            };
+          }
+
+          return stockInfoValue;
+        });
+
+        console.log("stockInfo", stockInfo);
       } else {
-        console.log("회사 정보를 사용할 수 없습니다. 차트만 표시됩니다.");
-        setCompanyInfo(null);
+        console.log("주식 정보를 사용할 수 없습니다. 차트만 표시됩니다.");
+        setStockInfo(null);
       }
 
       setError(null);
@@ -214,9 +241,9 @@ export default function ChartPage() {
             marginBottom: "20px",
           }}
         >
-          {stockInfo?.description?.logo && (
+          {stockInfo?.logo && (
             <Image
-              src={stockInfo.description.logo}
+              src={stockInfo.logo}
               alt="logo"
               width={50}
               height={50}
@@ -237,7 +264,7 @@ export default function ChartPage() {
       </div>
 
       {/* 종목 설명 */}
-      {stockInfo?.description?.description && (
+      {stockInfo?.description && (
         <div
           className="mb-6 p-4 bg-gray-50 rounded-lg"
           style={{ margin: "15px 0" }}
@@ -245,16 +272,11 @@ export default function ChartPage() {
           <h2 className="text-xl font-semibold mb-3 text-gray-800">
             종목 정보
           </h2>
-          <div
-            className="text-gray-700 leading-relaxed"
-            dangerouslySetInnerHTML={{
-              __html: stockInfo.description.description,
-            }}
-          />
-          {stockInfo.description.website && (
+
+          {stockInfo.website && (
             <div className="mt-3">
               <a
-                href={stockInfo.description.website}
+                href={stockInfo.website}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-blue-600 hover:text-blue-800 underline"
@@ -263,35 +285,24 @@ export default function ChartPage() {
               </a>
             </div>
           )}
-          {companyInfo && (
-            <div className="mt-3 grid grid-cols-2 gap-4 text-sm text-gray-600">
-              {stockInfo.description.sector && (
-                <div>
-                  <span className="font-medium">섹터:</span>{" "}
-                  {stockInfo.description.sector}
-                </div>
-              )}
-              {stockInfo.description.industry && (
-                <div>
-                  <span className="font-medium">산업:</span>{" "}
-                  {stockInfo.description.industry}
-                </div>
-              )}
-
-              {companyInfo.founded && (
-                <div>
-                  <span className="font-medium">설립년도:</span>{" "}
-                  {companyInfo.founded}
-                </div>
-              )}
-              {companyInfo.headquarters && (
-                <div>
-                  <span className="font-medium">본사:</span>{" "}
-                  {companyInfo.headquarters}
-                </div>
-              )}
-            </div>
-          )}
+          <div className="mt-3 grid grid-cols-2 gap-4 text-sm text-gray-600">
+            {stockInfo.sector && (
+              <div>
+                <span className="font-medium">섹터:</span> {stockInfo.sector}
+              </div>
+            )}
+            {stockInfo.industry && (
+              <div>
+                <span className="font-medium">산업:</span> {stockInfo.industry}
+              </div>
+            )}
+          </div>
+          <div
+            className="text-gray-700 leading-relaxed"
+            dangerouslySetInnerHTML={{
+              __html: stockInfo.description,
+            }}
+          />
         </div>
       )}
 

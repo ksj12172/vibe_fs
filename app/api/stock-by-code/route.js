@@ -7,12 +7,11 @@ export const dynamic = "force-dynamic";
 export async function GET(request) {
   try {
     const { searchParams } = request.nextUrl;
-    const query = searchParams.get("query");
-    const market = searchParams.get("market"); // 'KR', 'US', 또는 빈 값 (전체)
+    const stockCode = searchParams.get("stock_code");
 
-    if (!query || query.trim() === "") {
+    if (!stockCode || stockCode.trim() === "") {
       return NextResponse.json(
-        { error: "검색어를 입력해주세요." },
+        { error: "종목코드를 입력해주세요." },
         { status: 400 }
       );
     }
@@ -28,57 +27,46 @@ export async function GET(request) {
 
     const prisma = getPrismaClient();
 
-    // 검색 조건 구성
-    const searchCondition = {
-      AND: [
-        { isActive: true }, // 활성화된 주식만
-        {
-          OR: [
-            { name: { contains: query.trim(), mode: "insensitive" } },
-            { nameKor: { contains: query.trim(), mode: "insensitive" } },
-            { nameEng: { contains: query.trim(), mode: "insensitive" } },
-            { symbol: { contains: query.trim(), mode: "insensitive" } },
-          ],
-        },
-      ],
-    };
-
-    // 마켓 필터 추가
-    if (market && (market === "KR" || market === "US")) {
-      searchCondition.AND.push({ market: market });
-    }
-
-    const stocks = await prisma.stock.findMany({
-      where: searchCondition,
+    // Stock 테이블에서 종목코드로 주식 정보 조회
+    const stock = await prisma.stock.findUnique({
+      where: {
+        symbol: stockCode.trim(),
+        isActive: true, // 활성화된 주식만
+      },
       select: {
         id: true,
-        type: true,
         symbol: true,
         name: true,
         nameKor: true,
         nameEng: true,
+        type: true,
         market: true,
         exchange: true,
         sector: true,
         industry: true,
-        logo: true,
-        currency: true,
         description: true,
+        logo: true,
+        website: true,
+        currency: true,
+        isActive: true,
+        createdAt: true,
+        updatedAt: true,
       },
-      orderBy: [
-        { market: "asc" }, // KR이 먼저 오도록
-        { name: "asc" },
-      ],
-      take: 20, // 검색 결과 제한
     });
+
+    if (!stock) {
+      return NextResponse.json(
+        { error: "해당 종목코드의 주식을 찾을 수 없습니다." },
+        { status: 404 }
+      );
+    }
 
     return NextResponse.json({
       success: true,
-      results: stocks || [],
-      total: stocks.length,
+      stock: stock,
     });
   } catch (error) {
-    console.error("주식 검색 오류:", error);
+    console.error("주식 조회 오류:", error);
 
     // 더 구체적인 에러 메시지 제공
     if (error.code === "P1001") {
@@ -89,7 +77,7 @@ export async function GET(request) {
     }
 
     return NextResponse.json(
-      { error: "주식 검색 중 오류가 발생했습니다." },
+      { error: "주식 조회 중 오류가 발생했습니다." },
       { status: 500 }
     );
   }

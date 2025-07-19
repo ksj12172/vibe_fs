@@ -8,37 +8,35 @@ async function addETFData() {
 
     const etfData = [
       {
-        symbol: "381170",
-        name: "TIGER 미국테크TOP10 INDXX",
-        nameKor: "TIGER 미국테크TOP10 INDXX",
-        nameEng: "Mirae Asset Maps Management - Tiger US Tech Top 10 Index ETF",
+        symbol: "161510",
+        name: "PLUS 고배당주",
+        nameKor: "PLUS 고배당주",
+        nameEng: "ARIRANG Dividend ETF",
         type: "ETF",
         market: "KR",
         exchange: "KOSPI",
         sector: "ETF",
         industry: "Index ETF",
-        description:
-          "미국 나스닥 상장 거대 멀티플랫폼 상위 10종목에 투자합니다.",
+        description: "예상 배당수익률 상위 30종목 선정하여 투자",
         currency: "KRW",
         isActive: true,
-        website:
-          "https://www.tigeretf.com/ko/product/search/detail/index.do?ksdFund=KR7381170000",
+        website: "https://www.plusetf.co.kr/product/detail?n=006273",
       },
       {
-        symbol: "497570",
-        name: "TIGER 미국필라델피아AI반도체나스닥",
-        nameKor: "TIGER 미국필라델피아AI반도체나스닥",
-        nameEng: "Mirae Asset Tiger Phlx Us Ai Semiconductor Etf",
+        symbol: "466940",
+        name: "TIGER 은행고배당플러스TOP10",
+        nameKor: "TIGER 은행고배당플러스TOP10",
+        nameEng: "Mirae Asset Tiger Bank High Dividend Plus Top 10 Fn Etf",
         type: "ETF",
         market: "KR",
         exchange: "KOSPI",
         sector: "ETF",
         industry: "Index ETF",
-        description: "AI반도체 시대의 승자",
+        description: "고배당에 최적화된 은행주 포트폴리오의 등장!",
         currency: "KRW",
         isActive: true,
         website:
-          "https://www.tigeretf.com/ko/product/search/detail/index.do?ksdFund=KR7497570002",
+          "https://www.tigeretf.com/ko/product/search/detail/index.do?ksdFund=KR7466940004",
       },
     ];
 

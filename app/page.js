@@ -5,14 +5,25 @@ import { useRouter } from "next/navigation";
 import StockSearch from "../components/StockSearch";
 import ErrorSection from "../components/ErrorSection";
 
-const ETF_TICKER_LIST = [
-  { name: "TIGER 200", stockCode: "102110" },
-  { name: "TIGER 미국S&P500", stockCode: "360750" },
-  { name: "TIGER 미국나스닥", stockCode: "133690" },
-  { name: "TIGER 미국테크TOP10 INDXX", stockCode: "381170" },
-  { name: "TIGER 미국필라델피아AI반도체나스닥", stockCode: "497570" },
-  { name: "TIGER 차이나항셍테크", stockCode: "371160" },
-];
+const COLOR = {
+  korea: "#007BFF",
+  us: "#28A745",
+  china: "#DC3545",
+};
+const ETF_TICKER_LIST = {
+  korea: [
+    { name: "TIGER 200", stockCode: "102110" },
+    { name: "PLUS 고배당주", stockCode: "161510" },
+    { name: "TIGER 은행고배당플러스TOP10", stockCode: "466940" },
+  ],
+  us: [
+    { name: "TIGER 미국S&P500", stockCode: "360750" },
+    { name: "TIGER 미국나스닥", stockCode: "133690" },
+    { name: "TIGER 미국테크TOP10 INDXX", stockCode: "381170" },
+    { name: "TIGER 미국필라델피아AI반도체나스닥", stockCode: "497570" },
+  ],
+  china: [{ name: "TIGER 차이나항셍테크", stockCode: "371160" }],
+};
 
 export default function HomePage() {
   const [errorMessage, setErrorMessage] = useState("");
@@ -56,35 +67,66 @@ export default function HomePage() {
             📈 ETF 차트 바로가기
           </h3>
           <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
-            {ETF_TICKER_LIST.map((item) => (
-              <button
-                onClick={() => handleETFClick(item.stockCode)}
-                style={{
-                  padding: "0.75rem 1.5rem",
-                  backgroundColor: "#007bff",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "6px",
-                  cursor: "pointer",
-                  fontSize: "0.9rem",
-                  fontWeight: "500",
-                  transition: "all 0.2s ease",
-                  boxShadow: "0 2px 4px rgba(0,123,255,0.2)",
-                }}
-                onMouseOver={(e) => {
-                  e.target.style.backgroundColor = "#0056b3";
-                  e.target.style.transform = "translateY(-1px)";
-                  e.target.style.boxShadow = "0 4px 8px rgba(0,123,255,0.3)";
-                }}
-                onMouseOut={(e) => {
-                  e.target.style.backgroundColor = "#007bff";
-                  e.target.style.transform = "translateY(0)";
-                  e.target.style.boxShadow = "0 2px 4px rgba(0,123,255,0.2)";
-                }}
-              >
-                {item.name}
-              </button>
-            ))}
+            <div>
+              {ETF_TICKER_LIST.korea.map((item) => (
+                <button
+                  onClick={() => handleETFClick(item.stockCode)}
+                  style={{
+                    padding: "0.75rem 1.5rem",
+                    marginRight: "5px",
+                    color: COLOR.korea,
+                    border: "none",
+                    borderRadius: "6px",
+                    cursor: "pointer",
+                    fontSize: "0.9rem",
+                    fontWeight: "500",
+                    transition: "all 0.2s ease",
+                  }}
+                >
+                  🇰🇷 {item.name}
+                </button>
+              ))}
+            </div>
+            <div>
+              {ETF_TICKER_LIST.us.map((item) => (
+                <button
+                  onClick={() => handleETFClick(item.stockCode)}
+                  style={{
+                    padding: "0.75rem 1.5rem",
+                    marginRight: "5px",
+                    color: COLOR.us,
+                    border: "none",
+                    borderRadius: "6px",
+                    cursor: "pointer",
+                    fontSize: "0.9rem",
+                    fontWeight: "500",
+                    transition: "all 0.2s ease",
+                  }}
+                >
+                  🇺🇸 {item.name}
+                </button>
+              ))}
+            </div>
+            <div>
+              {ETF_TICKER_LIST.china.map((item) => (
+                <button
+                  onClick={() => handleETFClick(item.stockCode)}
+                  style={{
+                    padding: "0.75rem 1.5rem",
+                    marginRight: "5px",
+                    color: COLOR.china,
+                    border: "none",
+                    borderRadius: "6px",
+                    cursor: "pointer",
+                    fontSize: "0.9rem",
+                    fontWeight: "500",
+                    transition: "all 0.2s ease",
+                  }}
+                >
+                  🇨🇳 {item.name}
+                </button>
+              ))}
+            </div>
           </div>
         </section>
 

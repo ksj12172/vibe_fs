@@ -13,6 +13,7 @@ interface StockInfo extends Partial<Omit<ZustandStockInfo, "id">> {
   id?: string;
   symbol_name?: string;
   corp_name?: string;
+  displayName?: string;
 }
 
 /**
@@ -141,13 +142,13 @@ function ChartPageContent() {
       // 주식 정보는 선택적
       if (stockInfoData.status === "fulfilled" && stockInfoData.value) {
         const stockInfoValue = stockInfoData.value;
-        console.log("stockInfoValue", stockInfoValue);
 
         setStockInfo((prev: StockInfo | null) => {
           if (prev) {
             return {
               ...prev,
               ...stockInfoValue,
+              displayName: stockInfoValue?.corp_name || prev?.symbol_name,
             };
           }
 
@@ -248,6 +249,11 @@ function ChartPageContent() {
             {stockInfo ? stockInfo.symbol_name : "알 수 없음"}
           </h1>
         </div>
+        {stockInfo?.displayName && (
+          <p className="text-lg text-gray-600">
+            종목명: {stockInfo?.displayName}
+          </p>
+        )}
         <p className="text-lg text-gray-600">종목코드: {params.code}</p>
       </div>
 
@@ -335,11 +341,7 @@ function ChartPageContent() {
         ) : chartData && chartData.candles && chartData.candles.length > 0 ? (
           <CandlestickChart
             data={chartData}
-            displayName={
-              stockInfo?.corp_name ||
-              stockInfo?.symbol_name ||
-              (params.code as string)
-            }
+            displayName={stockInfo?.displayName || ""}
           />
         ) : (
           <div className="flex items-center justify-center h-96">

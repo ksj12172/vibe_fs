@@ -32,7 +32,7 @@ async function migrateCompanyToStock() {
       nameKor: company.corpName, // 한국 회사이므로 한글명으로 설정
       nameEng: company.corpEngName || null,
       market: "KR" as const, // 기본적으로 한국 시장으로 설정
-      exchange: null, // 나중에 수동으로 KOSPI/KOSDAQ 설정 필요
+      exchange: null, // 해당 종목이 상장되어 거래되는 거래소를 의미한다, 나중에 수동으로 KOSPI/KOSDAQ 설정 필요
       sector: company.sector || null,
       industry: company.industry || null,
       description: company.description || null,

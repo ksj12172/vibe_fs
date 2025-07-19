@@ -11,8 +11,7 @@ import CandlestickChart from "@/components/CandlestickChart";
 
 interface StockInfo extends Partial<ZustandStockInfo> {
   symbol_name?: string;
-  display_name?: string;
-  stock_code?: string;
+  corp_name?: string;
 }
 
 /**
@@ -85,8 +84,6 @@ function ChartPageContent() {
           id: cachedStock.id.toString(),
           type: cachedStock.type,
           corp_name: cachedStock.nameKor || cachedStock.name,
-          corp_code: "", // Stock 테이블에는 corp_code가 없음
-          stock_code: cachedStock.symbol,
           description: cachedStock.description,
           website: cachedStock.website,
           sector: cachedStock.sector,
@@ -119,9 +116,8 @@ function ChartPageContent() {
       return {
         id: stock.id.toString(),
         type: stock.type,
+        symbol: stock.symbol,
         corp_name: stock.nameKor || stock.name,
-        corp_code: "", // Stock 테이블에는 corp_code가 없음
-        stock_code: stock.symbol,
         description: stock.description,
         website: stock.website,
         sector: stock.sector,
@@ -153,8 +149,6 @@ function ChartPageContent() {
         setChartData(candleChartData.value.data.candles);
         setStockInfo({
           symbol_name: candleChartData.value.data.symbol_name,
-          display_name: candleChartData.value.data.display_name,
-          stock_code: candleChartData.value.data.stock_code,
         });
       } else {
         setChartData([]);
@@ -352,7 +346,11 @@ function ChartPageContent() {
         ) : chartData.length > 0 ? (
           <CandlestickChart
             data={chartData}
-            displayName={stockInfo?.display_name || (params.code as string)}
+            displayName={
+              stockInfo?.corp_name ||
+              stockInfo?.symbol_name ||
+              (params.code as string)
+            }
           />
         ) : (
           <div className="flex items-center justify-center h-96">

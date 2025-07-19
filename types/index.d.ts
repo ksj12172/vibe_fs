@@ -89,7 +89,7 @@ declare global {
   }
 
   interface CandleData {
-    adj_close: number; // 7980.14
+    adj_close: number; // 7980.14, 조정 종가 (배당/분할 반영)
     open: number;
     high: number;
     low: number;

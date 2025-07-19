@@ -2,6 +2,7 @@
 
 import { IChartApi, ISeriesApi } from "lightweight-charts";
 import { useEffect, useRef } from "react";
+import OHLCAnalyzer from "./OHLCAnalyzer";
 
 type Currency = "USD" | "KRW";
 
@@ -215,34 +216,33 @@ export default function CandlestickChart({
         className="w-full border border-gray-200 rounded-lg"
         style={{ height: "400px" }}
       />
-      <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-          <div>
-            <span className="text-gray-500">데이터 포인트:</span>
-            <span className="ml-2 font-medium">
-              {candleData?.length || 0}개
-            </span>
-          </div>
-          <div>
-            <span className="text-gray-500">기간: </span>
-            <span className="ml-2 font-medium">
-              {candleData?.length > 0 ? getDateRange(candleData) : "N/A"}
-            </span>
-          </div>
-          <div>
-            <span className="text-gray-500">최고가: </span>
-            <span className="ml-2 font-medium text-red-600">
-              {highestPrice}
-            </span>
-          </div>
-          <div>
-            <span className="text-gray-500">최저가: </span>
-            <span className="ml-2 font-medium text-blue-600">
-              {lowestPrice}
-            </span>
-          </div>
+      <div style={{ margin: "20px 0" }}>
+        <div>
+          <span className="text-gray-500">데이터 포인트:</span>
+          <span className="ml-2 font-medium">{candleData?.length || 0}개</span>
+        </div>
+        <div>
+          <span className="text-gray-500">기간: </span>
+          <span className="ml-2 font-medium">
+            {candleData?.length > 0 ? getDateRange(candleData) : "N/A"}
+          </span>
+        </div>
+        <div>
+          <span className="text-gray-500">기간 중 최고가: </span>
+          <span className="ml-2 font-medium text-red-600">{highestPrice}</span>
+        </div>
+        <div>
+          <span className="text-gray-500">기간 중 최저가: </span>
+          <span className="ml-2 font-medium text-blue-600">{lowestPrice}</span>
         </div>
       </div>
+
+      {candleData.length > 0 && (
+        <OHLCAnalyzer
+          data={candleData[candleData.length - 1]}
+          isUSD={data.market_info.currency === "USD"}
+        ></OHLCAnalyzer>
+      )}
     </div>
   );
 }

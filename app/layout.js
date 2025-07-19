@@ -1,5 +1,6 @@
 import "./globals.css";
 import Header from "../components/Header";
+import Footer from "../components/Footer";
 
 export const metadata = {
   title: "재무제표 시각화",
@@ -26,6 +27,7 @@ export default function RootLayout({ children }) {
       <body>
         <Header />
         <div className="main-content">{children}</div>
+        <Footer />
       </body>
     </html>
   );

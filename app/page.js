@@ -2,10 +2,13 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import CompanySearch from "../components/CompanySearch";
+import StockSearch from "../components/StockSearch";
 import ErrorSection from "../components/ErrorSection";
 
-const ETF_TICKER_LIST = [{ name: "TIGER 200", stockCode: "102110"}, {name: 'TIGER 차이나항셍테크', stockCode: "371160"}];
+const ETF_TICKER_LIST = [
+  { name: "TIGER 200", stockCode: "102110" },
+  { name: "TIGER 차이나항셍테크", stockCode: "371160" },
+];
 
 export default function HomePage() {
   const [errorMessage, setErrorMessage] = useState("");
@@ -27,8 +30,8 @@ export default function HomePage() {
   return (
     <div className="container">
       <main>
-        {/* 회사 검색 */}
-        <CompanySearch onError={handleError} />
+        {/* 주식 검색 */}
+        <StockSearch onError={handleError} />
 
         {/* 오류 메시지 */}
         {errorMessage && (

@@ -33,3 +33,31 @@ model Company {
   @@index([stockCode], name: "idx_stock_code")
   @@map("companies")
 }
+
+// 새로운 주식 전용 모델
+model Stock {
+  id           Int      @id @default(autoincrement())
+  symbol       String   @unique @db.VarChar(20)  // 종목코드 (예: "005930", "AAPL")
+  name         String   @map("name") @db.VarChar(255)  // 주식명 (예: "삼성전자", "Apple Inc.")
+  nameKor      String?  @map("name_kor") @db.VarChar(255)  // 한글명 (미국주식의 경우)
+  nameEng      String?  @map("name_eng") @db.VarChar(255)  // 영문명 (국내주식의 경우)
+  market       String   @map("market") @db.VarChar(10)  // "KR" (한국), "US" (미국)
+  exchange     String?  @map("exchange") @db.VarChar(20)  // "KOSPI", "KOSDAQ", "NYSE", "NASDAQ"
+  sector       String?  @map("sector") @db.VarChar(100)
+  industry     String?  @map("industry") @db.VarChar(100)
+  description  String?  @map("description") @db.Text
+  logo         String?  @map("logo") @db.VarChar(500)
+  website      String?  @map("website") @db.VarChar(255)
+  marketCap    BigInt?  @map("market_cap")  // 시가총액
+  currency     String   @default("KRW") @map("currency") @db.VarChar(3)  // "KRW", "USD"
+  isActive     Boolean  @default(true) @map("is_active")  // 거래 가능 여부
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@index([name], name: "idx_stock_name")
+  @@index([nameKor], name: "idx_stock_name_kor")
+  @@index([symbol], name: "idx_stock_symbol")
+  @@index([market], name: "idx_stock_market")
+  @@index([exchange], name: "idx_stock_exchange")
+  @@map("stocks")
+}

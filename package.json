@@ -17,7 +17,7 @@
     "seed": "node scripts/seed-with-prisma.js",
     "manage-stock-descriptions": "python lib/stock_description_manager.py",
     "postinstall": "prisma generate --no-engine",
-    "update-db-data": "ts-node scripts/update-samsung-preferred.ts"
+    "update-db-data": "npx tsx scripts/update-samsung-preferred.ts"
   },
   "dependencies": {
     "@prisma/client": "6.9.0",

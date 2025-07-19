@@ -18,6 +18,7 @@
 - Node.js (18.0.0 이상)
 - Yarn 또는 npm
 - PostgreSQL 데이터베이스 (Vercel Postgres 권장)
+- prisma client 사용 방법: https://www.prisma.io/docs/orm/reference/prisma-client-reference
 
 ### 환경 설정
 

@@ -3,13 +3,74 @@
 import { IChartApi, ISeriesApi } from "lightweight-charts";
 import { useEffect, useRef } from "react";
 
+type Currency = "USD" | "KRW";
+
+const getTargetPrice = ({
+  target,
+  candleData,
+  currency,
+}: {
+  target: "high" | "low";
+  candleData: CandleData[];
+  currency: Currency;
+}) => {
+  if (candleData.length === 0) return "N/A";
+
+  const isUSD = currency === "USD";
+  const targetPrice =
+    target === "high"
+      ? Math.max(...candleData.map((d) => d.high))
+      : Math.min(...candleData.map((d) => d.low));
+
+  if (isUSD) {
+    return "$" + targetPrice.toLocaleString();
+  }
+
+  return targetPrice.toLocaleString() + "원";
+};
+
+const getDateRange = (candleData: CandleData[]) => {
+  const firstDate = new Date((candleData[0].time as number) * 1000);
+  const lastDate = new Date(
+    (candleData[candleData.length - 1].time as number) * 1000
+  );
+
+  const options = {
+    timeZone: "Asia/Seoul", // 한국 시간 기준
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  } as const;
+
+  return `${firstDate.toLocaleDateString(
+    "ko-KR",
+    options
+  )} ~ ${lastDate.toLocaleDateString("ko-KR", options)}`;
+};
+
 export default function CandlestickChart({
   data,
   displayName,
 }: {
-  data: CandleData[];
+  data: StockData;
   displayName: string;
 }) {
+  const candleData = data.candles;
+
+  const highestPrice = getTargetPrice({
+    target: "high",
+    candleData,
+    currency: data.market_info.currency as Currency,
+  });
+  const lowestPrice = getTargetPrice({
+    target: "low",
+    candleData,
+    currency: data.market_info.currency as Currency,
+  });
+
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const candlestickSeriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
@@ -69,9 +130,9 @@ export default function CandlestickChart({
         candlestickSeriesRef.current = candlestickSeries;
 
         // 데이터 변환 및 설정
-        if (data && data.length > 0) {
+        if (candleData && candleData.length > 0) {
           try {
-            const chartData = data.map((item) => ({
+            const chartData = candleData.map((item) => ({
               time: item.time as any,
               open:
                 typeof item.open === "string"
@@ -123,7 +184,7 @@ export default function CandlestickChart({
       }
     };
 
-    if (data && data.length > 0) {
+    if (candleData.length > 0) {
       initChart();
     }
 
@@ -158,30 +219,26 @@ export default function CandlestickChart({
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
           <div>
             <span className="text-gray-500">데이터 포인트:</span>
-            <span className="ml-2 font-medium">{data?.length || 0}개</span>
+            <span className="ml-2 font-medium">
+              {candleData?.length || 0}개
+            </span>
           </div>
           <div>
             <span className="text-gray-500">기간:</span>
             <span className="ml-2 font-medium">
-              {data?.length > 0
-                ? `${data[0].time} ~ ${data[data.length - 1].time}`
-                : "N/A"}
+              {candleData?.length > 0 ? getDateRange(candleData) : "N/A"}
             </span>
           </div>
           <div>
-            <span className="text-gray-500">최고가:</span>
+            <span className="text-gray-500">최고가: </span>
             <span className="ml-2 font-medium text-red-600">
-              {data?.length > 0
-                ? Math.max(...data.map((d) => d.high)).toLocaleString() + "원"
-                : "N/A"}
+              {highestPrice}
             </span>
           </div>
           <div>
-            <span className="text-gray-500">최저가:</span>
+            <span className="text-gray-500">최저가: </span>
             <span className="ml-2 font-medium text-blue-600">
-              {data?.length > 0
-                ? Math.min(...data.map((d) => d.low)).toLocaleString() + "원"
-                : "N/A"}
+              {lowestPrice}
             </span>
           </div>
         </div>

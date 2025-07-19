@@ -9,7 +9,7 @@ export interface StockInfo {
   nameKor?: string;
   nameEng?: string;
   type: "STOCK" | "ETF" | "ETN" | "PREFERRED";
-  market: string;
+  market: "US" | "KR" | string;
   exchange?: string;
   sector?: string;
   industry?: string;

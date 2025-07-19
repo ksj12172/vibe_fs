@@ -9,7 +9,8 @@ import {
 } from "../../../lib/stockStore";
 import CandlestickChart from "@/components/CandlestickChart";
 
-interface StockInfo extends Partial<ZustandStockInfo> {
+interface StockInfo extends Partial<Omit<ZustandStockInfo, "id">> {
+  id?: string;
   symbol_name?: string;
   corp_name?: string;
 }
@@ -31,7 +32,7 @@ function ChartPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [stockInfo, setStockInfo] = useState<StockInfo | null>(null);
-  const [chartData, setChartData] = useState<CandleData[]>([]);
+  const [chartData, setChartData] = useState<StockData | null>(null);
   const [loading, setLoading] = useState(true);
   const [chartLoading, setChartLoading] = useState(false); // 차트 영역만 로딩
   const [error, setError] = useState<string | null>(null);
@@ -80,16 +81,7 @@ function ChartPageContent() {
         console.log("✅ Zustand store에서 주식 정보 발견:", cachedStock);
 
         // StockInfo 인터페이스에 맞게 변환
-        return {
-          id: cachedStock.id.toString(),
-          type: cachedStock.type,
-          corp_name: cachedStock.nameKor || cachedStock.name,
-          description: cachedStock.description,
-          website: cachedStock.website,
-          sector: cachedStock.sector,
-          industry: cachedStock.industry,
-          logo: cachedStock.logo,
-        };
+        return getStockInfo(cachedStock);
       }
 
       // 2. store에 없으면 새로운 Stock API 호출
@@ -112,18 +104,7 @@ function ChartPageContent() {
       }
 
       // StockInfo 인터페이스에 맞게 변환
-      const stock = stockData.stock;
-      return {
-        id: stock.id.toString(),
-        type: stock.type,
-        symbol: stock.symbol,
-        corp_name: stock.nameKor || stock.name,
-        description: stock.description,
-        website: stock.website,
-        sector: stock.sector,
-        industry: stock.industry,
-        logo: stock.logo,
-      };
+      return getStockInfo(stockData.stock);
     } catch (error) {
       console.warn("주식 정보 조회 중 오류:", error);
       return null;
@@ -146,12 +127,12 @@ function ChartPageContent() {
 
       // 주식 데이터는 필수
       if (candleChartData.status === "fulfilled") {
-        setChartData(candleChartData.value.data.candles);
+        setChartData(candleChartData.value.data);
         setStockInfo({
           symbol_name: candleChartData.value.data.symbol_name,
         });
       } else {
-        setChartData([]);
+        setChartData(null);
         setStockInfo(null);
 
         throw new Error("차트 데이터를 불러오지 못했습니다.");
@@ -190,6 +171,20 @@ function ChartPageContent() {
     } finally {
       setChartLoading(false);
     }
+  };
+
+  const getStockInfo = (data: ZustandStockInfo) => {
+    return {
+      id: data.id.toString(),
+      type: data.type,
+      symbol: data.symbol,
+      corp_name: data.nameKor || data.name,
+      description: data.description,
+      website: data.website,
+      sector: data.sector,
+      industry: data.industry,
+      logo: data.logo,
+    };
   };
 
   // 기간 변경 핸들러
@@ -343,7 +338,7 @@ function ChartPageContent() {
               </button>
             </div>
           </div>
-        ) : chartData.length > 0 ? (
+        ) : chartData && chartData.candles && chartData.candles.length > 0 ? (
           <CandlestickChart
             data={chartData}
             displayName={

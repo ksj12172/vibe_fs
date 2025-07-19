@@ -33,6 +33,10 @@ export default function StockSearch({ onError }) {
     } else {
       // 검색어가 없으면 결과 초기화
       setSearchResults([]);
+
+      if (query !== "") {
+        setQuery("");
+      }
     }
   }, [searchParams]);
 

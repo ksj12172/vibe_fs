@@ -296,19 +296,13 @@ function ChartPageContent() {
 
       {/* 기간 선택 버튼 */}
       <div className="mb-6" style={{ margin: "15px 0" }}>
-        <h3 className="text-lg font-medium mb-3 text-gray-800">
-          📊 차트 기간 선택
-        </h3>
-
-        <div className="flex flex-wrap gap-2">
+        <div className="button-container">
           {PERIOD_OPTIONS.map((option) => (
             <button
               key={option.value}
               onClick={() => handlePeriodChange(option.value)}
-              className={`px-4 py-2 rounded-lg transition-colors ${
-                currentPeriod === option.value
-                  ? "bg-blue-500 text-white"
-                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              className={`default-btn ${
+                currentPeriod === option.value && "selected-btn"
               }`}
             >
               {option.label}

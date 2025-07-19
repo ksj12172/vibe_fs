@@ -998,3 +998,22 @@ section h2 {
     font-size: 3rem;
   }
 }
+
+.button-container {
+  display: flex;
+  margin-top: 5px;
+}
+
+.default-btn {
+  display: flex;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  background-color: #f8f9fa;
+  border: 0;
+  margin-right: 5px;
+}
+
+.selected-btn {
+  background-color: #dee2e6;
+}

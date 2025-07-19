@@ -224,7 +224,7 @@ export default function CandlestickChart({
             </span>
           </div>
           <div>
-            <span className="text-gray-500">기간:</span>
+            <span className="text-gray-500">기간: </span>
             <span className="ml-2 font-medium">
               {candleData?.length > 0 ? getDateRange(candleData) : "N/A"}
             </span>

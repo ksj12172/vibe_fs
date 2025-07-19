@@ -52,7 +52,7 @@ async function addETFData() {
         isActive: true,
       },
       {
-        symbol: "143850",
+        symbol: "133690",
         name: "TIGER 미국나스닥100",
         nameKor: "TIGER 미국나스닥100",
         nameEng: "TIGER NASDAQ 100",

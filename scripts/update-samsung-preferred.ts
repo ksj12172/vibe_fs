@@ -8,7 +8,7 @@ async function updateSamsungPreferredStock() {
 
     // 현재 삼성전자우 데이터 확인
     const existing = await prisma.stock.findUnique({
-      where: { symbol: "360750" },
+      where: { symbol: "143850" },
     });
 
     if (existing) {
@@ -21,10 +21,13 @@ async function updateSamsungPreferredStock() {
 
       // 업데이트
       const updated = await prisma.stock.update({
-        where: { symbol: "360750" },
+        where: { symbol: "143850" },
         data: {
+          symbol: "133690",
+          description:
+            "4차 산업혁명의 수혜가 기대되는 IT, 소비재, 헬스케어 중심으로 구성된 미국 나스닥 시장 분산 투자합니다.",
           website:
-            "https://www.tigeretf.com/ko/product/search/detail/index.do?ksdFund=KR7360750004",
+            "https://www.tigeretf.com/ko/product/search/detail/index.do?ksdFund=KR7133690008",
         },
       });
 

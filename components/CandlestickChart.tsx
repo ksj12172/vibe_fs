@@ -321,7 +321,7 @@ export default function CandlestickChart({ data }: { data: StockData }) {
 
       const newChartInstance = chartRef.current?.addSeries(LineSeries, {
         color: targetPeriod.color,
-        lineWidth: 2,
+        lineWidth: 1,
       });
 
       if (newChartInstance) {

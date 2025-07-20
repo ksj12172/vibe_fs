@@ -201,7 +201,7 @@ export default function CandlestickChart({ data }: { data: StockData }) {
           rightPriceScale: { borderColor: "#cccccc" },
           timeScale: {
             borderColor: "#cccccc",
-            timeVisible: true,
+            timeVisible: data.interval !== "1d",
             secondsVisible: false,
           },
           localization: {

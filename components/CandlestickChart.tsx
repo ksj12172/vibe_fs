@@ -8,7 +8,7 @@ import {
   Time,
   UTCTimestamp,
 } from "lightweight-charts";
-import { useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import OHLCAnalyzer from "./OHLCAnalyzer";
 
 type Currency = "USD" | "KRW";

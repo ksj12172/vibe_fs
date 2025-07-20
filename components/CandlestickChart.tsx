@@ -52,21 +52,29 @@ const getTargetPrice = ({
   return targetPrice.toLocaleString() + "원";
 };
 
-const getDateRange = (candleData: CandleDataWithModifiedTime[]) => {
+const getDateRange = (
+  candleData: CandleDataWithModifiedTime[],
+  interval: string
+) => {
   const firstDate = new Date((candleData[0].time as number) * 1000);
   const lastDate = new Date(
     (candleData[candleData.length - 1].time as number) * 1000
   );
 
-  const options = {
+  let options: Intl.DateTimeFormatOptions = {
     timeZone: "Asia/Seoul", // 한국 시간 기준
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-  } as const;
+  };
+
+  if (interval !== "1d") {
+    options = {
+      ...options,
+      hour: "2-digit",
+      minute: "2-digit",
+    };
+  }
 
   return `${firstDate.toLocaleDateString(
     "ko-KR",
@@ -386,7 +394,9 @@ export default function CandlestickChart({ data }: { data: StockData }) {
         <div>
           <span className="text-gray-500">기간: </span>
           <span className="ml-2 font-medium">
-            {candleData?.length > 0 ? getDateRange(candleData) : "N/A"}
+            {candleData?.length > 0
+              ? getDateRange(candleData, data.interval)
+              : "N/A"}
           </span>
         </div>
         <div>

@@ -1064,3 +1064,7 @@ section h2 {
 .text-with-line.bgColor120::after {
   background-color: #9b25f9;
 }
+
+.full-width {
+  width: 100%;
+}

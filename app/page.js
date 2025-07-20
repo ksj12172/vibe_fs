@@ -23,6 +23,7 @@ const ETF_TICKER_LIST = {
     { name: "TIGER 미국필라델피아AI반도체나스닥", stockCode: "497570" },
   ],
   china: [{ name: "TIGER 차이나항셍테크", stockCode: "371160" }],
+  world: [{ name: "VT", stockCode: "VT" }],
 };
 
 export default function HomePage() {
@@ -66,8 +67,8 @@ export default function HomePage() {
           >
             📈 ETF 차트 바로가기
           </h3>
-          <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
-            <div>
+          <div>
+            <div className="full-width">
               {ETF_TICKER_LIST.korea.map((item) => (
                 <button
                   onClick={() => handleETFClick(item.stockCode)}
@@ -80,7 +81,7 @@ export default function HomePage() {
                 </button>
               ))}
             </div>
-            <div>
+            <div className="full-width">
               {ETF_TICKER_LIST.us.map((item) => (
                 <button
                   onClick={() => handleETFClick(item.stockCode)}
@@ -93,7 +94,7 @@ export default function HomePage() {
                 </button>
               ))}
             </div>
-            <div>
+            <div className="full-width">
               {ETF_TICKER_LIST.china.map((item) => (
                 <button
                   onClick={() => handleETFClick(item.stockCode)}
@@ -103,6 +104,17 @@ export default function HomePage() {
                   }}
                 >
                   🇨🇳 {item.name}
+                </button>
+              ))}
+            </div>
+            <div className="full-width">
+              {ETF_TICKER_LIST.world.map((item) => (
+                <button
+                  onClick={() => handleETFClick(item.stockCode)}
+                  className="etf-btn"
+                  style={{ color: COLOR.world }}
+                >
+                  🌏 {item.name}
                 </button>
               ))}
             </div>

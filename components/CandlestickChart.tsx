@@ -332,19 +332,6 @@ export default function CandlestickChart({ data }: { data: StockData }) {
           <IoMdInformationCircleOutline
             style={{ marginLeft: "3px", cursor: "pointer" }}
             onClick={(e) => {
-              const rect = e.currentTarget.getBoundingClientRect();
-
-              // 아이콘이 버튼의 오른쪽 끝에 위치하므로 그 위치를 계산
-              const iconX = rect.right - 20; // 버튼 오른쪽에서 20px 정도 안쪽 (아이콘 중심)
-              const iconY = rect.bottom;
-
-              // 툴팁 기본 위치 (아이콘 기준으로 중앙 정렬)
-              const tooltipWidth = 280;
-              const tooltipX = iconX - tooltipWidth / 2; // 툴팁을 아이콘 중심에 맞춤
-
-              // 화살표는 아이콘 위치에 맞춰짐 (툴팁 시작점에서 아이콘까지의 거리)
-              const arrowOffset = iconX - tooltipX;
-
               if (clickedPosition) {
                 setClickedPosition(null);
               } else {

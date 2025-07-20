@@ -131,6 +131,7 @@ function ChartPageContent() {
         setChartData(candleChartData.value.data);
         setStockInfo({
           symbol_name: candleChartData.value.data.symbol_name,
+          displayName: candleChartData.value.data.display_name,
         });
       } else {
         setChartData(null);
@@ -158,7 +159,6 @@ function ChartPageContent() {
         console.log("stockInfo", stockInfo);
       } else {
         console.log("주식 정보를 사용할 수 없습니다. 차트만 표시됩니다.");
-        setStockInfo(null);
       }
 
       setError(null);

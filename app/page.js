@@ -25,6 +25,10 @@ const ETF_TICKER_LIST = {
   china: [{ name: "TIGER 차이나항셍테크", stockCode: "371160" }],
   world: [{ name: "VT", stockCode: "VT" }],
 };
+const COIN_TICKER_LIST = [
+  { name: "비트코인", stockCode: "BTC-USD" },
+  { name: "이더리움", stockCode: "ETH-USD" },
+];
 
 export default function HomePage() {
   const [errorMessage, setErrorMessage] = useState("");
@@ -38,9 +42,9 @@ export default function HomePage() {
     setErrorMessage("");
   };
 
-  const handleETFClick = (etfCode) => {
+  const handleStockClick = (stockCode) => {
     // ETF 차트 페이지로 이동 (기본 period: 3mo)
-    router.push(`/chart/${etfCode}?period=3mo`);
+    router.push(`/chart/${stockCode}?period=3mo`);
   };
 
   return (
@@ -65,13 +69,14 @@ export default function HomePage() {
               fontWeight: "500",
             }}
           >
-            📈 ETF 차트 바로가기
+            📈 차트 바로가기
           </h3>
           <div>
             <div className="full-width">
               {ETF_TICKER_LIST.korea.map((item) => (
                 <button
-                  onClick={() => handleETFClick(item.stockCode)}
+                  key={item.stockCode}
+                  onClick={() => handleStockClick(item.stockCode)}
                   className="etf-btn"
                   style={{
                     color: COLOR.korea,
@@ -84,7 +89,8 @@ export default function HomePage() {
             <div className="full-width">
               {ETF_TICKER_LIST.us.map((item) => (
                 <button
-                  onClick={() => handleETFClick(item.stockCode)}
+                  key={item.stockCode}
+                  onClick={() => handleStockClick(item.stockCode)}
                   className="etf-btn"
                   style={{
                     color: COLOR.us,
@@ -97,7 +103,7 @@ export default function HomePage() {
             <div className="full-width">
               {ETF_TICKER_LIST.china.map((item) => (
                 <button
-                  onClick={() => handleETFClick(item.stockCode)}
+                  onClick={() => handleStockClick(item.stockCode)}
                   className="etf-btn"
                   style={{
                     color: COLOR.china,
@@ -110,11 +116,24 @@ export default function HomePage() {
             <div className="full-width">
               {ETF_TICKER_LIST.world.map((item) => (
                 <button
-                  onClick={() => handleETFClick(item.stockCode)}
+                  key={item.stockCode}
+                  onClick={() => handleStockClick(item.stockCode)}
                   className="etf-btn"
                   style={{ color: COLOR.world }}
                 >
                   🌏 {item.name}
+                </button>
+              ))}
+            </div>
+            <div className="full-width">
+              {COIN_TICKER_LIST.map((item) => (
+                <button
+                  key={item.stockCode}
+                  onClick={() => handleStockClick(item.stockCode)}
+                  className="etf-btn"
+                  style={{ color: COLOR.world }}
+                >
+                  🌝 {item.name}
                 </button>
               ))}
             </div>

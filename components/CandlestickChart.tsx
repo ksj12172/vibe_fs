@@ -21,7 +21,11 @@ interface CandleDataWithModifiedTime extends CandleData {
   modifiedTime: Time;
 }
 
-const MOVING_AVERAGE_PERIODS = [NaN, 5, 20, 60, 120];
+interface MovingAveragePeriod {
+  value: number;
+  label: string;
+  chartInstance: ISeriesApi<"Line"> | null;
+}
 
 const getTargetPrice = ({
   target,
@@ -156,7 +160,12 @@ export default function CandlestickChart({ data }: { data: StockData }) {
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const candlestickSeriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
-  const movingAverageSeriesRef = useRef<ISeriesApi<"Line"> | null>(null);
+  const MOVING_AVERAGE_PERIODS = useRef<MovingAveragePeriod[]>([
+    { value: 5, label: "5일", chartInstance: null },
+    { value: 20, label: "20일", chartInstance: null },
+    { value: 60, label: "60일", chartInstance: null },
+    { value: 120, label: "120일", chartInstance: null },
+  ]);
 
   useEffect(() => {
     const initChart = async () => {
@@ -294,27 +303,33 @@ export default function CandlestickChart({ data }: { data: StockData }) {
     };
   }, [data]);
 
-  const addMovingAverageLine = (period: number, interval: "1d" | string) => {
-    if (!chartRef.current) return;
+  const addMovingAverageLine = (
+    period: { value: number; label: string },
+    interval: "1d" | string
+  ) => {
+    if (!chartRef.current || interval !== "1d") return;
 
-    if (movingAverageSeriesRef.current) {
-      chartRef.current.removeSeries(movingAverageSeriesRef.current);
-      movingAverageSeriesRef.current = null;
+    const targetPeriod = MOVING_AVERAGE_PERIODS.current.find(
+      (p) => p.value === period.value
+    );
+    if (!targetPeriod) return;
+
+    if (targetPeriod.chartInstance) {
+      chartRef.current.removeSeries(targetPeriod.chartInstance);
+      targetPeriod.chartInstance = null;
+
+      return;
     }
 
-    if (Number.isNaN(period) || interval !== "1d") {
-      setCurrentMovingAveragePeriod(null);
-    } else {
-      const maData = calculateMovingAverageSeriesData(candleData, period);
+    const maData = calculateMovingAverageSeriesData(candleData, period.value);
 
-      movingAverageSeriesRef.current = chartRef.current.addSeries(LineSeries, {
-        color: "#26a69a",
-        lineWidth: 1,
-      });
-      movingAverageSeriesRef.current.setData(maData);
+    targetPeriod.chartInstance = chartRef.current.addSeries(LineSeries, {
+      color: "#26a69a",
+      lineWidth: 1,
+    });
+    targetPeriod.chartInstance.setData(maData);
 
-      setCurrentMovingAveragePeriod(period);
-    }
+    setCurrentMovingAveragePeriod(period.value);
   };
 
   return (
@@ -343,16 +358,18 @@ export default function CandlestickChart({ data }: { data: StockData }) {
             }}
           />
         </button>
-        {MOVING_AVERAGE_PERIODS.map((period) => (
+        {MOVING_AVERAGE_PERIODS.current.map((period) => (
           <button
-            key={period}
+            key={period.value}
             onClick={() => addMovingAverageLine(period, data.interval)}
             className={`default-btn ${
-              currentMovingAveragePeriod === period && "selected-btn"
+              currentMovingAveragePeriod === period.value && "selected-btn"
             }`}
-            disabled={data.interval !== "1d" || candleData.length < period}
+            disabled={
+              data.interval !== "1d" || candleData.length < period.value
+            }
           >
-            {Number.isNaN(period) ? "제거" : period + "일"}
+            {period.label}
           </button>
         ))}
       </div>

@@ -18,7 +18,7 @@ const ETF_TICKER_LIST = {
   ],
   us: [
     { name: "TIGER 미국S&P500", stockCode: "360750" },
-    { name: "TIGER 미국나스닥", stockCode: "133690" },
+    { name: "TIGER 미국나스닥100", stockCode: "133690" },
     { name: "TIGER 미국테크TOP10 INDXX", stockCode: "381170" },
     { name: "TIGER 미국필라델피아AI반도체나스닥", stockCode: "497570" },
   ],

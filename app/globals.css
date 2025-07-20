@@ -1034,3 +1034,33 @@ section h2 {
   font-weight: 500;
   transition: all 0.2s ease;
 }
+
+.text-with-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px; /* 텍스트와 선 사이 간격 */
+}
+
+.text-with-line::after {
+  content: "";
+  flex: 1; /* 남은 공간을 모두 선으로 */
+  width: 12px;
+  height: 2px; /* 선 두께 */
+  background-color: gray; /* 선 색상 */
+}
+
+.text-with-line.bgColor5::after {
+  background-color: #0ab563;
+}
+
+.text-with-line.bgColor20::after {
+  background-color: #fe7baa;
+}
+
+.text-with-line.bgColor60::after {
+  background-color: #0a6fff;
+}
+
+.text-with-line.bgColor120::after {
+  background-color: #9b25f9;
+}

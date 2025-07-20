@@ -321,7 +321,7 @@ export default function CandlestickChart({ data }: { data: StockData }) {
 
       const newChartInstance = chartRef.current?.addSeries(LineSeries, {
         color: targetPeriod.color,
-        lineWidth: 1,
+        lineWidth: 2,
       });
 
       if (newChartInstance) {
@@ -371,7 +371,9 @@ export default function CandlestickChart({ data }: { data: StockData }) {
               data.interval !== "1d" || candleData.length < period.value
             }
           >
-            {period.label}
+            <span className={`text-with-line ${"bgColor" + period.value}`}>
+              {period.label}
+            </span>
           </button>
         ))}
       </div>

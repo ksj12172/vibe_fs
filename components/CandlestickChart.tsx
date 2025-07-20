@@ -5,13 +5,21 @@ import {
   CandlestickData,
   IChartApi,
   ISeriesApi,
+  LineData,
+  LineSeries,
   Time,
   UTCTimestamp,
 } from "lightweight-charts";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import OHLCAnalyzer from "./OHLCAnalyzer";
 
 type Currency = "USD" | "KRW";
+
+interface CandleDataWithModifiedTime extends CandleData {
+  modifiedTime: Time;
+}
+
+const MOVING_AVERAGE_PERIODS = [NaN, 5, 20, 60, 120];
 
 const getTargetPrice = ({
   target,
@@ -19,7 +27,7 @@ const getTargetPrice = ({
   currency,
 }: {
   target: "high" | "low";
-  candleData: CandleData[];
+  candleData: CandleDataWithModifiedTime[];
   currency: Currency;
 }) => {
   if (candleData.length === 0) return "N/A";
@@ -37,7 +45,7 @@ const getTargetPrice = ({
   return targetPrice.toLocaleString() + "원";
 };
 
-const getDateRange = (candleData: CandleData[]) => {
+const getDateRange = (candleData: CandleDataWithModifiedTime[]) => {
   const firstDate = new Date((candleData[0].time as number) * 1000);
   const lastDate = new Date(
     (candleData[candleData.length - 1].time as number) * 1000
@@ -82,8 +90,46 @@ const convertToKSTBusinessDay = (
   };
 };
 
+const calculateMovingAverageSeriesData = (
+  candleData: CandleDataWithModifiedTime[],
+  period: number
+) => {
+  const maData: LineData<Time>[] = [];
+
+  if (candleData.length < period) {
+    return maData;
+  }
+
+  /**
+   * provide whitespace data points until the MA(moving average) can be calculated
+   */
+  for (let i = 0; i < period - 1; i++) {
+    maData.push({ time: candleData[i].modifiedTime } as LineData<Time>);
+  }
+
+  /**
+   * Calculate the moving average, slow but simple way
+   */
+  for (let i = period - 1; i < candleData.length; i++) {
+    const ma =
+      candleData
+        .slice(i - period + 1, i + 1)
+        .reduce((sum, d) => sum + d.close, 0) / period;
+
+    maData.push({
+      time: candleData[i].modifiedTime,
+      value: ma,
+    });
+  }
+
+  return maData;
+};
+
 export default function CandlestickChart({ data }: { data: StockData }) {
-  const candleData = data.candles;
+  const candleData = data.candles.map((candle) => ({
+    ...candle,
+    modifiedTime: convertToKSTBusinessDay(data.interval, candle.time),
+  }));
 
   const highestPrice = getTargetPrice({
     target: "high",
@@ -96,9 +142,13 @@ export default function CandlestickChart({ data }: { data: StockData }) {
     currency: data.market_info.currency as Currency,
   });
 
+  const [currentMovingAveragePeriod, setCurrentMovingAveragePeriod] = useState<
+    number | null
+  >(null);
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const candlestickSeriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
+  const movingAverageSeriesRef = useRef<ISeriesApi<"Line"> | null>(null);
 
   useEffect(() => {
     const initChart = async () => {
@@ -163,7 +213,7 @@ export default function CandlestickChart({ data }: { data: StockData }) {
           try {
             const chartData: CandlestickData<Time>[] = candleData.map(
               (item) => ({
-                time: convertToKSTBusinessDay(data.interval, item.time),
+                time: item.modifiedTime,
                 open:
                   typeof item.open === "string"
                     ? parseFloat(item.open)
@@ -236,6 +286,29 @@ export default function CandlestickChart({ data }: { data: StockData }) {
     };
   }, [data]);
 
+  const addMovingAverageLine = (period: number, interval: "1d" | string) => {
+    if (!chartRef.current) return;
+
+    if (movingAverageSeriesRef.current) {
+      chartRef.current.removeSeries(movingAverageSeriesRef.current);
+      movingAverageSeriesRef.current = null;
+    }
+
+    if (Number.isNaN(period) || interval !== "1d") {
+      setCurrentMovingAveragePeriod(null);
+    } else {
+      const maData = calculateMovingAverageSeriesData(candleData, period);
+
+      movingAverageSeriesRef.current = chartRef.current.addSeries(LineSeries, {
+        color: "#26a69a",
+        lineWidth: 1,
+      });
+      movingAverageSeriesRef.current.setData(maData);
+
+      setCurrentMovingAveragePeriod(period);
+    }
+  };
+
   return (
     <div className="w-full relative">
       <div
@@ -243,6 +316,25 @@ export default function CandlestickChart({ data }: { data: StockData }) {
         className="w-full border border-gray-200 rounded-lg"
         style={{ height: "400px" }}
       />
+
+      {/* 이동 평균선 */}
+      {data.interval === "1d" && (
+        <div style={{ display: "flex", margin: "20px 0" }}>
+          {MOVING_AVERAGE_PERIODS.map((period) => (
+            <button
+              key={period}
+              onClick={() => addMovingAverageLine(period, data.interval)}
+              className={`default-btn ${
+                currentMovingAveragePeriod === period && "selected-btn"
+              }`}
+              disabled={candleData.length < period}
+            >
+              {Number.isNaN(period) ? "이동평균선 제거" : period + "일"}
+            </button>
+          ))}
+        </div>
+      )}
+
       <div style={{ margin: "20px 0" }}>
         <div>
           <span className="text-gray-500">데이터 포인트:</span>

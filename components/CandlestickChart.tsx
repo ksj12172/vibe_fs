@@ -115,6 +115,10 @@ export default function CandlestickChart({
             timeVisible: true,
             secondsVisible: false,
           },
+          localization: {
+            locale: "ko-KR",
+            dateFormat: "yyyy-MM-dd",
+          },
         });
         chartRef.current = chart;
 

@@ -82,18 +82,25 @@ const getDateRange = (
   )} ~ ${lastDate.toLocaleDateString("ko-KR", options)}`;
 };
 
+const KST_OFFSET = 9 * 60 * 60 * 1000;
+
 /**
  * yfinance 일봉 데이터가 자정으로 돼 있어,
  * light-weight 차트에는 데이터에 해당하는 날짜가 전일로 나오는 이슈 수정
  *
  * 해결: 날짜만 남기고 시간은 넘기지 않는다
  */
-const convertToKSTBusinessDay = (
+const getTimeForLightweightChart = (
   interval: string,
   time: number
 ): UTCTimestamp | BusinessDay => {
+  // lightweight-charts에서 timezone 처리가 안 돼서 timezone 만큼 직접 더함
   if (interval !== "1d") {
-    return time as UTCTimestamp;
+    const zoneAddedTime = Math.floor(
+      (new Date(time * 1000).getTime() + KST_OFFSET) / 1000
+    ) as UTCTimestamp;
+
+    return zoneAddedTime;
   }
 
   const date = new Date(time * 1000);
@@ -143,7 +150,7 @@ const calculateMovingAverageSeriesData = (
 export default function CandlestickChart({ data }: { data: StockData }) {
   const candleData = data.candles.map((candle) => ({
     ...candle,
-    modifiedTime: convertToKSTBusinessDay(data.interval, candle.time),
+    modifiedTime: getTimeForLightweightChart(data.interval, candle.time),
   }));
 
   const highestPrice = getTargetPrice({

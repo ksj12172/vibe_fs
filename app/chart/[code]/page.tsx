@@ -24,8 +24,8 @@ const PERIOD_OPTIONS = [
   { value: "1d", label: "1일", interval: "5m" },
   { value: "1wk", label: "1주", interval: "15m" },
   { value: "3mo", label: "3개월", interval: "1d" },
-  { value: "1y", label: "1년", interval: "1wk" },
-  { value: "5y", label: "5년", interval: "1mo" },
+  { value: "1y", label: "1년", interval: "1d" },
+  { value: "5y", label: "5년", interval: "1d" },
 ];
 
 function ChartPageContent() {

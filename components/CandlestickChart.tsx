@@ -1,6 +1,13 @@
 "use client";
 
-import { IChartApi, ISeriesApi } from "lightweight-charts";
+import {
+  BusinessDay,
+  CandlestickData,
+  IChartApi,
+  ISeriesApi,
+  Time,
+  UTCTimestamp,
+} from "lightweight-charts";
 import { useEffect, useRef } from "react";
 import OHLCAnalyzer from "./OHLCAnalyzer";
 
@@ -50,6 +57,29 @@ const getDateRange = (candleData: CandleData[]) => {
     "ko-KR",
     options
   )} ~ ${lastDate.toLocaleDateString("ko-KR", options)}`;
+};
+
+/**
+ * yfinance 일봉 데이터가 자정으로 돼 있어,
+ * light-weight 차트에는 데이터에 해당하는 날짜가 전일로 나오는 이슈 수정
+ *
+ * 해결: 날짜만 남기고 시간은 넘기지 않는다
+ */
+const convertToKSTBusinessDay = (
+  interval: string,
+  time: number
+): UTCTimestamp | BusinessDay => {
+  if (interval !== "1d") {
+    return time as UTCTimestamp;
+  }
+
+  const date = new Date(time * 1000);
+
+  return {
+    year: date.getFullYear(),
+    month: date.getMonth() + 1,
+    day: date.getDate(),
+  };
 };
 
 export default function CandlestickChart({
@@ -137,23 +167,27 @@ export default function CandlestickChart({
         // 데이터 변환 및 설정
         if (candleData && candleData.length > 0) {
           try {
-            const chartData = candleData.map((item) => ({
-              time: item.time as any,
-              open:
-                typeof item.open === "string"
-                  ? parseFloat(item.open)
-                  : item.open,
-              high:
-                typeof item.high === "string"
-                  ? parseFloat(item.high)
-                  : item.high,
-              low:
-                typeof item.low === "string" ? parseFloat(item.low) : item.low,
-              close:
-                typeof item.close === "string"
-                  ? parseFloat(item.close)
-                  : item.close,
-            }));
+            const chartData: CandlestickData<Time>[] = candleData.map(
+              (item) => ({
+                time: convertToKSTBusinessDay(data.interval, item.time),
+                open:
+                  typeof item.open === "string"
+                    ? parseFloat(item.open)
+                    : item.open,
+                high:
+                  typeof item.high === "string"
+                    ? parseFloat(item.high)
+                    : item.high,
+                low:
+                  typeof item.low === "string"
+                    ? parseFloat(item.low)
+                    : item.low,
+                close:
+                  typeof item.close === "string"
+                    ? parseFloat(item.close)
+                    : item.close,
+              })
+            );
 
             candlestickSeries.setData(chartData);
 

@@ -25,6 +25,7 @@ interface MovingAveragePeriod {
   value: number;
   label: string;
   chartInstance: ISeriesApi<"Line"> | null;
+  color: string;
 }
 
 const getTargetPrice = ({
@@ -148,10 +149,6 @@ export default function CandlestickChart({ data }: { data: StockData }) {
     currency: data.market_info.currency as Currency,
   });
 
-  const [currentMovingAveragePeriod, setCurrentMovingAveragePeriod] = useState<
-    number | null
-  >(null);
-
   const [clickedPosition, setClickedPosition] = useState<{
     x: number;
     y: number;
@@ -160,12 +157,13 @@ export default function CandlestickChart({ data }: { data: StockData }) {
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const candlestickSeriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
-  const MOVING_AVERAGE_PERIODS = useRef<MovingAveragePeriod[]>([
-    { value: 5, label: "5일", chartInstance: null },
-    { value: 20, label: "20일", chartInstance: null },
-    { value: 60, label: "60일", chartInstance: null },
-    { value: 120, label: "120일", chartInstance: null },
-  ]);
+  const [movingAveragePeriodChartList, setMovingAveragePeriodChartList] =
+    useState<MovingAveragePeriod[]>([
+      { value: 5, label: "5일", chartInstance: null, color: "#0AB563" },
+      { value: 20, label: "20일", chartInstance: null, color: "#fe7baa" },
+      { value: 60, label: "60일", chartInstance: null, color: "#0a6fff" },
+      { value: 120, label: "120일", chartInstance: null, color: "#9b25f9" },
+    ]);
 
   useEffect(() => {
     const initChart = async () => {
@@ -309,27 +307,33 @@ export default function CandlestickChart({ data }: { data: StockData }) {
   ) => {
     if (!chartRef.current || interval !== "1d") return;
 
-    const targetPeriod = MOVING_AVERAGE_PERIODS.current.find(
-      (p) => p.value === period.value
-    );
-    if (!targetPeriod) return;
+    const newList = [...movingAveragePeriodChartList];
+    const targetIndex = newList.findIndex((p) => p.value === period.value);
+    if (targetIndex === -1) return;
+
+    const targetPeriod = newList[targetIndex];
 
     if (targetPeriod.chartInstance) {
-      chartRef.current.removeSeries(targetPeriod.chartInstance);
-      targetPeriod.chartInstance = null;
+      chartRef.current?.removeSeries(targetPeriod.chartInstance);
+      newList[targetIndex] = { ...targetPeriod, chartInstance: null };
+    } else {
+      const maData = calculateMovingAverageSeriesData(candleData, period.value);
 
-      return;
+      const newChartInstance = chartRef.current?.addSeries(LineSeries, {
+        color: targetPeriod.color,
+        lineWidth: 1,
+      });
+
+      if (newChartInstance) {
+        newChartInstance.setData(maData);
+        newList[targetIndex] = {
+          ...targetPeriod,
+          chartInstance: newChartInstance,
+        };
+      }
     }
 
-    const maData = calculateMovingAverageSeriesData(candleData, period.value);
-
-    targetPeriod.chartInstance = chartRef.current.addSeries(LineSeries, {
-      color: "#26a69a",
-      lineWidth: 1,
-    });
-    targetPeriod.chartInstance.setData(maData);
-
-    setCurrentMovingAveragePeriod(period.value);
+    setMovingAveragePeriodChartList(newList);
   };
 
   return (
@@ -358,13 +362,11 @@ export default function CandlestickChart({ data }: { data: StockData }) {
             }}
           />
         </button>
-        {MOVING_AVERAGE_PERIODS.current.map((period) => (
+        {movingAveragePeriodChartList.map((period) => (
           <button
             key={period.value}
             onClick={() => addMovingAverageLine(period, data.interval)}
-            className={`default-btn ${
-              currentMovingAveragePeriod === period.value && "selected-btn"
-            }`}
+            className={`default-btn ${period.chartInstance && "selected-btn"}`}
             disabled={
               data.interval !== "1d" || candleData.length < period.value
             }

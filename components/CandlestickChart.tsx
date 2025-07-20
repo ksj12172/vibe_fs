@@ -275,7 +275,7 @@ export default function CandlestickChart({
         </div>
       </div>
 
-      {candleData.length > 0 && (
+      {data.interval === "1d" && candleData.length > 0 && (
         <OHLCAnalyzer
           data={candleData[candleData.length - 1]}
           isUSD={data.market_info.currency === "USD"}

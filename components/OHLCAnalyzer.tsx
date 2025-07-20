@@ -1,18 +1,24 @@
+import { DateTime } from "luxon";
+
 const formatPrice = (price: number, isUSD: boolean) => {
   return isUSD ? "$" + price.toLocaleString() : price.toLocaleString() + "원";
 };
 
 /**
- * Open, High, Low, Close 기준 분석
+ * Open, High, Low, Close 기준 분석 (1d 캔들 데이터만 해당)
  * 해석 참고: https://newneek.co/@saltylife/article/18561?utm_source=article&utm_medium=share&utm_content=18561
  */
 export default function OHLCAnalyzer({
-  data: { open, close, low, high },
+  data: { time, volume, open, close, low, high },
   isUSD,
 }: {
   data: CandleData;
   isUSD: boolean;
 }) {
+  const formattedDate = DateTime.fromMillis(time * 1000).toFormat(
+    "yyyy년 MM월 dd일"
+  );
+
   const totalRange = high - low;
   const isDoji = Math.abs(open - close) <= totalRange * 0.01;
   const isBullish = !isDoji && close > open;
@@ -20,35 +26,55 @@ export default function OHLCAnalyzer({
 
   const color = isDoji ? "#dee2e6" : isBullish ? "#ED5858" : "#5889ED";
 
-  const upperWickHeight = high - Math.max(open, close);
-  const lowerWickHeight = Math.min(open, close) - low;
-  const bodyHeight = Math.abs(open - close);
-  const totalHeight = upperWickHeight + lowerWickHeight + bodyHeight;
+  const upperWick = high - Math.max(open, close);
+  const lowerWick = Math.min(open, close) - low;
+  const bodySize = Math.abs(open - close);
+  const totalHeight = upperWick + lowerWick + bodySize;
+  const bodyRatio = bodySize / totalRange;
 
   let analysis = "";
 
   if (!isDoji) {
-    if (upperWickHeight > lowerWickHeight) {
-      analysis = isBullish
-        ? "약한 상승폭을 보였습니다."
-        : "강한 하락폭을 보였습니다.";
+    const isSimilar = Math.abs(upperWick - lowerWick) <= totalRange * 0.1;
+
+    analysis += "1️⃣ 꼬리 길이 비교 \n";
+
+    if (isSimilar) {
+      analysis +=
+        "윗꼬리와 아랫꼬리가 비슷합니다. \n 매수·매도 세력이 균형을 이뤘을 가능성이 있습니다. \n";
     } else {
-      analysis = isBullish
-        ? "강한 상승폭을 보였습니다. \n 다음 날에도 주가 상승 흐름이 이어질 가능성이 높습니다."
-        : "주가가 내려갔다가 강한 매수세로 저가보다는 오른채 마감했습니다. \n 상승할 여지가 남아있습니다.";
+      if (upperWick > lowerWick) {
+        analysis +=
+          "윗꼬리가 더 깁니다. \n 장중에 매수세가 있었지만, 종가에 가까워지며 매도 압력이 컸던 것으로 보입니다. \n";
+        analysis += isBullish
+          ? "약한 상승폭을 보였습니다. \n"
+          : "강한 하락폭을 보였습니다. \n";
+      } else {
+        analysis += "아랫꼬리가 더 깁니다. \n";
+        analysis += isBullish
+          ? "장중에 매도세가 있었지만, 이후 강한 매수세가 들어와 강한 상승폭을 보였습니다. \n 다음 날에도 주가 상승 흐름이 이어질 가능성이 높습니다. \n"
+          : "장중에 매도세가 있었지만, 강한 매수세가 들어와 저가보다는 오른채 마감했습니다. \n 상승할 여지가 남아있습니다. \n";
+      }
+    }
+    analysis += "\n 2️⃣ 몸통 크기 비교 \n";
+    if (bodyRatio > 0.7) {
+      analysis += `종가가 시가와 크게 벌어졌습니다. \n 몸통이 크고 꼬리가 짧은 강한 추세형 캔들입니다. \n ${
+        isBullish ? "매수세" : "매도세"
+      }가 힘을 잃지 않고 장을 끝까지 주도했습니다. \n 다음 날도 흐름이 이어질 가능성이 높습니다.`;
+    } else if (bodyRatio > 0.4) {
+      analysis += `몸통이 중간 크기이고 꼬리와 함께 방향성을 보여줍니다. \n`;
+    } else {
+      analysis += `몸통이 작고 꼬리가 긴 캔들입니다. \n 변동성에 비해 종가의 방향성이 약했습니다. \n`;
     }
   } else {
     // 십자형 도지
-    const isStandardDoji =
-      Math.abs(upperWickHeight - lowerWickHeight) <= totalRange * 0.1;
+    const isStandardDoji = Math.abs(upperWick - lowerWick) <= totalRange * 0.1;
     // 비석형 도지
     const isGravestoneDoji =
-      upperWickHeight >= totalRange * 0.6 &&
-      lowerWickHeight <= totalRange * 0.1;
+      upperWick >= totalRange * 0.6 && lowerWick <= totalRange * 0.1;
     // 잠자리형 도지
     const isDragonflyDoji =
-      upperWickHeight <= totalRange * 0.1 &&
-      lowerWickHeight >= totalRange * 0.6;
+      upperWick <= totalRange * 0.1 && lowerWick >= totalRange * 0.6;
 
     analysis =
       "시가와 종가가 비슷한 도지 캔들은 주가의 추세가 뒤집힐 수 있다는 신호입니다. \n";
@@ -92,10 +118,7 @@ export default function OHLCAnalyzer({
   return (
     <div style={{ marginTop: "20px" }}>
       <h3 style={{ margin: "10px 0" }}>OHLC 분석</h3>
-      <p style={{ fontSize: "small", margin: "10px 0" }}>
-        ❗️ 과거의 가격 데이터가 미래의 가격을 무조건 담보하지는 않으므로 참고만
-        하세요.
-      </p>
+      <p style={{ margin: "10px 0" }}>{formattedDate}</p>
       <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
         <div style={{ marginTop: "10px" }}>
           <div
@@ -109,23 +132,21 @@ export default function OHLCAnalyzer({
             <div
               style={{
                 width: "2px",
-                height:
-                  ((upperWickHeight / totalHeight) * 100).toFixed(2) + "%",
+                height: ((upperWick / totalHeight) * 100).toFixed(2) + "%",
                 backgroundColor: color,
               }}
             ></div>
             <div
               style={{
                 width: "20px",
-                height: ((bodyHeight / totalHeight) * 100).toFixed(2) + "%",
+                height: ((bodySize / totalHeight) * 100).toFixed(2) + "%",
                 backgroundColor: color,
               }}
             ></div>
             <div
               style={{
                 width: "2px",
-                height:
-                  ((lowerWickHeight / totalHeight) * 100).toFixed(2) + "%",
+                height: ((lowerWick / totalHeight) * 100).toFixed(2) + "%",
                 backgroundColor: color,
               }}
             ></div>
@@ -140,7 +161,7 @@ export default function OHLCAnalyzer({
         </div>
         <div>
           {orderedPriceList.map((price) => (
-            <div>
+            <div key={price.name}>
               <span className="text-gray-500">{price.name}: </span>
               <span className="ml-2 font-medium text-red-600">
                 {price.formattedValue}
@@ -148,8 +169,21 @@ export default function OHLCAnalyzer({
             </div>
           ))}
         </div>
-        <div style={{ whiteSpace: "pre-line" }}>{analysis}</div>
       </div>
+      <div style={{ marginTop: "20px", whiteSpace: "pre-line" }}>
+        {analysis}
+      </div>
+
+      <p
+        style={{
+          fontSize: "small",
+          margin: "20px 0",
+          textDecoration: "underline",
+        }}
+      >
+        ❗️ 과거의 가격 흐름이 미래의 수익을 보장하지는 않습니다. 투자 판단의
+        참고 자료로만 활용해 주세요.
+      </p>
     </div>
   );
 }

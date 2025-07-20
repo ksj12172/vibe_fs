@@ -4,36 +4,52 @@ const formatPrice = (price: number, isUSD: boolean) => {
   return isUSD ? "$" + price.toLocaleString() : price.toLocaleString() + "원";
 };
 
-/**
- * Open, High, Low, Close 기준 분석 (1d 캔들 데이터만 해당)
- * 해석 참고: https://newneek.co/@saltylife/article/18561?utm_source=article&utm_medium=share&utm_content=18561
- */
-export default function OHLCAnalyzer({
-  data: { time, volume, open, close, low, high },
-  isUSD,
-}: {
-  data: CandleData;
-  isUSD: boolean;
-}) {
-  const formattedDate = DateTime.fromMillis(time * 1000).toFormat(
-    "yyyy년 MM월 dd일"
-  );
-
+const getAnalysis = ({
+  open,
+  close,
+  low,
+  high,
+}: Pick<CandleData, "open" | "close" | "low" | "high">): string => {
   const totalRange = high - low;
   const isDoji = Math.abs(open - close) <= totalRange * 0.01;
   const isBullish = !isDoji && close > open;
-  const isBearish = !isDoji && close < open;
-
-  const color = isDoji ? "#dee2e6" : isBullish ? "#ED5858" : "#5889ED";
 
   const upperWick = high - Math.max(open, close);
   const lowerWick = Math.min(open, close) - low;
+
   const bodySize = Math.abs(open - close);
-  const totalHeight = upperWick + lowerWick + bodySize;
   const bodyRatio = bodySize / totalRange;
 
-  const isLogLowerWick =
+  const isLongLowerWick =
     lowerWick >= bodySize * 1.5 && upperWick <= bodySize * 0.5;
+  const tailThreshold = totalRange * 0.01;
+  const hasNoUpperWick = upperWick <= tailThreshold;
+
+  /**
+   * 장대 몸통
+   * 양봉 > 꾸준한 매수세
+   * 음봉 > 꾸준한 매도세
+   */
+  const isLongBody = bodySize >= totalRange * 0.6;
+
+  /**
+   * 장대 양봉 + 매수 주도형 케이스
+   */
+  if (isBullish && isLongBody && hasNoUpperWick) {
+    return "장대 양봉 + 매수 주도형 양봉입니다. \n (아랫꼬리 짧음) 초반 눌림이 있어 소폭 하락했습니다. \n 하지만 곧바로 매수세가 유입되며 시가를 돌파했습니다. \n 종가=고가 -> 종가 직전까지 매수세가 꾸준히 이어졌습니다. \n 매수자들이 이익 실현을 거의 하지 않았고, 더 상승할 여지를 남겨뒀습니다. \n 추세 전환 초기 or 돌파 시점에 자주 나오는 캔들로, 다음날 갭 상승 또는 추가 상승 가능성이 있습니다. \n ";
+  }
+
+  /**
+   * 장대 양봉 + 윗꼬리 & 아랫꼬리 모두 있는 매수 우위 캔들
+   */
+  if (
+    isBullish &&
+    isLongBody &&
+    upperWick > tailThreshold &&
+    lowerWick > tailThreshold
+  ) {
+    return "장대 양봉 + 윗꼬리 & 아랫꼬리 모두 있는 전형적인 매수 우위 캔들입니다.\n 일부 매도세가 유입되어 아랫꼬리가 형성되었습니다. \n 눌림 이후 매수세가 강하게 유입되며 반등했습니다. \n 고점 근접 후 일부 이익 실현이 이루어졌으나, 매수 주도로 상승 마감했습니다.\n 다음 날 추가 상승을 기대할 수 있는 긍정적 흐름입니다.\n";
+  }
 
   let analysis = "";
 
@@ -55,7 +71,7 @@ export default function OHLCAnalyzer({
       } else {
         analysis += "아랫꼬리가 더 깁니다. \n";
         if (isBullish) {
-          if (isLogLowerWick) {
+          if (isLongLowerWick) {
             analysis +=
               "장중에 매도세가 있었지만, 이후 강한 매수세가 들어와 강한 상승폭을 보였습니다. \n 저점이라면, 저가 매수세가 유입하여 반등 가능성, 지지선 확인 후 상승 전환 시도로 볼 수 있습니다. \n";
           } else {
@@ -70,7 +86,7 @@ export default function OHLCAnalyzer({
     }
 
     analysis += "\n 2️⃣ 몸통 크기 비교 \n";
-    if (bodyRatio > 0.7) {
+    if (isLongBody) {
       analysis += `종가가 시가와 크게 벌어졌습니다. \n 몸통이 크고 꼬리가 짧은 강한 추세형 캔들입니다. \n`;
 
       if (isBullish) {
@@ -111,6 +127,37 @@ export default function OHLCAnalyzer({
         "잠자리형 도지 (시가 ≒  종가 ≒  고가) \n 강한 매수세가 들어와 매도세를 극복했습니다. \n 하락 추세의 저점에서 나타날 경우 상승 전환 신호일 수 있습니다. \n 주가가 상승할 가능성이 높습니다.";
     }
   }
+
+  return analysis;
+};
+
+/**
+ * Open, High, Low, Close 기준 분석 (1d 캔들 데이터만 해당)
+ * 해석 참고: https://newneek.co/@saltylife/article/18561?utm_source=article&utm_medium=share&utm_content=18561
+ */
+export default function OHLCAnalyzer({
+  data: { time, volume, open, close, low, high },
+  isUSD,
+}: {
+  data: CandleData;
+  isUSD: boolean;
+}) {
+  const formattedDate = DateTime.fromMillis(time * 1000).toFormat(
+    "yyyy년 MM월 dd일"
+  );
+
+  const totalRange = high - low;
+  const isDoji = Math.abs(open - close) <= totalRange * 0.01;
+  const isBearish = !isDoji && close < open;
+  const isBullish = !isDoji && close > open;
+  const color = isDoji ? "#dee2e6" : isBullish ? "#ED5858" : "#5889ED";
+
+  const upperWick = high - Math.max(open, close);
+  const lowerWick = Math.min(open, close) - low;
+  const bodySize = Math.abs(open - close);
+  const totalHeight = upperWick + lowerWick + bodySize;
+
+  const analysis = getAnalysis({ open, close, low, high });
 
   const priceList = [
     {

@@ -32,6 +32,9 @@ export default function OHLCAnalyzer({
   const totalHeight = upperWick + lowerWick + bodySize;
   const bodyRatio = bodySize / totalRange;
 
+  const isLogLowerWick =
+    lowerWick >= bodySize * 1.5 && upperWick <= bodySize * 0.5;
+
   let analysis = "";
 
   if (!isDoji) {
@@ -51,16 +54,35 @@ export default function OHLCAnalyzer({
           : "강한 하락폭을 보였습니다. \n";
       } else {
         analysis += "아랫꼬리가 더 깁니다. \n";
-        analysis += isBullish
-          ? "장중에 매도세가 있었지만, 이후 강한 매수세가 들어와 강한 상승폭을 보였습니다. \n 다음 날에도 주가 상승 흐름이 이어질 가능성이 높습니다. \n"
-          : "장중에 매도세가 있었지만, 강한 매수세가 들어와 저가보다는 오른채 마감했습니다. \n 상승할 여지가 남아있습니다. \n";
+        if (isBullish) {
+          if (isLogLowerWick) {
+            analysis +=
+              "장중에 매도세가 있었지만, 이후 강한 매수세가 들어와 강한 상승폭을 보였습니다. \n 저점이라면, 저가 매수세가 유입하여 반등 가능성, 지지선 확인 후 상승 전환 시도로 볼 수 있습니다. \n";
+          } else {
+            analysis +=
+              "장중에 매도세가 있었지만, 이후 매수세가 들어와 상승했습니다. \n";
+          }
+        } else {
+          analysis +=
+            "장중에 매도세가 있었지만, 매수세가 들어와 저가보다는 오른채 마감했습니다.\n";
+        }
       }
     }
+
     analysis += "\n 2️⃣ 몸통 크기 비교 \n";
     if (bodyRatio > 0.7) {
-      analysis += `종가가 시가와 크게 벌어졌습니다. \n 몸통이 크고 꼬리가 짧은 강한 추세형 캔들입니다. \n ${
-        isBullish ? "매수세" : "매도세"
-      }가 힘을 잃지 않고 장을 끝까지 주도했습니다. \n 다음 날도 흐름이 이어질 가능성이 높습니다.`;
+      analysis += `종가가 시가와 크게 벌어졌습니다. \n 몸통이 크고 꼬리가 짧은 강한 추세형 캔들입니다. \n`;
+
+      if (isBullish) {
+        analysis +=
+          "매수세가 힘을 잃지 않고 장을 끝까지 주도했습니다. \n 다음 날도 흐름이 이어질 가능성이 높습니다.";
+      } else {
+        // todo. else 케이스 더 추가할 필요 있음
+        if (upperWick < lowerWick) {
+          analysis +=
+            "하락 의지가 강한 음봉입니다. \n 매도세가 강했고, 추가 하락 가능성도 있습니다. \n 단, 아랫꼬리가 있다는 건 소폭 매수세 방어 시도도 있었음을 의미합니다.\n";
+        }
+      }
     } else if (bodyRatio > 0.4) {
       analysis += `몸통이 중간 크기이고 꼬리와 함께 방향성을 보여줍니다. \n`;
     } else {

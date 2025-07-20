@@ -82,13 +82,7 @@ const convertToKSTBusinessDay = (
   };
 };
 
-export default function CandlestickChart({
-  data,
-  displayName,
-}: {
-  data: StockData;
-  displayName: string;
-}) {
+export default function CandlestickChart({ data }: { data: StockData }) {
   const candleData = data.candles;
 
   const highestPrice = getTargetPrice({
@@ -240,15 +234,10 @@ export default function CandlestickChart({
         chartRef.current = null;
       }
     };
-  }, [data, displayName]);
+  }, [data]);
 
   return (
     <div className="w-full relative">
-      <div className="mb-4">
-        <h3 className="text-lg font-semibold text-gray-800">
-          {displayName} 캔들스틱 차트
-        </h3>
-      </div>
       <div
         ref={chartContainerRef}
         className="w-full border border-gray-200 rounded-lg"

@@ -249,6 +249,12 @@ function ChartPageContent() {
             {stockInfo ? stockInfo.symbol_name : "알 수 없음"}
           </h1>
         </div>
+
+        <div style={{ margin: "20px 0" }}>
+          <h2 className="text-lg font-semibold text-gray-800">
+            {stockInfo?.displayName} 캔들스틱 차트
+          </h2>
+        </div>
         {stockInfo?.displayName && (
           <p className="text-lg text-gray-600">
             종목명: {stockInfo?.displayName}
@@ -263,9 +269,7 @@ function ChartPageContent() {
           className="mb-6 p-4 bg-gray-50 rounded-lg"
           style={{ margin: "15px 0" }}
         >
-          <h2 className="text-xl font-semibold mb-3 text-gray-800">
-            종목 정보
-          </h2>
+          <h4 style={{ margin: "10px 0" }}>종목 정보</h4>
 
           {stockInfo.website && (
             <div className="mt-3">
@@ -339,10 +343,7 @@ function ChartPageContent() {
             </div>
           </div>
         ) : chartData && chartData.candles && chartData.candles.length > 0 ? (
-          <CandlestickChart
-            data={chartData}
-            displayName={stockInfo?.displayName || ""}
-          />
+          <CandlestickChart data={chartData} />
         ) : (
           <div className="flex items-center justify-center h-96">
             <p className="text-gray-600">차트 데이터가 없습니다.</p>

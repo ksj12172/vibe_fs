@@ -12,6 +12,8 @@ import {
 } from "lightweight-charts";
 import React, { useEffect, useRef, useState } from "react";
 import OHLCAnalyzer from "./OHLCAnalyzer";
+import Tooltip from "./Tooltip";
+import { IoMdInformationCircleOutline } from "react-icons/io";
 
 type Currency = "USD" | "KRW";
 
@@ -145,6 +147,12 @@ export default function CandlestickChart({ data }: { data: StockData }) {
   const [currentMovingAveragePeriod, setCurrentMovingAveragePeriod] = useState<
     number | null
   >(null);
+
+  const [clickedPosition, setClickedPosition] = useState<{
+    x: number;
+    y: number;
+  } | null>(null);
+
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const candlestickSeriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
@@ -318,22 +326,49 @@ export default function CandlestickChart({ data }: { data: StockData }) {
       />
 
       {/* 이동 평균선 */}
-      {data.interval === "1d" && (
-        <div style={{ display: "flex", margin: "20px 0" }}>
-          {MOVING_AVERAGE_PERIODS.map((period) => (
-            <button
-              key={period}
-              onClick={() => addMovingAverageLine(period, data.interval)}
-              className={`default-btn ${
-                currentMovingAveragePeriod === period && "selected-btn"
-              }`}
-              disabled={candleData.length < period}
-            >
-              {Number.isNaN(period) ? "이동평균선 제거" : period + "일"}
-            </button>
-          ))}
-        </div>
-      )}
+      <div style={{ display: "flex", margin: "20px 0" }}>
+        <button className="default-btn">
+          🐚 이동평균선{" "}
+          <IoMdInformationCircleOutline
+            style={{ marginLeft: "3px", cursor: "pointer" }}
+            onClick={(e) => {
+              const rect = e.currentTarget.getBoundingClientRect();
+
+              // 아이콘이 버튼의 오른쪽 끝에 위치하므로 그 위치를 계산
+              const iconX = rect.right - 20; // 버튼 오른쪽에서 20px 정도 안쪽 (아이콘 중심)
+              const iconY = rect.bottom;
+
+              // 툴팁 기본 위치 (아이콘 기준으로 중앙 정렬)
+              const tooltipWidth = 280;
+              const tooltipX = iconX - tooltipWidth / 2; // 툴팁을 아이콘 중심에 맞춤
+
+              // 화살표는 아이콘 위치에 맞춰짐 (툴팁 시작점에서 아이콘까지의 거리)
+              const arrowOffset = iconX - tooltipX;
+
+              if (clickedPosition) {
+                setClickedPosition(null);
+              } else {
+                setClickedPosition({
+                  x: e.clientX,
+                  y: e.clientY,
+                });
+              }
+            }}
+          />
+        </button>
+        {MOVING_AVERAGE_PERIODS.map((period) => (
+          <button
+            key={period}
+            onClick={() => addMovingAverageLine(period, data.interval)}
+            className={`default-btn ${
+              currentMovingAveragePeriod === period && "selected-btn"
+            }`}
+            disabled={data.interval !== "1d" || candleData.length < period}
+          >
+            {Number.isNaN(period) ? "제거" : period + "일"}
+          </button>
+        ))}
+      </div>
 
       <div style={{ margin: "20px 0" }}>
         <div>
@@ -362,6 +397,16 @@ export default function CandlestickChart({ data }: { data: StockData }) {
           isUSD={data.market_info.currency === "USD"}
         ></OHLCAnalyzer>
       )}
+
+      <Tooltip
+        isVisible={clickedPosition !== null}
+        clickedPosition={clickedPosition || { x: 0, y: 0 }}
+        onClose={() => setClickedPosition(null)}
+      >
+        주가의 일정 기간 평균값을 선으로 표시합니다.
+        <br />
+        5일, 20일, 60일, 120일 이동평균선을 제공합니다.
+      </Tooltip>
     </div>
   );
 }

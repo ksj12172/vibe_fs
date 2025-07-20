@@ -307,6 +307,7 @@ function ChartPageContent() {
       {/* 기간 선택 버튼 */}
       <div className="mb-6" style={{ margin: "15px 0" }}>
         <div className="button-container">
+          <div className="default-btn pointer-none">🐳 기간</div>
           {PERIOD_OPTIONS.map((option) => (
             <button
               key={option.value}

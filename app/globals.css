@@ -1006,6 +1006,7 @@ section h2 {
 
 .default-btn {
   display: flex;
+  align-items: center;
   padding: 8px 16px;
   border-radius: 8px;
   cursor: pointer;
@@ -1014,8 +1015,13 @@ section h2 {
   margin-right: 5px;
 }
 
+.pointer-none {
+  pointer-events: none;
+}
+
 .selected-btn {
-  background-color: #dee2e6;
+  background-color: #f0f9ff;
+  color: #1967d2;
 }
 
 .etf-btn {

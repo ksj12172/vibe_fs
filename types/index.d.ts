@@ -97,6 +97,16 @@ declare global {
     time: number; // 1752192000 (timestamp)
     volume: number;
   }
+
+  interface IndicatorInfo {
+    title: string;
+    icon: string;
+    description: string;
+    enDescription: string;
+    details: string;
+    unit: string;
+    source: string;
+  }
 }
 
 // 이 파일을 모듈로 만들기 위한 빈 export

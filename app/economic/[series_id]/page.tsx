@@ -25,27 +25,28 @@ interface FredApiResponse {
   };
 }
 
-const ECONOMIC_SERIES_INFO: Record<string, { title: string; description: string }> = {
+const ECONOMIC_SERIES_INFO: Record<string, { title: string; description: string; website: string }> = {
   M2SL: {
     title: "M2 통화량 (M2 Money Supply)",
-    description: "광의의 통화공급량으로 현금, 당좌예금, 저축예금, 단기 금융상품 등을 포함"
+    description: "광의의 통화공급량으로 현금, 당좌예금, 저축예금, 단기 금융상품 등을 포함",
+    website: "https://fred.stlouisfed.org/series/M2SL"
   },
-  GDP: {
-    title: "실질 국내총생산 (Real GDP)",
-    description: "인플레이션을 제거한 실질 국내총생산"
-  },
-  UNRATE: {
-    title: "실업률 (Unemployment Rate)",
-    description: "미국의 계절 조정된 실업률"
-  },
-  FEDFUNDS: {
-    title: "연방기금금리 (Federal Funds Rate)",
-    description: "미국 연방준비제도의 기준금리"
-  },
-  CPIAUCSL: {
-    title: "소비자물가지수 (Consumer Price Index)",
-    description: "모든 도시 소비자 대상 소비자물가지수"
-  }
+  // GDP: {
+  //   title: "실질 국내총생산 (Real GDP)",
+  //   description: "인플레이션을 제거한 실질 국내총생산"
+  // },
+  // UNRATE: {
+  //   title: "실업률 (Unemployment Rate)",
+  //   description: "미국의 계절 조정된 실업률"
+  // },
+  // FEDFUNDS: {
+  //   title: "연방기금금리 (Federal Funds Rate)",
+  //   description: "미국 연방준비제도의 기준금리"
+  // },
+  // CPIAUCSL: {
+  //   title: "소비자물가지수 (Consumer Price Index)",
+  //   description: "모든 도시 소비자 대상 소비자물가지수"
+  // }
 };
 
 export default function EconomicPage() {
@@ -163,37 +164,15 @@ export default function EconomicPage() {
           {seriesInfo.title}
         </h1>
         <p className="text-gray-600 mb-4">{seriesInfo.description}</p>
-        <div className="text-sm text-gray-500">
-          <span>서버: {economicData.data.server}</span>
-          <span className="mx-2">•</span>
-          <span>업데이트: {new Date(economicData.data.timestamp).toLocaleString('ko-KR')}</span>
-        </div>
       </div>
 
       <div className="bg-white rounded-lg shadow-sm border p-6">
         <EconomicIndicators
           seriesId={economicData.data.series_id}
-          title={seriesInfo.title}
+          title={economicData.data.title}
           data={economicData.data.data}
+          website={seriesInfo.website}
         />
-      </div>
-
-      <div className="mt-8 bg-gray-50 rounded-lg p-6">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">데이터 정보</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-          <div>
-            <span className="font-medium text-gray-600">Series ID:</span>
-            <span className="ml-2">{economicData.data.series_id}</span>
-          </div>
-          <div>
-            <span className="font-medium text-gray-600">총 데이터 포인트:</span>
-            <span className="ml-2">{economicData.data.total_count}개</span>
-          </div>
-          <div className="md:col-span-2">
-            <span className="font-medium text-gray-600">데이터 출처:</span>
-            <span className="ml-2">Federal Reserve Economic Data (FRED)</span>
-          </div>
-        </div>
       </div>
     </div>
   );

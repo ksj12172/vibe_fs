@@ -9,6 +9,8 @@ import {
   UTCTimestamp,
 } from "lightweight-charts";
 import React, { useEffect, useRef, useState } from "react";
+import EconomicIndicatorDescription from "./EconomicIndicatorDescription";
+import economicIndicatorsData from "../data/economic-indicators.json";
 
 interface EconomicData {
   time: number;
@@ -19,6 +21,7 @@ interface EconomicIndicatorsProps {
   seriesId: string;
   title: string;
   data: EconomicData[];
+  website: string;
 }
 
 const formatValue = (value: number): string => {
@@ -54,7 +57,10 @@ export default function EconomicIndicators({
   seriesId,
   title,
   data,
+  website,
 }: EconomicIndicatorsProps) {
+  const indicatorInfo = economicIndicatorsData[seriesId as keyof typeof economicIndicatorsData] as IndicatorInfo;
+
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const lineSeriesRef = useRef<ISeriesApi<"Line"> | null>(null);
@@ -185,9 +191,8 @@ export default function EconomicIndicators({
 
   return (
     <div className="w-full relative">
-      <div className="mb-4">
-        <h3 className="text-xl font-semibold text-gray-800">{title}</h3>
-        <p className="text-sm text-gray-600">Series ID: {seriesId}</p>
+      <div style={{ margin: "1rem 0" }}>
+        <h3 className="text-xl font-semibold text-gray-800">{title}({seriesId})</h3>
       </div>
 
       <div
@@ -197,6 +202,10 @@ export default function EconomicIndicators({
       />
 
       <div style={{ margin: "20px 0" }}>
+        <div style={{marginBottom: "10px"}}>
+          <span className="text-gray-500" style={{color: "#28a745"}}>단위: </span>
+          <span className="ml-2 font-medium">{indicatorInfo.unit}</span>
+        </div>
         <div>
           <span className="text-gray-500">데이터 포인트:</span>
           <span className="ml-2 font-medium">{data?.length || 0}개</span>
@@ -227,48 +236,7 @@ export default function EconomicIndicators({
         </div>
       </div>
 
-      {seriesId === "M2SL" && (
-        <div
-          style={{
-            marginTop: "20px",
-            padding: "16px",
-            backgroundColor: "#f8f9fa",
-            borderRadius: "8px",
-            fontSize: "14px",
-            lineHeight: "1.6",
-          }}
-        >
-          <h4
-            style={{ margin: "0 0 12px 0", color: "#495057", fontSize: "16px" }}
-          >
-            📊 M2 통화량 (M2 Money Supply)
-          </h4>
-          <div style={{ display: "grid", gap: "8px" }}>
-            <div>
-              <strong style={{ color: "#007bff" }}>M2 통화량</strong>은 현금, 당좌예금, 
-              저축예금, 단기 금융상품 등을 포함한 광의의 통화공급량입니다.
-            </div>
-            <div>
-              M2는 경제의 유동성과 인플레이션 압력을 측정하는 중요한 지표로 사용됩니다.
-            </div>
-            <div>
-              <strong style={{ color: "#28a745" }}>단위:</strong> 10억 달러 (Billions of Dollars)
-            </div>
-          </div>
-          <div
-            style={{
-              marginTop: "12px",
-              padding: "8px",
-              backgroundColor: "#e9ecef",
-              borderRadius: "4px",
-              fontSize: "12px",
-              color: "#6c757d",
-            }}
-          >
-            💡 데이터 출처: Federal Reserve Economic Data (FRED)
-          </div>
-        </div>
-      )}
+      <EconomicIndicatorDescription indicatorInfo={indicatorInfo} />
     </div>
   );
 } 

@@ -304,6 +304,14 @@ section {
   margin-bottom: 2rem;
 }
 
+section.quick-access {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
 section h2 {
   color: var(--primary-color);
   margin-bottom: 1.5rem;
@@ -1027,12 +1035,21 @@ section h2 {
 .etf-btn {
   padding: 0.75rem 1.5rem;
   margin: 5px 5px 5px 0;
-  border: none;
+  /** 호버 effect 넣으면서 바깥쪽 컨테이너 사이즈가 호버했을 때 늘었다가 마우스 빼면 줄었다 하는 현상이 발생하여 투명 테두리를 넣는다*/
+  border: 1px solid transparent;
   border-radius: 6px;
   cursor: pointer;
   font-size: 0.9rem;
   font-weight: 500;
   transition: all 0.2s ease;
+  background-color: #e9ecef;
+}
+
+.quick-access .etf-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  background-color: #ffffff;
+  border-color: #dee2e6;
 }
 
 .text-with-line {

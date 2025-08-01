@@ -57,14 +57,7 @@ export default function HomePage() {
       <main>
         {/* 경제 지표 바로가기 */}
         <section
-          className="economic-quick-access"
-          style={{
-            marginTop: "2rem",
-            padding: "1.5rem",
-            backgroundColor: "#f0f8ff",
-            borderRadius: "8px",
-            border: "1px solid #b3d9ff",
-          }}
+          className="quick-access"
         >
           <h3
             style={{
@@ -120,14 +113,7 @@ export default function HomePage() {
 
         {/* ETF 차트 바로가기 */}
         <section
-          className="etf-quick-access"
-          style={{
-            marginTop: "2rem",
-            padding: "1.5rem",
-            backgroundColor: "#f8f9fa",
-            borderRadius: "8px",
-            border: "1px solid #e9ecef",
-          }}
+          className="quick-access"
         >
           <h3
             style={{

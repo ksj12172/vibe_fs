@@ -1032,7 +1032,7 @@ section h2 {
   color: #1967d2;
 }
 
-.etf-btn {
+.quick-btn {
   padding: 0.75rem 1.5rem;
   margin: 5px 5px 5px 0;
   /** 호버 effect 넣으면서 바깥쪽 컨테이너 사이즈가 호버했을 때 늘었다가 마우스 빼면 줄었다 하는 현상이 발생하여 투명 테두리를 넣는다*/
@@ -1045,7 +1045,7 @@ section h2 {
   background-color: #e9ecef;
 }
 
-.quick-access .etf-btn:hover {
+.quick-access .quick-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   background-color: #ffffff;

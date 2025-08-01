@@ -73,7 +73,7 @@ export default function HomePage() {
             <div className="full-width">
               <button
                 onClick={() => handleEconomicClick("M2SL")}
-                className="etf-btn"
+                className="quick-btn"
                 style={{
                   color: "#0066cc",
                 }}
@@ -82,7 +82,7 @@ export default function HomePage() {
               </button>
               <button
                 onClick={() => handleEconomicClick("UNRATE")}
-                className="etf-btn"
+                className="quick-btn"
                 style={{
                   color: "#0066cc",
                 }}
@@ -91,7 +91,7 @@ export default function HomePage() {
               </button>
               <button
                 onClick={() => handleEconomicClick("FEDFUNDS")}
-                className="etf-btn"
+                className="quick-btn"
                 style={{
                   color: "#0066cc",
                 }}
@@ -100,7 +100,7 @@ export default function HomePage() {
               </button>
               <button
                 onClick={() => handleEconomicClick("CPIAUCSL")}
-                className="etf-btn"
+                className="quick-btn"
                 style={{
                   color: "#0066cc",
                 }}
@@ -131,7 +131,7 @@ export default function HomePage() {
                 <button
                   key={item.stockCode}
                   onClick={() => handleStockClick(item.stockCode)}
-                  className="etf-btn"
+                  className="quick-btn"
                   style={{
                     color: COLOR.korea,
                   }}
@@ -145,7 +145,7 @@ export default function HomePage() {
                 <button
                   key={item.stockCode}
                   onClick={() => handleStockClick(item.stockCode)}
-                  className="etf-btn"
+                  className="quick-btn"
                   style={{
                     color: COLOR.us,
                   }}
@@ -158,7 +158,7 @@ export default function HomePage() {
               {ETF_TICKER_LIST.china.map((item) => (
                 <button
                   onClick={() => handleStockClick(item.stockCode)}
-                  className="etf-btn"
+                  className="quick-btn"
                   style={{
                     color: COLOR.china,
                   }}
@@ -172,7 +172,7 @@ export default function HomePage() {
                 <button
                   key={item.stockCode}
                   onClick={() => handleStockClick(item.stockCode)}
-                  className="etf-btn"
+                  className="quick-btn"
                   style={{ color: COLOR.world }}
                 >
                   🌏 {item.name}
@@ -184,7 +184,7 @@ export default function HomePage() {
                 <button
                   key={item.stockCode}
                   onClick={() => handleStockClick(item.stockCode)}
-                  className="etf-btn"
+                  className="quick-btn"
                   style={{ color: COLOR.world }}
                 >
                   🌝 {item.name}

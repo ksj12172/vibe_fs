@@ -4,6 +4,7 @@ import { Suspense, useState } from "react";
 import { useRouter } from "next/navigation";
 import StockSearch from "../components/StockSearch";
 import ErrorSection from "../components/ErrorSection";
+import QuickAccessToFredData from "../components/QuickAccessToFredData";
 
 const COLOR = {
   korea: "#007BFF",
@@ -47,82 +48,15 @@ export default function HomePage() {
     router.push(`/chart/${stockCode}?period=3mo`);
   };
 
-  const handleEconomicClick = (seriesId) => {
-    // 경제 지표 페이지로 이동
-    router.push(`/economic/${seriesId}`);
-  };
-
   return (
     <div className="container">
       <main>
         {/* 경제 지표 바로가기 */}
-        <section
-          className="quick-access"
-        >
-          <h3
-            style={{
-              marginBottom: "1rem",
-              color: "#495057",
-              fontSize: "1.2rem",
-              fontWeight: "500",
-            }}
-          >
-            📊 경제 지표 바로가기
-          </h3>
-          <div>
-            <div className="full-width">
-              <button
-                onClick={() => handleEconomicClick("M2SL")}
-                className="quick-btn"
-                style={{
-                  color: "#0066cc",
-                }}
-              >
-                💰 M2 통화량
-              </button>
-              <button
-                onClick={() => handleEconomicClick("UNRATE")}
-                className="quick-btn"
-                style={{
-                  color: "#0066cc",
-                }}
-              >
-                👥 실업률
-              </button>
-              <button
-                onClick={() => handleEconomicClick("FEDFUNDS")}
-                className="quick-btn"
-                style={{
-                  color: "#0066cc",
-                }}
-              >
-                📈 연방기금금리
-              </button>
-              <button
-                onClick={() => handleEconomicClick("CPIAUCSL")}
-                className="quick-btn"
-                style={{
-                  color: "#0066cc",
-                }}
-              >
-                📊 소비자물가지수
-              </button>
-            </div>
-          </div>
-        </section>
+        <QuickAccessToFredData />
 
         {/* ETF 차트 바로가기 */}
-        <section
-          className="quick-access"
-        >
-          <h3
-            style={{
-              marginBottom: "1rem",
-              color: "#495057",
-              fontSize: "1.2rem",
-              fontWeight: "500",
-            }}
-          >
+        <section className="quick-access">
+          <h3 className="title">
             📈 차트 바로가기
           </h3>
           <div>

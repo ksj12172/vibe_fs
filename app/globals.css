@@ -312,6 +312,13 @@ section.quick-access {
   border: 1px solid #e9ecef;
 }
 
+section.quick-access .title {
+  margin-bottom: 1rem;
+  color: #495057;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
 section h2 {
   color: var(--primary-color);
   margin-bottom: 1.5rem;
@@ -1032,6 +1039,7 @@ section h2 {
   color: #1967d2;
 }
 
+
 .quick-btn {
   padding: 0.75rem 1.5rem;
   margin: 5px 5px 5px 0;
@@ -1043,6 +1051,7 @@ section h2 {
   font-weight: 500;
   transition: all 0.2s ease;
   background-color: #e9ecef;
+  color: #0066cc;
 }
 
 .quick-access .quick-btn:hover {

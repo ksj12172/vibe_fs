@@ -21,7 +21,7 @@ export default function QuickAccessToFredData() {
                 onClick={() => handleEconomicClick("M2SL")}
                 className="quick-btn"
               >
-                💰 M2 통화량
+                💰 미국 M2 통화량 (M2SL)
               </button>
               <button
                 onClick={() => handleEconomicClick("UNRATE")}

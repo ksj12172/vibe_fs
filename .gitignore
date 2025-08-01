@@ -136,7 +136,6 @@ dist
 .pnp.*
 
 # 프로젝트 관련 큰 파일들
-data/
 downloads/
 *.db
 *.sqlite

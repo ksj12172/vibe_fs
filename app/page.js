@@ -47,9 +47,77 @@ export default function HomePage() {
     router.push(`/chart/${stockCode}?period=3mo`);
   };
 
+  const handleEconomicClick = (seriesId) => {
+    // 경제 지표 페이지로 이동
+    router.push(`/economic/${seriesId}`);
+  };
+
   return (
     <div className="container">
       <main>
+        {/* 경제 지표 바로가기 */}
+        <section
+          className="economic-quick-access"
+          style={{
+            marginTop: "2rem",
+            padding: "1.5rem",
+            backgroundColor: "#f0f8ff",
+            borderRadius: "8px",
+            border: "1px solid #b3d9ff",
+          }}
+        >
+          <h3
+            style={{
+              marginBottom: "1rem",
+              color: "#495057",
+              fontSize: "1.2rem",
+              fontWeight: "500",
+            }}
+          >
+            📊 경제 지표 바로가기
+          </h3>
+          <div>
+            <div className="full-width">
+              <button
+                onClick={() => handleEconomicClick("M2SL")}
+                className="etf-btn"
+                style={{
+                  color: "#0066cc",
+                }}
+              >
+                💰 M2 통화량
+              </button>
+              <button
+                onClick={() => handleEconomicClick("UNRATE")}
+                className="etf-btn"
+                style={{
+                  color: "#0066cc",
+                }}
+              >
+                👥 실업률
+              </button>
+              <button
+                onClick={() => handleEconomicClick("FEDFUNDS")}
+                className="etf-btn"
+                style={{
+                  color: "#0066cc",
+                }}
+              >
+                📈 연방기금금리
+              </button>
+              <button
+                onClick={() => handleEconomicClick("CPIAUCSL")}
+                className="etf-btn"
+                style={{
+                  color: "#0066cc",
+                }}
+              >
+                📊 소비자물가지수
+              </button>
+            </div>
+          </div>
+        </section>
+
         {/* ETF 차트 바로가기 */}
         <section
           className="etf-quick-access"

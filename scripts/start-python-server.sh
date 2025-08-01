@@ -24,10 +24,17 @@ export PYTHON_API_PORT=5001
 export ENV=development
 
 # 서버 시작
-echo "🚀 Starting Flask server on http://localhost:$PYTHON_API_PORT"
-echo "📊 Available endpoints:"
-echo "   - GET /api/stock-data/035720?period=3mo&interval=1d"
+echo "🚀 Starting Unified Flask server on http://localhost:$PYTHON_API_PORT"
+echo "📊 Available Stock API endpoints:"
+echo "   - GET /api/stock-data/<stock_code>?period=3mo&interval=1d"
+echo "   - GET /cache/stats"
+echo "   - POST /cache/clear"
+echo "   - POST /cache/clear-expired"
+echo "📈 Available FRED API endpoints:"
+echo "   - GET /api/fred-data/<series_id>?start_date=&end_date="
+echo "🔧 System endpoints:"
 echo "   - GET /health"
+echo "   - GET /api/status"
 echo ""
 echo "🔧 Environment:"
 echo "   - PYTHON_API_PORT=$PYTHON_API_PORT"
@@ -35,4 +42,4 @@ echo ""
 echo "Press Ctrl+C to stop the server"
 echo ""
 
-python stock_api.py 
+python main.py 

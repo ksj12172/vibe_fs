@@ -29,6 +29,13 @@ const nextConfig = {
             ? "http://localhost:5001/api/stock-data/:code"
             : "/api/stock-data/:code",
       },
+      {
+        source: "/api/fred-data/:series_id",
+        destination:
+          process.env.NODE_ENV === "development"
+            ? "http://localhost:5001/api/fred-data/:series_id"
+            : "/api/fred-data/:series_id",
+      },
     ];
   },
 };

@@ -100,12 +100,13 @@ declare global {
 
   interface IndicatorInfo {
     title: string;
-    icon: string;
+    icon?: string;
     description: string;
-    enDescription: string;
-    details: string;
-    unit: string;
-    source: string;
+    enDescription?: string;
+    details?: string;
+    unit?: string;
+    source?: string;
+    website?: string;
   }
 }
 

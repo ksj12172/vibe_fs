@@ -21,7 +21,7 @@ interface EconomicIndicatorsProps {
   seriesId: string;
   title: string;
   data: EconomicData[];
-  website: string;
+  indicatorInfo: IndicatorInfo;
 }
 
 const formatValue = (value: number): string => {
@@ -57,10 +57,8 @@ export default function EconomicIndicators({
   seriesId,
   title,
   data,
-  website,
+  indicatorInfo
 }: EconomicIndicatorsProps) {
-  const indicatorInfo = economicIndicatorsData[seriesId as keyof typeof economicIndicatorsData] as IndicatorInfo;
-
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const lineSeriesRef = useRef<ISeriesApi<"Line"> | null>(null);

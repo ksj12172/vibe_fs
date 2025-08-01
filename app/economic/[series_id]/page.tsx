@@ -3,6 +3,7 @@
 import { useParams, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import EconomicIndicators from "../../../components/EconomicIndicators";
+import economicIndicatorsData from "../../../data/economic-indicators.json";
 
 interface EconomicData {
   time: number;
@@ -25,30 +26,6 @@ interface FredApiResponse {
   };
 }
 
-const ECONOMIC_SERIES_INFO: Record<string, { title: string; description: string; website: string }> = {
-  M2SL: {
-    title: "M2 통화량 (M2 Money Supply)",
-    description: "광의의 통화공급량으로 현금, 당좌예금, 저축예금, 단기 금융상품 등을 포함",
-    website: "https://fred.stlouisfed.org/series/M2SL"
-  },
-  // GDP: {
-  //   title: "실질 국내총생산 (Real GDP)",
-  //   description: "인플레이션을 제거한 실질 국내총생산"
-  // },
-  // UNRATE: {
-  //   title: "실업률 (Unemployment Rate)",
-  //   description: "미국의 계절 조정된 실업률"
-  // },
-  // FEDFUNDS: {
-  //   title: "연방기금금리 (Federal Funds Rate)",
-  //   description: "미국 연방준비제도의 기준금리"
-  // },
-  // CPIAUCSL: {
-  //   title: "소비자물가지수 (Consumer Price Index)",
-  //   description: "모든 도시 소비자 대상 소비자물가지수"
-  // }
-};
-
 export default function EconomicPage() {
   const params = useParams();
   const searchParams = useSearchParams();
@@ -58,7 +35,7 @@ export default function EconomicPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const seriesInfo = ECONOMIC_SERIES_INFO[seriesId] || {
+  const seriesInfo = economicIndicatorsData[seriesId as keyof typeof economicIndicatorsData] || {
     title: `FRED Series: ${seriesId}`,
     description: "경제 지표 데이터"
   };
@@ -163,7 +140,6 @@ export default function EconomicPage() {
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
           {seriesInfo.title}
         </h1>
-        <p className="text-gray-600 mb-4">{seriesInfo.description}</p>
       </div>
 
       <div className="bg-white rounded-lg shadow-sm border p-6">
@@ -171,7 +147,7 @@ export default function EconomicPage() {
           seriesId={economicData.data.series_id}
           title={economicData.data.title}
           data={economicData.data.data}
-          website={seriesInfo.website}
+          indicatorInfo={seriesInfo}
         />
       </div>
     </div>

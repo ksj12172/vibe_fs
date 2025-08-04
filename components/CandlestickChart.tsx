@@ -11,6 +11,7 @@ import {
   UTCTimestamp,
   HistogramData,
   HistogramSeries,
+  CreatePriceLineOptions,
 } from "lightweight-charts";
 import React, { useEffect, useRef, useState } from "react";
 import OHLCAnalyzer from "./OHLCAnalyzer";
@@ -30,6 +31,61 @@ interface MovingAveragePeriod {
   chartInstance: ISeriesApi<"Line"> | null;
   color: string;
 }
+
+const minMaxAvgPrice = (
+  candleData: CandleDataWithModifiedTime[]
+): {
+  minPriceLineOption: CreatePriceLineOptions;
+  maxPriceLineOption: CreatePriceLineOptions;
+  avgPriceLineOption: CreatePriceLineOptions;
+} | null => {
+  if (candleData.length === 0) return null;
+
+  let min = candleData[0].close;
+  let max = min;
+
+  candleData.forEach((d) => {
+    const price = d.close;
+    if (price > max) {
+      max = price;
+    }
+    if (price < min) {
+      min = price;
+    }
+  });
+
+  const avg =
+    candleData.reduce((sum, d) => sum + d.close, 0) / candleData.length;
+
+  const lineWidth = 2;
+
+  return {
+    minPriceLineOption: {
+      price: min,
+      color: "#ef5350",
+      lineWidth: lineWidth,
+      lineStyle: 2, // LineStyle.Dashed
+      axisLabelVisible: true,
+      title: "min price",
+    },
+    maxPriceLineOption: {
+      price: max,
+      color: "#26a69a",
+      lineWidth: lineWidth,
+      lineStyle: 2, // LineStyle.Dashed
+      axisLabelVisible: true,
+      title: "max price",
+    },
+    avgPriceLineOption: {
+      price: avg,
+      color: "black",
+      lineWidth: lineWidth,
+      lineStyle: 1, // LineStyle.Dotted
+      axisLabelVisible: true,
+      title: "ave price",
+    },
+  };
+};
 
 const getTargetPrice = ({
   target,
@@ -292,7 +348,7 @@ export default function CandlestickChart({ data }: { data: StockData }) {
         // 데이터 변환 및 설정
         if (candleData && candleData.length > 0) {
           try {
-            const chartData: CandlestickData<Time>[] = candleData.map(
+            const candleStickData: CandlestickData<Time>[] = candleData.map(
               (item) => ({
                 time: item.modifiedTime,
                 open:
@@ -314,6 +370,20 @@ export default function CandlestickChart({ data }: { data: StockData }) {
               })
             );
 
+            candlestickSeries.setData(candleStickData);
+
+            /**
+             * min, max, avg 라인 추가
+             * https://tradingview.github.io/lightweight-charts/tutorials/how_to/price-line
+             */
+            const priceList = minMaxAvgPrice(candleData);
+
+            if (priceList) {
+              candlestickSeries.createPriceLine(priceList.minPriceLineOption);
+              candlestickSeries.createPriceLine(priceList.maxPriceLineOption);
+              candlestickSeries.createPriceLine(priceList.avgPriceLineOption);
+            }
+
             /**
              * 거래량 데이터 변환
              * 미국식 거래량 색깔: 캔들의 색깔과 동일
@@ -330,12 +400,16 @@ export default function CandlestickChart({ data }: { data: StockData }) {
               })
             );
 
-            candlestickSeries.setData(chartData);
             volumeSeries.setData(volumeData);
 
             setTimeout(() => {
-              if (chart && chart.timeScale) {
-                chart.timeScale().fitContent();
+              try {
+                if (chartRef.current && chartRef.current.timeScale) {
+                  chartRef.current.timeScale().fitContent();
+                }
+              } catch (error) {
+                // 차트가 이미 dispose된 경우 무시
+                console.log("차트가 이미 dispose되었습니다.");
               }
             }, 100);
           } catch (error) {
@@ -353,7 +427,8 @@ export default function CandlestickChart({ data }: { data: StockData }) {
               }
             }
           } catch (error) {
-            // 무시
+            // 차트가 이미 dispose된 경우 무시
+            console.log("resize 중 차트가 이미 dispose되었습니다.");
           }
         };
         window.addEventListener("resize", handleResize);
@@ -380,6 +455,8 @@ export default function CandlestickChart({ data }: { data: StockData }) {
           // 이미 dispose된 경우 무시
         }
         chartRef.current = null;
+        candlestickSeriesRef.current = null;
+        volumeSeriesRef.current = null;
       }
     };
   }, [data]);
@@ -388,35 +465,43 @@ export default function CandlestickChart({ data }: { data: StockData }) {
     period: { value: number; label: string },
     interval: "1d" | string
   ) => {
-    if (!chartRef.current || interval !== "1d") return;
+    try {
+      if (!chartRef.current || interval !== "1d") return;
 
-    const newList = [...movingAveragePeriodChartList];
-    const targetIndex = newList.findIndex((p) => p.value === period.value);
-    if (targetIndex === -1) return;
+      const newList = [...movingAveragePeriodChartList];
+      const targetIndex = newList.findIndex((p) => p.value === period.value);
+      if (targetIndex === -1) return;
 
-    const targetPeriod = newList[targetIndex];
+      const targetPeriod = newList[targetIndex];
 
-    if (targetPeriod.chartInstance) {
-      chartRef.current?.removeSeries(targetPeriod.chartInstance);
-      newList[targetIndex] = { ...targetPeriod, chartInstance: null };
-    } else {
-      const maData = calculateMovingAverageSeriesData(candleData, period.value);
+      if (targetPeriod.chartInstance) {
+        chartRef.current?.removeSeries(targetPeriod.chartInstance);
+        newList[targetIndex] = { ...targetPeriod, chartInstance: null };
+      } else {
+        const maData = calculateMovingAverageSeriesData(
+          candleData,
+          period.value
+        );
 
-      const newChartInstance = chartRef.current?.addSeries(LineSeries, {
-        color: targetPeriod.color,
-        lineWidth: 1,
-      });
+        const newChartInstance = chartRef.current?.addSeries(LineSeries, {
+          color: targetPeriod.color,
+          lineWidth: 1,
+        });
 
-      if (newChartInstance) {
-        newChartInstance.setData(maData);
-        newList[targetIndex] = {
-          ...targetPeriod,
-          chartInstance: newChartInstance,
-        };
+        if (newChartInstance) {
+          newChartInstance.setData(maData);
+          newList[targetIndex] = {
+            ...targetPeriod,
+            chartInstance: newChartInstance,
+          };
+        }
       }
-    }
 
-    setMovingAveragePeriodChartList(newList);
+      setMovingAveragePeriodChartList(newList);
+    } catch (error) {
+      // 차트가 이미 dispose된 경우 무시
+      console.log("이동평균선 추가 중 차트가 이미 dispose되었습니다.");
+    }
   };
 
   // 현재 거래량 계산

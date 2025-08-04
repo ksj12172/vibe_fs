@@ -21,8 +21,9 @@ class handler(BaseHTTPRequestHandler):
             path_parts = self.path.split('/')
             stock_code = None
             
+            # /api/stock-data/ma200/<stock_code> 형식에서 종목코드 추출
             for i, part in enumerate(path_parts):
-                if part == 'stock-data' and i + 1 < len(path_parts):
+                if part == 'ma200' and i + 1 < len(path_parts):
                     # 쿼리 파라미터 분리
                     code_with_params = path_parts[i + 1]
                     stock_code = code_with_params.split('?')[0]

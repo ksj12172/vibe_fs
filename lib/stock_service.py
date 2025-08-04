@@ -261,4 +261,110 @@ class StockDataService:
     
     def clear_expired_cache(self):
         """만료된 캐시만 삭제"""
-        self._clear_expired_cache() 
+        self._clear_expired_cache()
+    
+    def get_ma200_data(self, stock_code, force_refresh=False, server_name='Stock Service'):
+        """200일 이동평균 데이터 조회 (캐시 최적화)"""
+        try:
+            # MA200 전용 캐시 키
+            cache_key = f"{stock_code}_ma200"
+            
+            # 캐시에서 데이터 조회 (MA200은 더 오래 캐시)
+            if not force_refresh and self.cache_enabled:
+                cached_data = self._get_from_cache_ma200(cache_key)
+                if cached_data:
+                    # cache_info가 없으면 생성하고, 있으면 from_cache 키 추가
+                    if 'cache_info' not in cached_data:
+                        cached_data['cache_info'] = {}
+                    cached_data['cache_info']['from_cache'] = True
+                    cached_data['cache_info']['cache_key'] = cache_key
+                    return cached_data
+            
+            # 1년 데이터로 200일 이동평균 계산
+            response_data = self.get_stock_data(
+                stock_code=stock_code,
+                period='1y',
+                interval='1d',
+                force_refresh=force_refresh,
+                server_name=server_name
+            )
+            
+            if not response_data['success']:
+                return response_data
+            
+            # 200일 이동평균 계산
+            candles = response_data['data']['candles']
+            if len(candles) < 200:
+                raise Exception(f"200일 이동평균을 계산하기에는 데이터가 부족합니다. 현재 데이터: {len(candles)}일")
+            
+            # 종가 기준으로 200일 이동평균 계산
+            close_prices = [candle['close'] for candle in candles]
+            ma200 = sum(close_prices[-200:]) / 200
+            
+            # 최신 종가
+            latest_close = close_prices[-1]
+            
+            # MA200 대비 현재가 비율
+            ma200_ratio = (latest_close / ma200 - 1) * 100
+            
+            ma200_response = {
+                'success': True,
+                'data': {
+                    'stock_code': stock_code,
+                    'symbol_name': response_data['data']['symbol_name'],
+                    'display_name': response_data['data']['display_name'],
+                    'ma200': round(ma200, 2),
+                    'current_price': round(latest_close, 2),
+                    'ma200_ratio': round(ma200_ratio, 2),
+                    'data_points': len(candles),
+                    'calculation_date': candles[-1]['time'],
+                    'server': server_name,
+                    'timestamp': datetime.now().isoformat(),
+                    'cache_info': {
+                        'from_cache': False,
+                        'note': 'MA200 calculation',
+                        'cache_key': cache_key
+                    }
+                }
+            }
+            
+            # MA200 전용 캐시에 저장 (더 오래 캐시)
+            if self.cache_enabled:
+                self._set_cache_ma200(cache_key, ma200_response)
+            
+            return ma200_response
+            
+        except Exception as e:
+            error_message = f"200일 이동평균 계산 중 오류가 발생했습니다: {str(e)}"
+            print(f"Error: {error_message}")
+            raise Exception(error_message)
+    
+    def _get_from_cache_ma200(self, cache_key, max_age_minutes=60):
+        """MA200 전용 캐시에서 데이터 조회 (더 오래 캐시)"""
+        if not self.cache_enabled:
+            return None
+            
+        if cache_key in self.cache and cache_key in self.cache_timestamps:
+            cache_time = self.cache_timestamps[cache_key]
+            current_time = time.time()
+            age_minutes = (current_time - cache_time) / 60
+            
+            if age_minutes < max_age_minutes:
+                print(f"MA200 Cache HIT for {cache_key} (age: {age_minutes:.1f} minutes)")
+                return self.cache[cache_key]
+            else:
+                print(f"MA200 Cache EXPIRED for {cache_key} (age: {age_minutes:.1f} minutes)")
+                del self.cache[cache_key]
+                del self.cache_timestamps[cache_key]
+        
+        print(f"MA200 Cache MISS for {cache_key}")
+        return None
+    
+    def _set_cache_ma200(self, cache_key, data):
+        """MA200 전용 캐시에 데이터 저장"""
+        if not self.cache_enabled:
+            return
+            
+        self.cache[cache_key] = data
+        self.cache_timestamps[cache_key] = time.time()
+        print(f"MA200 Cache SET for {cache_key}") 

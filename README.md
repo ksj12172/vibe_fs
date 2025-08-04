@@ -8,10 +8,43 @@
 - **재무제표 시각화**: 손익계산서, 재무상태표, 현금흐름표 차트 표시
 - **실시간 데이터**: Open DART API를 통한 최신 재무 데이터 조회
 - **주식 데이터 시각화**: Yahoo Finance를 통한 실시간 주식 차트
+- **200일 이동평균 분석**: 주식의 200일 이동평균 가격 및 현재가 대비 비율 표시
 - **기업 정보 제공**: 주식별 상세한 기업 설명 및 정보
 - **반응형 디자인**: 데스크톱과 모바일 모두 지원
 
 ## 🚀 설치 및 실행
+
+### Vercel 배포
+
+1. **Vercel CLI 설치**
+
+   ```bash
+   npm i -g vercel
+   ```
+
+2. **환경변수 설정**
+   Vercel 대시보드에서 다음 환경변수를 설정하세요:
+
+   - `DART_API_KEY`: Open DART API 키
+   - `DATABASE_URL`: PostgreSQL 연결 URL
+   - `POSTGRES_PRISMA_URL`: Prisma PostgreSQL URL
+   - `POSTGRES_URL_NON_POOLING`: PostgreSQL Non-pooling URL
+
+3. **배포**
+
+   ```bash
+   vercel --prod
+   ```
+
+4. **API 테스트**
+
+   ```bash
+   # 환경변수 설정
+   export VERCEL_URL=your-app.vercel.app
+
+   # API 테스트
+   python test_vercel_ma200_api.py 005930
+   ```
 
 ### 필수 요구사항
 
@@ -211,26 +244,90 @@ POST http://localhost:5001/cache/clear-expired # 만료된 캐시만 삭제
 ```
 vibe-fs/
 ├── app/                    # Next.js 앱 라우터
-├── api/                   # Vercel API Routes
+│   └── chart/[code]/      # 주식 차트 페이지
+├── api/                   # Vercel API Routes (Next.js)
 │   └── stock-data/        # 주식 데이터 API (Vercel Python Runtime)
+│       ├── [code]/        # 동적 주식 데이터 엔드포인트
+│       │   ├── route.js   # 일반 주식 데이터
+│       │   └── ma200/     # 200일 평균 가격 API
+│       │       └── route.js
 │       └── [code].py      # 동적 주식 데이터 엔드포인트
+├── api/                   # Vercel Python Functions (루트)
+│   └── stock-data/        # 주식 데이터 API (Vercel Python Runtime)
+│       ├── [code].py      # 일반 주식 데이터
+│       └── [code]/        # 동적 주식 데이터 엔드포인트
+│           └── ma200.py   # 200일 평균 가격 API
 ├── components/             # React 컴포넌트
 ├── lib/                   # 공통 라이브러리
 │   ├── stock_service.py   # 주식 데이터 조회 공통 서비스
 │   ├── postgres-database.js  # PostgreSQL 데이터베이스 매니저
 │   └── __init__.py        # Python 패키지 초기화
 ├── python-server/         # 로컬 개발용 Python 서버
-│   └── stock_api.py       # Flask 기반 주식 API 서버
+│   └── main.py            # Flask 기반 주식 API 서버
 ├── public/                # 정적 파일
 ├── scripts/               # 스크립트 파일
 │   ├── download_corp_code.js    # 회사코드 다운로드
 │   └── migrate-to-postgres.js   # PostgreSQL 설정
 ├── downloads/             # 다운로드된 파일
 ├── test_stock_service.py # 주식 서비스 테스트 스크립트
+├── test_ma200_api.py     # 로컬 200일 평균 가격 API 테스트
+├── test_vercel_ma200_api.py # Vercel 200일 평균 가격 API 테스트
 └── package.json          # 의존성 및 스크립트
 ```
 
 ## 🔧 개발 도구
+
+### API 엔드포인트
+
+#### 주식 데이터 API
+
+- **GET** `/api/stock-data/[code]` - 주식 차트 데이터 조회
+
+  - Query Parameters:
+    - `period`: 기간 (1d, 1wk, 3mo, 1y, 5y)
+    - `interval`: 간격 (5m, 15m, 1d)
+    - `force_refresh`: 캐시 무시 여부 (true/false)
+
+- **GET** `/api/stock-data/[code]/ma200` - 200일 이동평균 데이터 조회
+  - Query Parameters:
+    - `force_refresh`: 캐시 무시 여부 (true/false)
+  - Response:
+    ```json
+    {
+      "success": true,
+      "data": {
+        "stock_code": "005930",
+        "symbol_name": "Samsung Electronics Co., Ltd.",
+        "display_name": "삼성전자",
+        "ma200": 75000.5,
+        "current_price": 78000.0,
+        "ma200_ratio": 4.0,
+        "data_points": 252,
+        "calculation_date": 1704067200,
+        "server": "Python Flask (Local Development)",
+        "timestamp": "2024-01-01T12:00:00",
+        "cache_info": {
+          "from_cache": false,
+          "note": "MA200 calculation"
+        }
+      }
+    }
+    ```
+
+#### Python 서버 API (로컬 개발)
+
+- **GET** `http://localhost:5001/api/stock-data/[code]` - 주식 데이터
+- **GET** `http://localhost:5001/api/stock-data/[code]/ma200` - 200일 이동평균
+- **GET** `http://localhost:5001/cache/stats` - 캐시 통계
+- **POST** `http://localhost:5001/cache/clear` - 캐시 삭제
+- **POST** `http://localhost:5001/cache/clear-expired` - 만료된 캐시 삭제
+
+- 캐시 클리어하기 `curl "http://localhost:3000/api/stock-by-code?stock_code=360750" -H "Cache-Control: no-cache"`
+
+#### Vercel Python Functions API (프로덕션)
+
+- **GET** `https://your-app.vercel.app/api/stock-data/[code]` - 주식 데이터
+- **GET** `https://your-app.vercel.app/api/stock-data/[code]/ma200` - 200일 이동평균
 
 ### 사용 가능한 스크립트
 
@@ -258,6 +355,12 @@ yarn python-server
 
 # 주식 서비스 테스트
 python test_stock_service.py
+
+# 200일 평균 가격 API 테스트
+python test_ma200_api.py [종목코드]
+
+# Vercel 200일 평균 가격 API 테스트
+python test_vercel_ma200_api.py [종목코드] [base_url]
 
 # 주식 description 관리
 yarn manage-stock-descriptions

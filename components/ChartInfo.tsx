@@ -7,6 +7,7 @@ interface ChartInfoProps {
   candleData: CandleDataWithModifiedTime[];
   interval: string;
   currency: Currency;
+  ma200Data: Ma200Data | null;
 }
 
 const getDateRange = (
@@ -83,6 +84,7 @@ export default function ChartInfo({
   candleData,
   interval,
   currency,
+  ma200Data,
 }: ChartInfoProps) {
   // 현재 거래량 계산
   const recentVolumeData = getRecentVolumeData(interval, candleData);
@@ -101,6 +103,43 @@ export default function ChartInfo({
 
   return (
     <div style={{ margin: "20px 0" }}>
+      {ma200Data && (
+        <>
+          <div>
+            <div>
+              <span>
+                🌿 200일 평균 가격 ({ma200Data?.ma200?.toLocaleString()}){" "}
+              </span>
+              <span className="ml-2 font-medium">
+                {ma200Data?.ma200 < ma200Data?.current_price
+                  ? "<"
+                  : ma200Data?.ma200 > ma200Data?.current_price
+                  ? ">"
+                  : "="}
+              </span>
+              <span>
+                {" "}
+                최근 종가 ({ma200Data?.current_price?.toLocaleString()})
+              </span>
+            </div>
+            <div>
+              <span className="font-medium text-gray-700">
+                200일 이동평균 대비:
+              </span>
+              <span
+                className={`ml-2 text-lg font-bold ${
+                  ma200Data.ma200_ratio > 0 ? "text-red-600" : "text-blue-600"
+                }`}
+              >
+                {ma200Data.ma200_ratio > 0 ? "+" : ""}
+                {ma200Data.ma200_ratio}%
+              </span>
+            </div>
+          </div>
+
+          <br />
+        </>
+      )}
       <div>
         <span className="text-gray-500">데이터 포인트:</span>
         <span className="ml-2 font-medium">{candleData?.length || 0}개</span>

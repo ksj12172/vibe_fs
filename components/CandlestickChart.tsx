@@ -151,7 +151,13 @@ const calculateMovingAverageSeriesData = (
   return maData;
 };
 
-export default function CandlestickChart({ data }: { data: StockData }) {
+export default function CandlestickChart({
+  data,
+  ma200Data,
+}: {
+  data: StockData;
+  ma200Data: Ma200Data | null;
+}) {
   const candleData = data.candles.map((candle) => ({
     ...candle,
     modifiedTime: getTimeForLightweightChart(data.interval, candle.time),
@@ -517,6 +523,7 @@ export default function CandlestickChart({ data }: { data: StockData }) {
         candleData={candleData}
         interval={data.interval}
         currency={currency}
+        ma200Data={ma200Data}
       />
 
       {data.interval === "1d" && candleData.length > 0 && (

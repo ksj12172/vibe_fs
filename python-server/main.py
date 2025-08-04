@@ -51,6 +51,34 @@ def get_stock_data(stock_code):
             'timestamp': datetime.now().isoformat()
         }), 500
 
+@app.route('/api/stock-data/<stock_code>/ma200')
+def get_ma200_data(stock_code):
+    try:
+        # 쿼리 파라미터 가져오기
+        force_refresh = request.args.get('force_refresh', 'false').lower() == 'true'
+        
+        # 개선된 MA200 메서드 사용
+        response_data = stock_service.get_ma200_data(
+            stock_code=stock_code,
+            force_refresh=force_refresh,
+            server_name='Python Flask (Local Development)'
+        )
+        
+        return jsonify(response_data)
+        
+    except Exception as e:
+        error_message = f"200일 이동평균 계산 중 오류가 발생했습니다: {str(e)}"
+        print(f"Error: {error_message}")
+        return jsonify({
+            'success': False,
+            'error': {
+                'code': 500,
+                'message': error_message
+            },
+            'server': 'Python Flask (Local Development)',
+            'timestamp': datetime.now().isoformat()
+        }), 500
+
 @app.route('/cache/stats')
 def cache_stats():
     """캐시 통계 조회"""

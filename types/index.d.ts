@@ -110,6 +110,23 @@ declare global {
   }
 
   type Currency = "USD" | "KRW";
+
+  interface Ma200Data {
+    stock_code: string;
+    symbol_name: string;
+    display_name: string;
+    ma200: number;
+    current_price: number;
+    ma200_ratio: number;
+    data_points: number;
+    calculation_date: number;
+    server: string;
+    timestamp: string;
+    cache_info: {
+      from_cache: boolean;
+      note: string;
+    };
+  }
 }
 
 // 이 파일을 모듈로 만들기 위한 빈 export

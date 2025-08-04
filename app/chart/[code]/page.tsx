@@ -34,6 +34,7 @@ function ChartPageContent() {
   const router = useRouter();
   const [stockInfo, setStockInfo] = useState<StockInfo | null>(null);
   const [chartData, setChartData] = useState<StockData | null>(null);
+  const [ma200Data, setMa200Data] = useState<Ma200Data | null>(null);
   const [loading, setLoading] = useState(true);
   const [chartLoading, setChartLoading] = useState(false); // 차트 영역만 로딩
   const [error, setError] = useState<string | null>(null);
@@ -71,6 +72,28 @@ function ChartPageContent() {
     }
 
     return candleChartData;
+  };
+
+  const fetchMa200Data = async () => {
+    // Vercel 배포 환경에서는 루트 /api 폴더의 Python 함수 사용
+    const apiUrl =
+      process.env.NODE_ENV === "development"
+        ? `http://localhost:${process.env.NEXT_PUBLIC_PYTHON_API_PORT}/api/stock-data/${params.code}/ma200`
+        : `/api/stock-data/${params.code}/ma200`;
+
+    const response = await fetch(apiUrl);
+
+    if (!response.ok) {
+      throw new Error("200일 평균 가격 데이터를 불러오지 못했습니다.");
+    }
+
+    const ma200Response = await response.json();
+
+    if (!ma200Response.success) {
+      throw new Error("200일 평균 가격 데이터를 불러오지 못했습니다.");
+    }
+
+    return ma200Response.data as Ma200Data;
   };
 
   const fetchStockInfo = async () => {
@@ -208,6 +231,14 @@ function ChartPageContent() {
     }
   }, [params.code, currentPeriod]);
 
+  useEffect(() => {
+    if (params.code) {
+      fetchMa200Data().then((data) => {
+        setMa200Data(data);
+      });
+    }
+  }, [params.code]);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -344,7 +375,7 @@ function ChartPageContent() {
             </div>
           </div>
         ) : chartData && chartData.candles && chartData.candles.length > 0 ? (
-          <CandlestickChart data={chartData} />
+          <CandlestickChart data={chartData} ma200Data={ma200Data} />
         ) : (
           <div className="flex items-center justify-center h-96">
             <p className="text-gray-600">차트 데이터가 없습니다.</p>

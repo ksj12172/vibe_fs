@@ -12,6 +12,7 @@ import {
   HistogramData,
   HistogramSeries,
   CreatePriceLineOptions,
+  IPriceLine,
 } from "lightweight-charts";
 import React, { useEffect, useRef, useState } from "react";
 import OHLCAnalyzer from "./OHLCAnalyzer";
@@ -228,6 +229,8 @@ export default function CandlestickChart({ data }: { data: StockData }) {
     modifiedTime: getTimeForLightweightChart(data.interval, candle.time),
   }));
 
+  const minMaxAvgPriceLineOption = minMaxAvgPrice(candleData);
+
   const highestPrice = getTargetPrice({
     target: "high",
     candleData,
@@ -248,6 +251,9 @@ export default function CandlestickChart({ data }: { data: StockData }) {
   const chartRef = useRef<IChartApi | null>(null);
   const candlestickSeriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
   const volumeSeriesRef = useRef<ISeriesApi<"Histogram"> | null>(null);
+
+  const [isPriceLineVisible, setIsPriceLineVisible] = useState(false);
+
   const [movingAveragePeriodChartList, setMovingAveragePeriodChartList] =
     useState<MovingAveragePeriod[]>([
       { value: 5, label: "5일", chartInstance: null, color: "#0AB563" },
@@ -372,17 +378,7 @@ export default function CandlestickChart({ data }: { data: StockData }) {
 
             candlestickSeries.setData(candleStickData);
 
-            /**
-             * min, max, avg 라인 추가
-             * https://tradingview.github.io/lightweight-charts/tutorials/how_to/price-line
-             */
-            const priceList = minMaxAvgPrice(candleData);
-
-            if (priceList) {
-              candlestickSeries.createPriceLine(priceList.minPriceLineOption);
-              candlestickSeries.createPriceLine(priceList.maxPriceLineOption);
-              candlestickSeries.createPriceLine(priceList.avgPriceLineOption);
-            }
+            togglePriceLine(true);
 
             /**
              * 거래량 데이터 변환
@@ -504,6 +500,36 @@ export default function CandlestickChart({ data }: { data: StockData }) {
     }
   };
 
+  /**
+   * min, max, avg 라인 추가
+   * https://tradingview.github.io/lightweight-charts/tutorials/how_to/price-line
+   */
+  const togglePriceLine = (isShow: boolean) => {
+    const series = candlestickSeriesRef.current;
+
+    if (!series || !minMaxAvgPriceLineOption) return;
+
+    const priceLineSeries = series.priceLines();
+
+    if (priceLineSeries.length > 0 && !isShow) {
+      priceLineSeries.forEach((priceLine) => {
+        series.removePriceLine(priceLine);
+      });
+
+      setIsPriceLineVisible(false);
+
+      return;
+    }
+
+    if (priceLineSeries.length === 0 && isShow) {
+      series.createPriceLine(minMaxAvgPriceLineOption.minPriceLineOption);
+      series.createPriceLine(minMaxAvgPriceLineOption.maxPriceLineOption);
+      series.createPriceLine(minMaxAvgPriceLineOption.avgPriceLineOption);
+
+      setIsPriceLineVisible(true);
+    }
+  };
+
   // 현재 거래량 계산
   const recentVolumeData = getRecentVolumeData(data.interval, candleData);
 
@@ -515,38 +541,59 @@ export default function CandlestickChart({ data }: { data: StockData }) {
         style={{ height: "500px" }} // 높이를 늘려서 거래량 차트 공간 확보
       />
 
-      {/* 이동 평균선 */}
-      <div style={{ display: "flex", margin: "20px 0" }}>
-        <button className="default-btn">
-          🐚 이동평균선{" "}
-          <IoMdInformationCircleOutline
-            style={{ marginLeft: "3px", cursor: "pointer" }}
-            onClick={(e) => {
-              if (clickedPosition) {
-                setClickedPosition(null);
-              } else {
-                setClickedPosition({
-                  x: e.clientX,
-                  y: e.clientY,
-                });
-              }
-            }}
-          />
-        </button>
-        {movingAveragePeriodChartList.map((period) => (
-          <button
-            key={period.value}
-            onClick={() => addMovingAverageLine(period, data.interval)}
-            className={`default-btn ${period.chartInstance && "selected-btn"}`}
-            disabled={
-              data.interval !== "1d" || candleData.length < period.value
-            }
-          >
-            <span className={`text-with-line ${"bgColor" + period.value}`}>
-              {period.label}
-            </span>
+      <div
+        style={{
+          display: "flex",
+          margin: "20px 0",
+          justifyContent: "space-between",
+        }}
+      >
+        {/* 이동 평균선,  */}
+        <div style={{ display: "flex" }}>
+          <button className="default-btn">
+            🐚 이동평균선{" "}
+            <IoMdInformationCircleOutline
+              style={{ marginLeft: "3px", cursor: "pointer" }}
+              onClick={(e) => {
+                if (clickedPosition) {
+                  setClickedPosition(null);
+                } else {
+                  setClickedPosition({
+                    x: e.clientX,
+                    y: e.clientY,
+                  });
+                }
+              }}
+            />
           </button>
-        ))}
+          {movingAveragePeriodChartList.map((period) => (
+            <button
+              key={period.value}
+              onClick={() => addMovingAverageLine(period, data.interval)}
+              className={`default-btn ${
+                period.chartInstance && "selected-btn"
+              }`}
+              disabled={
+                data.interval !== "1d" || candleData.length < period.value
+              }
+            >
+              <span className={`text-with-line ${"bgColor" + period.value}`}>
+                {period.label}
+              </span>
+            </button>
+          ))}
+        </div>
+        {minMaxAvgPriceLineOption && (
+          <button
+            key="min-max-avg"
+            className={`default-btn ${
+              isPriceLineVisible ? "selected-btn" : ""
+            }`}
+            onClick={() => togglePriceLine(!isPriceLineVisible)}
+          >
+            최대/최소/평균 가격선
+          </button>
+        )}
       </div>
 
       <div style={{ margin: "20px 0" }}>

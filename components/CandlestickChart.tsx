@@ -9,11 +9,14 @@ import {
   LineSeries,
   Time,
   UTCTimestamp,
+  HistogramData,
+  HistogramSeries,
 } from "lightweight-charts";
 import React, { useEffect, useRef, useState } from "react";
 import OHLCAnalyzer from "./OHLCAnalyzer";
 import Tooltip from "./Tooltip";
 import { IoMdInformationCircleOutline } from "react-icons/io";
+import { DateTime } from "luxon";
 
 type Currency = "USD" | "KRW";
 
@@ -112,6 +115,22 @@ const getTimeForLightweightChart = (
   };
 };
 
+const getRecentVolumeData = (
+  interval: string,
+  candleData: CandleDataWithModifiedTime[]
+) => {
+  if (interval !== "1d" || candleData.length === 0) {
+    return null;
+  }
+
+  const recentData = candleData[candleData.length - 1];
+  const formattedDate = DateTime.fromMillis(
+    recentData.time * 1000 + KST_OFFSET
+  ).toFormat("yy.M.d");
+
+  return { volume: recentData.volume, label: `${formattedDate} 거래량` };
+};
+
 const calculateMovingAverageSeriesData = (
   candleData: CandleDataWithModifiedTime[],
   period: number
@@ -172,6 +191,7 @@ export default function CandlestickChart({ data }: { data: StockData }) {
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const candlestickSeriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
+  const volumeSeriesRef = useRef<ISeriesApi<"Histogram"> | null>(null);
   const [movingAveragePeriodChartList, setMovingAveragePeriodChartList] =
     useState<MovingAveragePeriod[]>([
       { value: 5, label: "5일", chartInstance: null, color: "#0AB563" },
@@ -187,7 +207,8 @@ export default function CandlestickChart({ data }: { data: StockData }) {
           return;
         }
         const LightweightCharts = await import("lightweight-charts");
-        const { createChart, ColorType, CandlestickSeries } = LightweightCharts;
+        const { createChart, ColorType, CandlestickSeries, HistogramSeries } =
+          LightweightCharts;
 
         // 기존 차트 안전하게 제거
         if (chartRef.current) {
@@ -204,7 +225,7 @@ export default function CandlestickChart({ data }: { data: StockData }) {
         // 차트 생성
         const chart = createChart(chartContainerRef.current, {
           width: chartContainerRef.current.clientWidth || 600,
-          height: 400,
+          height: 500,
           layout: {
             background: { type: ColorType.Solid, color: "#ffffff" },
             textColor: "#333",
@@ -238,6 +259,36 @@ export default function CandlestickChart({ data }: { data: StockData }) {
 
         candlestickSeriesRef.current = candlestickSeries;
 
+        // 캔들 차트의 price scale 설정
+        candlestickSeries.priceScale().applyOptions({
+          scaleMargins: {
+            top: 0.1,
+            bottom: 0.1, // lowest point will be 10% away from the bottom
+          },
+        });
+
+        /**
+         * 거래량 차트 추가
+         * https://tradingview.github.io/lightweight-charts/tutorials/how_to/price-and-volume
+         */
+        const volumeSeries = chart.addSeries(HistogramSeries, {
+          color: "#26a69a",
+          priceFormat: {
+            type: "volume",
+          },
+          priceScaleId: "",
+        });
+
+        volumeSeriesRef.current = volumeSeries;
+
+        // 거래량 차트의 price scale 설정
+        volumeSeries.priceScale().applyOptions({
+          scaleMargins: {
+            top: 0.9, // highest point of the series will be 90% away from the top
+            bottom: 0, // lowest point will be at the very bottom.
+          },
+        });
+
         // 데이터 변환 및 설정
         if (candleData && candleData.length > 0) {
           try {
@@ -263,7 +314,24 @@ export default function CandlestickChart({ data }: { data: StockData }) {
               })
             );
 
+            /**
+             * 거래량 데이터 변환
+             * 미국식 거래량 색깔: 캔들의 색깔과 동일
+             * 한국식 거래량 색깔: 전날 거래량의 크기와 비교
+             */
+            const volumeData: HistogramData<Time>[] = candleData.map(
+              (item) => ({
+                time: item.modifiedTime,
+                value: item.volume,
+                color:
+                  item.close >= item.open
+                    ? "rgba(237, 88, 88, 0.5)"
+                    : "rgba(88, 137, 237, 0.5)", // 상승/하락에 따른 색상
+              })
+            );
+
             candlestickSeries.setData(chartData);
+            volumeSeries.setData(volumeData);
 
             setTimeout(() => {
               if (chart && chart.timeScale) {
@@ -351,12 +419,15 @@ export default function CandlestickChart({ data }: { data: StockData }) {
     setMovingAveragePeriodChartList(newList);
   };
 
+  // 현재 거래량 계산
+  const recentVolumeData = getRecentVolumeData(data.interval, candleData);
+
   return (
     <div className="w-full relative">
       <div
         ref={chartContainerRef}
         className="w-full border border-gray-200 rounded-lg"
-        style={{ height: "400px" }}
+        style={{ height: "500px" }} // 높이를 늘려서 거래량 차트 공간 확보
       />
 
       {/* 이동 평균선 */}
@@ -414,6 +485,14 @@ export default function CandlestickChart({ data }: { data: StockData }) {
           <span className="text-gray-500">기간 중 최저가: </span>
           <span className="ml-2 font-medium text-blue-600">{lowestPrice}</span>
         </div>
+        {recentVolumeData && (
+          <div>
+            <span className="text-gray-500">{recentVolumeData.label} </span>
+            <span className="ml-2 font-medium text-green-600">
+              {recentVolumeData.volume.toLocaleString()}
+            </span>
+          </div>
+        )}
       </div>
 
       {data.interval === "1d" && candleData.length > 0 && (

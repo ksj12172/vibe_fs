@@ -51,7 +51,7 @@ def get_stock_data(stock_code):
             'timestamp': datetime.now().isoformat()
         }), 500
 
-@app.route('/api/stock-data/<stock_code>/ma200')
+@app.route('/api/stock-data/ma200/<stock_code>')
 def get_ma200_data(stock_code):
     try:
         # 쿼리 파라미터 가져오기

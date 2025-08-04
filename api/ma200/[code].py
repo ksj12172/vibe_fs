@@ -6,8 +6,23 @@ import sys
 import os
 
 # 공통 모듈 import를 위한 경로 추가
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', '..', 'lib'))
-from stock_service import StockDataService
+current_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.join(current_dir, '..', '..', '..')
+lib_path = os.path.join(project_root, 'lib')
+
+# Vercel 환경에서 lib 폴더를 찾기 위한 경로 설정
+sys.path.insert(0, lib_path)
+sys.path.insert(0, os.path.join(project_root, 'lib'))
+sys.path.insert(0, '/var/task/lib')
+
+try:
+    from stock_service import StockDataService
+    print(f"Successfully imported StockDataService from {lib_path}")
+except ImportError as e:
+    print(f"Import error: {e}")
+    print(f"Current sys.path: {sys.path}")
+    # Vercel 환경에서 직접 모듈을 정의
+    raise ImportError(f"Could not import stock_service. Available paths: {sys.path}")
 
 # Vercel Python Runtime은 app/api/**/*.py 경로에 있는 .py 파일을 Python Serverless Function으로 자동으로 빌드합니다.
 

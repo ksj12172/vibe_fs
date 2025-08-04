@@ -75,11 +75,7 @@ function ChartPageContent() {
   };
 
   const fetchMa200Data = async () => {
-    // Vercel 배포 환경에서는 루트 /api 폴더의 Python 함수 사용
-    const apiUrl =
-      process.env.NODE_ENV === "development"
-        ? `http://localhost:${process.env.NEXT_PUBLIC_PYTHON_API_PORT}/api/stock-data/${params.code}/ma200`
-        : `/api/stock-data/${params.code}/ma200`;
+    const apiUrl = `/api/ma200/${params.code}`;
 
     const response = await fetch(apiUrl);
 

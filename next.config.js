@@ -23,18 +23,18 @@ const nextConfig = {
   rewrites: async () => {
     return [
       {
-        source: "/api/stock-data/:code",
-        destination:
-          process.env.NODE_ENV === "development"
-            ? "http://localhost:5001/api/stock-data/:code"
-            : "/api/stock-data/:code",
-      },
-      {
         source: "/api/stock-data/ma200/:code",
         destination:
           process.env.NODE_ENV === "development"
             ? "http://localhost:5001/api/stock-data/ma200/:code"
             : "/api/stock-data/ma200/:code",
+      },
+      {
+        source: "/api/stock-data/:code",
+        destination:
+          process.env.NODE_ENV === "development"
+            ? "http://localhost:5001/api/stock-data/:code"
+            : "/api/stock-data/:code",
       },
       {
         source: "/api/fred-data/:series_id",

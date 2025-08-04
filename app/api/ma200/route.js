@@ -3,10 +3,10 @@ import { NextResponse } from "next/server";
 // API 라우트를 동적으로 렌더링하도록 강제 설정
 export const dynamic = "force-dynamic";
 
-export async function GET(request, { params }) {
+export async function GET(request) {
   try {
     const { searchParams } = request.nextUrl;
-    const stockCode = params.code;
+    const stockCode = searchParams.get("code");
     const forceRefresh = searchParams.get("force_refresh") === "true";
 
     if (!stockCode || stockCode.trim() === "") {

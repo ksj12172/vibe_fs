@@ -75,7 +75,7 @@ function ChartPageContent() {
   };
 
   const fetchMa200Data = async () => {
-    const apiUrl = `/api/ma200/${params.code}`;
+    const apiUrl = `/api/ma200?code=${params.code}`;
 
     const response = await fetch(apiUrl);
 

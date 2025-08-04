@@ -260,6 +260,7 @@ export default function CandlestickChart({ data }: { data: StockData }) {
       { value: 20, label: "20일", chartInstance: null, color: "#fe7baa" },
       { value: 60, label: "60일", chartInstance: null, color: "#0a6fff" },
       { value: 120, label: "120일", chartInstance: null, color: "#9b25f9" },
+      { value: 200, label: "200일", chartInstance: null, color: "black" },
     ]);
 
   useEffect(() => {
@@ -641,7 +642,7 @@ export default function CandlestickChart({ data }: { data: StockData }) {
       >
         주가의 일정 기간 평균값을 선으로 표시합니다.
         <br />
-        5일, 20일, 60일, 120일 이동평균선을 제공합니다.
+        5일, 20일, 60일, 120일, 200일 이동평균선을 제공합니다.
       </Tooltip>
     </div>
   );

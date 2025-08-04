@@ -17,12 +17,12 @@ import {
 import React, { useEffect, useRef, useState } from "react";
 import OHLCAnalyzer from "./OHLCAnalyzer";
 import Tooltip from "./Tooltip";
+import ChartInfo from "./ChartInfo";
 import { IoMdInformationCircleOutline } from "react-icons/io";
 import { DateTime } from "luxon";
+import { KST_OFFSET } from "@/app/value";
 
-type Currency = "USD" | "KRW";
-
-interface CandleDataWithModifiedTime extends CandleData {
+export interface CandleDataWithModifiedTime extends CandleData {
   modifiedTime: Time;
 }
 
@@ -67,7 +67,7 @@ const minMaxAvgPrice = (
       lineWidth: lineWidth,
       lineStyle: 2, // LineStyle.Dashed
       axisLabelVisible: true,
-      title: "min price",
+      title: "min price(종가)",
     },
     maxPriceLineOption: {
       price: max,
@@ -75,7 +75,7 @@ const minMaxAvgPrice = (
       lineWidth: lineWidth,
       lineStyle: 2, // LineStyle.Dashed
       axisLabelVisible: true,
-      title: "max price",
+      title: "max price(종가)",
     },
     avgPriceLineOption: {
       price: avg,
@@ -83,66 +83,10 @@ const minMaxAvgPrice = (
       lineWidth: lineWidth,
       lineStyle: 1, // LineStyle.Dotted
       axisLabelVisible: true,
-      title: "ave price",
+      title: "ave price(종가)",
     },
   };
 };
-
-const getTargetPrice = ({
-  target,
-  candleData,
-  currency,
-}: {
-  target: "high" | "low";
-  candleData: CandleDataWithModifiedTime[];
-  currency: Currency;
-}) => {
-  if (candleData.length === 0) return "N/A";
-
-  const isUSD = currency === "USD";
-  const targetPrice =
-    target === "high"
-      ? Math.max(...candleData.map((d) => d.high))
-      : Math.min(...candleData.map((d) => d.low));
-
-  if (isUSD) {
-    return "$" + targetPrice.toLocaleString();
-  }
-
-  return targetPrice.toLocaleString() + "원";
-};
-
-const getDateRange = (
-  candleData: CandleDataWithModifiedTime[],
-  interval: string
-) => {
-  const firstDate = new Date((candleData[0].time as number) * 1000);
-  const lastDate = new Date(
-    (candleData[candleData.length - 1].time as number) * 1000
-  );
-
-  let options: Intl.DateTimeFormatOptions = {
-    timeZone: "Asia/Seoul", // 한국 시간 기준
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  };
-
-  if (interval !== "1d") {
-    options = {
-      ...options,
-      hour: "2-digit",
-      minute: "2-digit",
-    };
-  }
-
-  return `${firstDate.toLocaleDateString(
-    "ko-KR",
-    options
-  )} ~ ${lastDate.toLocaleDateString("ko-KR", options)}`;
-};
-
-const KST_OFFSET = 9 * 60 * 60 * 1000;
 
 /**
  * yfinance 일봉 데이터가 자정으로 돼 있어,
@@ -170,22 +114,6 @@ const getTimeForLightweightChart = (
     month: date.getMonth() + 1,
     day: date.getDate(),
   };
-};
-
-const getRecentVolumeData = (
-  interval: string,
-  candleData: CandleDataWithModifiedTime[]
-) => {
-  if (interval !== "1d" || candleData.length === 0) {
-    return null;
-  }
-
-  const recentData = candleData[candleData.length - 1];
-  const formattedDate = DateTime.fromMillis(
-    recentData.time * 1000 + KST_OFFSET
-  ).toFormat("yy.M.d");
-
-  return { volume: recentData.volume, label: `${formattedDate} 거래량` };
 };
 
 const calculateMovingAverageSeriesData = (
@@ -231,16 +159,7 @@ export default function CandlestickChart({ data }: { data: StockData }) {
 
   const minMaxAvgPriceLineOption = minMaxAvgPrice(candleData);
 
-  const highestPrice = getTargetPrice({
-    target: "high",
-    candleData,
-    currency: data.market_info.currency as Currency,
-  });
-  const lowestPrice = getTargetPrice({
-    target: "low",
-    candleData,
-    currency: data.market_info.currency as Currency,
-  });
+  const currency = data.market_info.currency as Currency;
 
   const [clickedPosition, setClickedPosition] = useState<{
     x: number;
@@ -531,9 +450,6 @@ export default function CandlestickChart({ data }: { data: StockData }) {
     }
   };
 
-  // 현재 거래량 계산
-  const recentVolumeData = getRecentVolumeData(data.interval, candleData);
-
   return (
     <div className="w-full relative">
       <div
@@ -597,36 +513,11 @@ export default function CandlestickChart({ data }: { data: StockData }) {
         )}
       </div>
 
-      <div style={{ margin: "20px 0" }}>
-        <div>
-          <span className="text-gray-500">데이터 포인트:</span>
-          <span className="ml-2 font-medium">{candleData?.length || 0}개</span>
-        </div>
-        <div>
-          <span className="text-gray-500">기간: </span>
-          <span className="ml-2 font-medium">
-            {candleData?.length > 0
-              ? getDateRange(candleData, data.interval)
-              : "N/A"}
-          </span>
-        </div>
-        <div>
-          <span className="text-gray-500">기간 중 최고가: </span>
-          <span className="ml-2 font-medium text-red-600">{highestPrice}</span>
-        </div>
-        <div>
-          <span className="text-gray-500">기간 중 최저가: </span>
-          <span className="ml-2 font-medium text-blue-600">{lowestPrice}</span>
-        </div>
-        {recentVolumeData && (
-          <div>
-            <span className="text-gray-500">{recentVolumeData.label} </span>
-            <span className="ml-2 font-medium text-green-600">
-              {recentVolumeData.volume.toLocaleString()}
-            </span>
-          </div>
-        )}
-      </div>
+      <ChartInfo
+        candleData={candleData}
+        interval={data.interval}
+        currency={currency}
+      />
 
       {data.interval === "1d" && candleData.length > 0 && (
         <OHLCAnalyzer

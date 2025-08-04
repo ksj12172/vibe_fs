@@ -19,8 +19,8 @@ export async function GET(request, { params }) {
     // Python 서버 URL 설정 - 200일 데이터를 위해 충분한 기간 설정
     const pythonServerUrl =
       process.env.NODE_ENV === "development"
-        ? `http://localhost:${process.env.NEXT_PUBLIC_PYTHON_API_PORT}/api/stock-data/${stockCode}/ma200?force_refresh=${forceRefresh}`
-        : `/api/stock-data/${stockCode}/ma200?force_refresh=${forceRefresh}`;
+        ? `http://localhost:${process.env.NEXT_PUBLIC_PYTHON_API_PORT}/api/stock-data/ma200/${stockCode}?force_refresh=${forceRefresh}`
+        : `/api/stock-data/ma200/${stockCode}?force_refresh=${forceRefresh}`;
 
     const response = await fetch(pythonServerUrl);
 

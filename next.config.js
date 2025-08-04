@@ -30,6 +30,13 @@ const nextConfig = {
             : "/api/stock-data/:code",
       },
       {
+        source: "/api/stock-data/ma200/:code",
+        destination:
+          process.env.NODE_ENV === "development"
+            ? "http://localhost:5001/api/stock-data/ma200/:code"
+            : "/api/stock-data/ma200/:code",
+      },
+      {
         source: "/api/fred-data/:series_id",
         destination:
           process.env.NODE_ENV === "development"

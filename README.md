@@ -102,6 +102,7 @@
     # .env 파일에 추가
     PYTHON_API_PORT=5001
     NEXT_PUBLIC_PYTHON_API_PORT=5001
+    NEXT_PUBLIC_PYTHON_API_URL=https://your-python-api-domain.com
     ```
 
 4.  **환경변수 설정**
@@ -119,6 +120,9 @@
     POSTGRES_HOST="your_postgres_host"
     POSTGRES_PASSWORD="your_postgres_password"
     POSTGRES_DATABASE="your_postgres_database"
+
+    # Python API URL (Vercel 배포 시 필수)
+    NEXT_PUBLIC_PYTHON_API_URL="https://your-python-api-domain.com"
     ```
 
 5.  **💡 PYTHONPATH 설정 이유**
@@ -189,6 +193,22 @@ GET http://localhost:5001/api/stock-data/{종목코드}?period=3mo&interval=1d&f
 ```
 GET /api/stock-data/{종목코드}?period=3mo&interval=1d&force_refresh=false
 ```
+
+#### 200일 이동평균 (MA200) 데이터
+
+**개발 환경:**
+
+```
+GET http://localhost:5001/api/stock-data/ma200/{종목코드}
+```
+
+**프로덕션 환경:**
+
+```
+GET {NEXT_PUBLIC_PYTHON_API_URL}/api/stock-data/ma200/{종목코드}
+```
+
+> **참고:** MA200 API는 Vercel 배포 시 에러를 방지하기 위해 Python API를 직접 호출하도록 변경되었습니다.
 
 **파라미터:**
 

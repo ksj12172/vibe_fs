@@ -75,7 +75,10 @@ function ChartPageContent() {
   };
 
   const fetchMa200Data = async () => {
-    const apiUrl = `/api/ma200?code=${params.code}`;
+    const apiUrl =
+      process.env.NODE_ENV === "development"
+        ? `http://localhost:${process.env.NEXT_PUBLIC_PYTHON_API_PORT}/api/ma200/${params.code}`
+        : `/api/ma200/${params.code}`;
 
     const response = await fetch(apiUrl);
 
